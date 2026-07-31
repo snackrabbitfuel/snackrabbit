@@ -26,12 +26,15 @@ npm run build      # genera dist/
 
 Detalles de estructura y de dónde tocar cada cosa: [`astro-site/README.md`](astro-site/README.md).
 
-## website — versión original
+## website — instantánea original
 
 El sitio tal como se construyó al principio: un `index.html`, un `styles.css` y
-un `app.js`, sin build ni dependencias. Se conserva como referencia y para poder
-comparar; **el diseño es idéntico al de la versión Astro** (verificado comparando
-el HTML renderizado y los estilos computados).
+un `app.js`, sin build ni dependencias.
+
+> **Es una instantánea histórica, no una copia viva.** Coincidía con la versión
+> Astro en el momento de la migración, pero desde entonces `astro-site/` ha
+> seguido evolucionando (catálogo, inglés por defecto, fotos recortadas sin
+> fondo…). Para ver el sitio actual, usa `astro-site/` o www.snackrabbit.co.
 
 ```bash
 cd website && python3 -m http.server 8123   # http://localhost:8123

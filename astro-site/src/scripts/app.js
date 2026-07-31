@@ -319,7 +319,8 @@ const PRODUCTS = [
     sizes: ["PACK ×4", "PACK ×12"],
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
-    img: "/assets/product-rabbit-fuel.jpg",
+    img: "/assets/can-cutout.png",
+    imgScale: 1,
     stock: 87, stockMax: 200
   },
   {
@@ -338,11 +339,11 @@ const PRODUCTS = [
     },
     colors: ["#f2f2f7", "#17171b"],
     colorNames: ["BLANCO", "NEGRO"],
-    imgByColor: { BLANCO: "/assets/plush-white.jpg", NEGRO: "/assets/plush-black.jpg" },
+    imgByColor: { BLANCO: "/assets/plush-cutout.png", NEGRO: "/assets/plush-black-cutout.png" },
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/plush-white.jpg",
-    imgPos: "50% 42%",
+    img: "/assets/plush-cutout.png",
+    imgScale: .74,   // es casi cuadrado: sin esto domina la tarjeta
     stock: 28, stockMax: 60
   },
   {
@@ -363,7 +364,8 @@ const PRODUCTS = [
     colorNames: ["ROSADO", "ROSA", "NEGRO"],
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/product-gym-towel.jpg",
+    img: "/assets/towel-cutout.png",
+    imgScale: .96,
     stock: 41, stockMax: 100
   }
 ];
@@ -662,11 +664,11 @@ function renderGrid(instant) {
     card.setAttribute("role", "button");
     card.setAttribute("aria-label", t("card.view", { name: p.name }));
     const low = p.stock <= 15;
-    const pos = p.imgPos ? ` style="object-position:${p.imgPos}"` : "";
+    const esc = ` style="--img-scale:${p.imgScale || 1}"`;
     card.innerHTML = `
       <p class="pcard-num">${p.num}</p>
       ${low ? `<span class="pcard-stock-flag">${t("card.low")}</span>` : ""}
-      <div class="pcard-media"><img src="${p.img}" alt="${p.name}" loading="lazy"${pos}></div>
+      <div class="pcard-media"><img src="${p.img}" alt="${p.name}" loading="lazy"${esc}></div>
       <div class="pcard-body">
         <h3 class="pcard-name">${p.name}</h3>
         <p class="pcard-desc">${p.desc[LANG]}</p>
@@ -732,7 +734,7 @@ const ProductModal = (() => {
     if (view && !(cur.views || []).includes(view)) view = cur.views ? cur.views[0] : null;
     $("#pmImg").src = srcNow();
     $("#pmImg").alt = cur.name;
-    $("#pmImg").style.objectPosition = cur.imgPos || "";
+    $("#pmImg").style.setProperty("--img-scale", cur.imgScale || 1);
     $("#pmNum").textContent = cur.num;
     $("#pmName").textContent = cur.name;
     $("#pmTagline").textContent = cur.tagline ? cur.tagline[LANG] : "";
