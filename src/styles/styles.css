@@ -439,7 +439,8 @@ body::after {
 }
 .hv-back { z-index: 1; }
 .hv-front { z-index: 3; }
-.hero .stamp-spin { z-index: 4; }
+/* sello en la esquina inferior derecha del panel, fuera del recorrido de la cinta */
+.hero .stamp-spin { z-index: 4; right: -7%; bottom: -6%; }
 .hero .stamp-ring { stroke: var(--yellow); }
 .hero .stamp-text { fill: var(--yellow); }
 .badge-ltd { z-index: 4; }
