@@ -5,28 +5,28 @@
 
 <!-- ============ LOGIN MODAL ============ -->
 <div class="modal login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
-  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Cerrar">✕</button>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
   <svg class="lm-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
-  <h2 id="loginTitle" class="lm-title" data-i18n="auth.title">LA MADRIGUERA</h2>
+  <h2 id="loginTitle" class="lm-title" data-i18n="auth.title">THE BURROW</h2>
   <div class="lm-tabs" role="tablist">
-    <button class="lm-tab active" id="tabIn" type="button" role="tab" aria-selected="true" data-i18n="auth.tabIn">ENTRAR</button>
-    <button class="lm-tab" id="tabUp" type="button" role="tab" aria-selected="false" data-i18n="auth.tabUp">CREAR CUENTA</button>
+    <button class="lm-tab active" id="tabIn" type="button" role="tab" aria-selected="true" data-i18n="auth.tabIn">SIGN IN</button>
+    <button class="lm-tab" id="tabUp" type="button" role="tab" aria-selected="false" data-i18n="auth.tabUp">SIGN UP</button>
   </div>
 
   <form class="lm-form" id="formIn" novalidate>
-    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="tu@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
-    <label><span data-i18n="auth.pass">CONTRASEÑA</span><input type="password" name="pass" placeholder="••••••" autocomplete="current-password" required></label>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="you@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <label><span data-i18n="auth.pass">PASSWORD</span><input type="password" name="pass" placeholder="••••••" autocomplete="current-password" required></label>
     <p class="lm-err" role="alert"></p>
-    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitIn">ENTRAR ▸</button>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitIn">SIGN IN ▸</button>
   </form>
 
   <form class="lm-form" id="formUp" hidden novalidate>
-    <label><span data-i18n="auth.name">NOMBRE</span><input type="text" name="name" placeholder="Tu nombre" data-i18n-ph="auth.namePh" autocomplete="name" required></label>
-    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="tu@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
-    <label><span data-i18n="auth.pass">CONTRASEÑA</span><input type="password" name="pass" placeholder="Mínimo 6 caracteres" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
+    <label><span data-i18n="auth.name">NAME</span><input type="text" name="name" placeholder="Your name" data-i18n-ph="auth.namePh" autocomplete="name" required></label>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="you@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <label><span data-i18n="auth.pass">PASSWORD</span><input type="password" name="pass" placeholder="At least 6 characters" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
     <p class="lm-err" role="alert"></p>
-    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitUp">CREAR CUENTA ▸</button>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitUp">CREATE ACCOUNT ▸</button>
   </form>
 
-  <p class="lm-note" data-i18n="auth.note">DEMO LOCAL — TU CUENTA SOLO VIVE EN ESTE NAVEGADOR.</p>
+  <p class="lm-note" data-i18n="auth.note">LOCAL DEMO — YOUR ACCOUNT LIVES ONLY IN THIS BROWSER.</p>
 </div>

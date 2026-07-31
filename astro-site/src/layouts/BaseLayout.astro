@@ -10,13 +10,15 @@ interface Props {
   lang?: string;
 }
 
+/* El sitio se sirve en inglés; el español es opt-in con el selector ES/EN y
+   app.js lo reescribe en cliente, recordando la elección en localStorage. */
 const {
-  title = "SNACKRABBIT — DROP 001 · Merch para gente curiosa",
-  description = "DROP 001 de SnackRabbit: Rabbit Fuel, la bebida energética natural, la Gym Towel y el plush oficial. Cero taurina, cero cosas raras.",
+  title = "SNACKRABBIT — DROP 001 · Merch for curious people",
+  description = "SnackRabbit DROP 001: Rabbit Fuel, the natural energy drink, the Gym Towel and the official plush. Zero taurine, zero weird stuff.",
   ogTitle = "SNACKRABBIT — DROP 001",
-  ogDescription = "Sigue al conejo. La curiosidad te trajo hasta aquí; la madriguera hace el resto. Edición limitada: nada se repite.",
+  ogDescription = "Follow the rabbit. Curiosity got you this far; the burrow does the rest. Limited edition: nothing comes back.",
   ogImage = "/assets/product-rabbit-fuel.jpg",
-  lang = "es",
+  lang = "en",
 } = Astro.props;
 ---
 

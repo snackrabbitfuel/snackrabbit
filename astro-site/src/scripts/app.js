@@ -273,9 +273,10 @@ const I18N = {
   }
 };
 
+/* Inglés por defecto; el español es opt-in y se recuerda en localStorage. */
 let LANG = (() => {
-  try { const l = localStorage.getItem("sr_lang_v1"); return (l === "en" || l === "es") ? l : "es"; }
-  catch { return "es"; }
+  try { const l = localStorage.getItem("sr_lang_v1"); return (l === "en" || l === "es") ? l : "en"; }
+  catch { return "en"; }
 })();
 
 function t(key, vars) {
@@ -452,16 +453,20 @@ function splitTitle() {
   fitTitle();
 }
 
-/* Encoge la fuente del titular hasta que cada línea quepa (por idioma y viewport) */
+/* Encoge la fuente del titular hasta que cada línea quepa (por idioma y viewport).
+   Actúa ya al 98% del ancho y deja el texto al 96%: sin ese margen, un titular que
+   encaja al milímetro aquí se recorta en otro dispositivo que rasterice la fuente
+   un poco más ancha (pasaba con "FOLLOW THE" en iPad). */
 function fitTitle() {
   const h1 = $("#heroTitle");
   h1.style.fontSize = "";
   const base = parseFloat(getComputedStyle(h1).fontSize);
+  const avail = h1.clientWidth;
   let ratio = 1;
   $$(".ht-line", h1).forEach(l => {
-    if (l.scrollWidth > h1.clientWidth + 1) ratio = Math.min(ratio, h1.clientWidth / l.scrollWidth);
+    if (l.scrollWidth > avail * 0.98) ratio = Math.min(ratio, (avail * 0.96) / l.scrollWidth);
   });
-  if (ratio < 1) h1.style.fontSize = Math.floor(base * ratio * 0.98) + "px";
+  if (ratio < 1) h1.style.fontSize = Math.floor(base * ratio) + "px";
 }
 let fitTimer;
 addEventListener("resize", () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitTitle, 150); });
