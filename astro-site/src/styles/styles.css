@@ -215,7 +215,8 @@ body::after {
 .nav-links a {
   position: relative;
   font-family: var(--f-pixel); font-style: normal;
-  font-size: 11px; letter-spacing: 2.5px;
+  font-size: 13px; letter-spacing: 2.5px;
+  white-space: nowrap;          /* si no, "THE DROP" y "RABBIT FUEL" se parten */
   color: var(--gray-1); text-decoration: none;
   padding: 8px 2px;
   transition: color .25s;
@@ -1318,7 +1319,13 @@ body::after {
   animation: citemIn .3s var(--ease-snap);
 }
 @keyframes citemIn { from { opacity: 0; transform: translateX(24px); } }
-.citem img { width: 74px; height: 74px; object-fit: cover; border: 3px solid var(--ink); }
+.citem img {
+  width: 74px; height: 74px;
+  object-fit: contain;
+  padding: 6px;
+  background: var(--card-dark);
+  border: 3px solid var(--ink);
+}
 .citem-name { font-family: var(--f-pixel); font-style: normal; font-size: 11px; letter-spacing: 1px; color: var(--bone); margin-bottom: 4px; }
 .citem-var { font-family: var(--f-pixel); font-style: normal; font-size: 9px; letter-spacing: 1px; color: var(--gray-2); margin-bottom: 8px; }
 .citem-qty { display: flex; align-items: center; gap: 0; border: 3px solid var(--line-dark); width: fit-content; }
@@ -1370,9 +1377,15 @@ body::after {
 .confetti { position: fixed; inset: 0; z-index: 1300; pointer-events: none; }
 
 /* ============ RESPONSIVE ============ */
-@media (max-width: 1024px) {
+/* Con los enlaces más grandes, el menú de escritorio necesita ~1140px para
+   respirar; por debajo manda la hamburguesa (el resto del layout sigue
+   cambiando en 1024px). */
+@media (max-width: 1140px) {
   .nav-links { display: none; }
   .btn-burger { display: flex; }
+}
+
+@media (max-width: 1024px) {
   .hero-inner { grid-template-columns: 1fr; }
   .hero-visual { min-height: 440px; margin-top: 10px; }
   .fuel-inner { grid-template-columns: 1fr; }
