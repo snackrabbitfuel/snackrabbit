@@ -437,65 +437,42 @@ body::after {
   color: var(--ink);
   white-space: nowrap;
 }
-.sticker-views {
+/* Productos recortados (PNG con alfa): sin marco ni fondo, flotando sobre el
+   escenario. El drop-shadow sigue la silueta real, no una caja, así que pueden
+   solaparse sin que uno tape al otro. */
+.hv-obj {
   position: absolute;
-  left: -5%; top: 28%;
-  z-index: 4;
-  background: var(--pink);
-  color: var(--ink);
-  border: 4px solid var(--ink);
-  box-shadow: 7px 7px 0 var(--ink);
-  font-family: var(--f-pixel); font-style: normal;
-  font-size: 10px; letter-spacing: 2px;
-  padding: 9px 12px;
-  rotate: -7deg;
+  transition: transform .4s var(--ease-snap), filter .4s var(--ease-snap);
 }
-.hv-card {
-  position: absolute;
-  border: 6px solid var(--ink);
-  background: var(--card-dark);
-  box-shadow: 16px 16px 0 var(--ink);
-  overflow: visible;
-  transition: transform .4s var(--ease-snap);
-}
-.hv-back { z-index: 1; }
-.hv-front { z-index: 3; }
-/* sello en la esquina inferior derecha del panel, fuera del recorrido de la cinta */
+.hv-obj img { width: 100%; height: auto; display: block; }
 .hero .stamp-spin { z-index: 4; right: -7%; bottom: -6%; }
 .hero .stamp-ring { stroke: var(--yellow); }
 .hero .stamp-text { fill: var(--yellow); }
 .badge-ltd { z-index: 4; }
-.hv-card img { width: 100%; height: 100%; object-fit: cover; }
-.hv-back {
-  width: clamp(200px, 22vw, 310px);
-  aspect-ratio: 10 / 11;
-  right: 0; top: 0;
-  rotate: 6deg;
+
+.hv-plush {
+  z-index: 2;
+  width: clamp(146px, 17.5vw, 242px);
+  right: 4%; top: 13%;
+  rotate: 4deg;
+  filter: drop-shadow(0 24px 26px rgba(0, 0, 0, .62));
 }
-.hv-front {
-  width: clamp(210px, 22vw, 330px);
-  aspect-ratio: 10 / 15;
-  left: 0; bottom: 2%;
-  rotate: -3.5deg;
+.hv-can {
+  z-index: 3;
+  width: clamp(118px, 14.5vw, 202px);
+  left: 12%; bottom: 4%;
+  rotate: -3deg;
   cursor: pointer;
+  /* sombra proyectada + halo rosa: el producto héroe se despega del fondo */
+  filter: drop-shadow(0 26px 26px rgba(0, 0, 0, .7)) drop-shadow(0 0 34px rgba(255, 79, 216, .32));
   animation: floaty 5.2s ease-in-out infinite;
 }
 @keyframes floaty { 50% { translate: 0 -14px; } }
-.hv-front:hover { scale: 1.02; }
-.hv-front.shake { animation: shake .5s var(--ease-snap); }
+.hv-can:hover { scale: 1.03; filter: drop-shadow(0 26px 26px rgba(0, 0, 0, .7)) drop-shadow(0 0 44px rgba(255, 79, 216, .5)); }
+.hv-can.shake { animation: shake .5s var(--ease-snap); }
 @keyframes shake {
   20% { rotate: -7deg; } 40% { rotate: 1deg; }
   60% { rotate: -6deg; } 80% { rotate: -2deg; }
-}
-.hv-tag {
-  position: absolute; left: -20px; bottom: 26px;
-  background: var(--pink); color: var(--ink);
-  border: 4px solid var(--ink);
-  font-family: var(--f-pixel); font-style: normal;
-  font-size: 10px; letter-spacing: 2px;
-  padding: 8px 12px;
-  rotate: -2deg;
-  box-shadow: 6px 6px 0 var(--ink);
 }
 .hv-tape {
   position: absolute;
@@ -1381,7 +1358,9 @@ body::after {
   /* sin override de tamaño: el clamp base ya da 58px aquí, que es lo máximo que
      admite "FOLLOW THE" en una línea. fitTitle() queda como red de seguridad. */
   .hero-visual { min-height: 400px; }
-  .hv-back { right: 0; }
+  /* en móvil el escenario es estrecho: la lata manda y el peluche se retira */
+  .hv-can { left: 8%; width: 34%; }
+  .hv-plush { right: 2%; top: 12%; width: 46%; }
   .stamp-spin { bottom: 0; }
   .news-form { flex-direction: column; }
   .news-form input { border-right: 4px solid var(--ink); }
