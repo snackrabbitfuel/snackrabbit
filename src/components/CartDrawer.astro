@@ -1,0 +1,21 @@
+---
+/* Carrito persistente en localStorage (app.js → Cart). El checkout es demo. */
+---
+
+<!-- ============ CART DRAWER ============ -->
+<aside class="cart" id="cartDrawer" aria-label="Carrito" aria-hidden="true">
+  <header class="cart-head">
+    <h2><span data-i18n="cart.title">TU CARRITO</span> <span id="cartHeadCount">(0)</span></h2>
+    <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Cerrar carrito">✕</button>
+  </header>
+  <div class="cart-ship" id="cartShip">
+    <p id="cartShipMsg">ENVÍO GRATIS DESDE $60</p>
+    <div class="cart-ship-bar"><span id="cartShipFill"></span></div>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <footer class="cart-foot">
+    <div class="cart-total"><span>SUBTOTAL</span><span id="cartTotal">$0.00</span></div>
+    <button class="btn btn-pink cart-checkout" id="btnCheckout" type="button" data-i18n="cart.checkout">TRAMITAR PEDIDO ▸</button>
+    <p class="cart-note" data-i18n="cart.note">IMPUESTOS INCLUIDOS · ENVÍO CALCULADO AL PAGAR</p>
+  </footer>
+</aside>

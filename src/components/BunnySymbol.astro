@@ -1,0 +1,25 @@
+---
+/*
+  Símbolo SVG del conejo pixel: se define una sola vez y se reutiliza en toda la
+  página con <use href="#bunny">. Los colores se controlan por CSS:
+  currentColor (cuerpo), --bunny-eye (ojos) y --bunny-muzzle (hocico).
+*/
+---
+
+<!-- ============ SVG DEFS: pixel bunny ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bunny" viewBox="0.9 -0.1 8.2 7.2">
+      <g class="bunny-body" fill="currentColor">
+        <rect x="2" y="0" width="1" height="3"/>
+        <rect x="7" y="0" width="1" height="3"/>
+        <rect x="2" y="3" width="6" height="1"/>
+        <rect x="1" y="4" width="8" height="2"/>
+        <rect x="2" y="6" width="6" height="1"/>
+      </g>
+      <rect class="bunny-eye" x="3" y="4" width="1" height="1" fill="var(--bunny-eye, #050508)"/>
+      <rect class="bunny-eye" x="6" y="4" width="1" height="1" fill="var(--bunny-eye, #050508)"/>
+      <rect class="bunny-muzzle" x="4" y="5" width="2" height="1" fill="var(--bunny-muzzle, #ff4fd8)"/>
+    </symbol>
+  </defs>
+</svg>

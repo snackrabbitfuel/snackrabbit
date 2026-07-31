@@ -1,0 +1,32 @@
+---
+/* Login/registro DEMO: app.js guarda usuarios y sesión en localStorage.
+   No hay backend — no debe usarse con contraseñas reales. */
+---
+
+<!-- ============ LOGIN MODAL ============ -->
+<div class="modal login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Cerrar">✕</button>
+  <svg class="lm-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+  <h2 id="loginTitle" class="lm-title" data-i18n="auth.title">LA MADRIGUERA</h2>
+  <div class="lm-tabs" role="tablist">
+    <button class="lm-tab active" id="tabIn" type="button" role="tab" aria-selected="true" data-i18n="auth.tabIn">ENTRAR</button>
+    <button class="lm-tab" id="tabUp" type="button" role="tab" aria-selected="false" data-i18n="auth.tabUp">CREAR CUENTA</button>
+  </div>
+
+  <form class="lm-form" id="formIn" novalidate>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="tu@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <label><span data-i18n="auth.pass">CONTRASEÑA</span><input type="password" name="pass" placeholder="••••••" autocomplete="current-password" required></label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitIn">ENTRAR ▸</button>
+  </form>
+
+  <form class="lm-form" id="formUp" hidden novalidate>
+    <label><span data-i18n="auth.name">NOMBRE</span><input type="text" name="name" placeholder="Tu nombre" data-i18n-ph="auth.namePh" autocomplete="name" required></label>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="tu@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <label><span data-i18n="auth.pass">CONTRASEÑA</span><input type="password" name="pass" placeholder="Mínimo 6 caracteres" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitUp">CREAR CUENTA ▸</button>
+  </form>
+
+  <p class="lm-note" data-i18n="auth.note">DEMO LOCAL — TU CUENTA SOLO VIVE EN ESTE NAVEGADOR.</p>
+</div>

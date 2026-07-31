@@ -1,0 +1,11 @@
+---
+/* Borde pixelado entre secciones. `edge` es el color de los dientes y
+   `edgeA` el color del hueco (la sección que queda debajo). */
+interface Props {
+  edge: string;
+  edgeA: string;
+}
+const { edge, edgeA } = Astro.props;
+---
+
+<div class="px-edge" style={`--edge:${edge}; --edge-a:${edgeA}`} aria-hidden="true"></div>

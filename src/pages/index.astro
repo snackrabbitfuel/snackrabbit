@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BunnySymbol from "../components/BunnySymbol.astro";
+import Preloader from "../components/Preloader.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import PixelEdge from "../components/PixelEdge.astro";
+import Marquee from "../components/Marquee.astro";
+import Stats from "../components/Stats.astro";
+import DropGrid from "../components/DropGrid.astro";
+import RabbitFuel from "../components/RabbitFuel.astro";
+import Manifesto from "../components/Manifesto.astro";
+import Newsletter from "../components/Newsletter.astro";
+import Footer from "../components/Footer.astro";
+import LoginModal from "../components/LoginModal.astro";
+import ProductModal from "../components/ProductModal.astro";
+import CartDrawer from "../components/CartDrawer.astro";
+import SuccessModal from "../components/SuccessModal.astro";
+---
+
+<BaseLayout>
+  <BunnySymbol />
+
+  <Preloader />
+
+  <!-- ============ SCROLL PROGRESS ============ -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- ============ CURSOR PIXEL (desktop) ============ -->
+  <div class="cursor-px" id="cursorPx" aria-hidden="true"></div>
+
+  <Navbar />
+
+  <main id="top">
+    <Hero />
+
+    <PixelEdge edge="#050508" edgeA="#ff4fd8" />
+
+    <Marquee />
+    <Stats />
+    <DropGrid />
+    <RabbitFuel />
+
+    <PixelEdge edge="#fbf2f7" edgeA="#0a0a12" />
+
+    <Manifesto />
+
+    <PixelEdge edge="#ff4fd8" edgeA="#fbf2f7" />
+
+    <Newsletter />
+  </main>
+
+  <Footer />
+
+  <!-- ============ OVERLAY ============ -->
+  <div class="overlay" id="overlay" hidden></div>
+
+  <LoginModal />
+  <ProductModal />
+  <CartDrawer />
+  <SuccessModal />
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+</BaseLayout>

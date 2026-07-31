@@ -1,0 +1,44 @@
+---
+import "../styles/styles.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  lang?: string;
+}
+
+const {
+  title = "SNACKRABBIT — DROP 001 · Merch para gente curiosa",
+  description = "DROP 001 de SnackRabbit: Rain Jacket impermeable, Hoodie Performance, toalla de gimnasio, Rabbit Fuel y el plush oficial. Cero taurina, cero cosas raras.",
+  ogTitle = "SNACKRABBIT — DROP 001",
+  ogDescription = "Sigue al conejo. La curiosidad te trajo hasta aquí; la madriguera hace el resto. Edición limitada: nada se repite.",
+  ogImage = "/assets/product-rabbit-fuel.jpg",
+  lang = "es",
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang={lang}>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<meta name="description" content={description}>
+<meta property="og:title" content={ogTitle}>
+<meta property="og:description" content={ogDescription}>
+<meta property="og:image" content={ogImage}>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ff4fd8"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g><rect x="4" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="7" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="5" y="6" width="2" height="1" fill="%23ff4fd8"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Serif+Display:ital@1&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<slot />
+<script>
+  import "../scripts/app.js";
+</script>
+</body>
+</html>

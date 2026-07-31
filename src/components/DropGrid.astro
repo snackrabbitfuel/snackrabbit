@@ -1,0 +1,14 @@
+---
+/* Las tarjetas las pinta app.js (renderGrid) desde el array PRODUCTS, para que
+   se puedan volver a renderizar al cambiar de idioma sin recargar la página. */
+---
+
+<!-- ============ DROP GRID ============ -->
+<section class="drop" id="drop">
+  <header class="sec-head">
+    <p class="sec-kicker rv" data-i18n="drop.kicker">DROP 001 — YA DISPONIBLE</p>
+    <h2 class="sec-title rv" data-delay="80" data-i18n-html="drop.title">COSAS QUE<br><em>NO NECESITAS.</em></h2>
+    <p class="sec-sub rv" data-delay="160" data-i18n="drop.sub">Pero vas a querer igual: si no lo usaríamos nosotros, no estaría aquí.</p>
+  </header>
+  <div class="drop-grid" id="dropGrid"><!-- cards via JS --></div>
+</section>
