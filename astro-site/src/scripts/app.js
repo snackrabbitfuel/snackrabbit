@@ -273,10 +273,17 @@ const I18N = {
   }
 };
 
-/* Inglés por defecto; el español es opt-in y se recuerda en localStorage. */
+/* Inglés para todo el mundo; el español es una elección explícita que sí se
+   recuerda. La clave va versionada a propósito: al pasar de v1 a v2 se descarta
+   cualquier preferencia guardada antes, así los visitantes que ya habían visto
+   el sitio en español también entran ahora en inglés. */
+const LANG_KEY = "sr_lang_v2";
 let LANG = (() => {
-  try { const l = localStorage.getItem("sr_lang_v1"); return (l === "en" || l === "es") ? l : "en"; }
-  catch { return "en"; }
+  try {
+    localStorage.removeItem("sr_lang_v1");   // preferencia anterior: deja de contar
+    const l = localStorage.getItem(LANG_KEY);
+    return (l === "en" || l === "es") ? l : "en";
+  } catch { return "en"; }
 })();
 
 function t(key, vars) {
@@ -1093,7 +1100,7 @@ function applyLang() {
 function setLang(l) {
   if (l === LANG) return;
   LANG = l;
-  try { localStorage.setItem("sr_lang_v1", l); } catch {}
+  try { localStorage.setItem(LANG_KEY, l); } catch {}
   applyLang();
 }
 $("#btnLang").addEventListener("click", () => setLang(LANG === "es" ? "en" : "es"));
