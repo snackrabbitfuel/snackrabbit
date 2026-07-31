@@ -48,7 +48,7 @@ const I18N = {
     "card.low": "¡ÚLTIMAS UNIDADES!",
     "card.view": "Ver {name}",
     "card.addAria": "Añadir {name} al carrito",
-    "fuel.kicker": "Nº 02 — EL PRODUCTO HÉROE",
+    "fuel.kicker": "Nº 01 — EL PRODUCTO HÉROE",
     "fuel.title": "ENERGÍA<br><em>SIN CUENTOS.</em>",
     "fuel.lead": "Yerba mate + guaraná. Cero taurina, cero cosas raras.",
     "fuel.ing1": "Energía natural, sin el bajón de después.",
@@ -176,7 +176,7 @@ const I18N = {
     "card.low": "LOW STOCK!",
     "card.view": "View {name}",
     "card.addAria": "Add {name} to cart",
-    "fuel.kicker": "No. 02 — THE HERO PRODUCT",
+    "fuel.kicker": "No. 01 — THE HERO PRODUCT",
     "fuel.title": "ENERGY,<br><em>NO NONSENSE.</em>",
     "fuel.lead": "Yerba mate + guaraná. Zero taurine, zero weird stuff.",
     "fuel.ing1": "Natural energy without the crash.",
@@ -295,29 +295,8 @@ const sizeName  = s => LANG === "en" ? (SIZE_EN[s] ?? s) : s;
    ============================================================ */
 const PRODUCTS = [
   {
-    id: "gym-towel",
-    num: "DROP 001 · Nº 01",
-    name: "GYM TOWEL",
-    price: 29,
-    priceNote: "",
-    desc: {
-      es: "Microfibra quick-dry con franjas jacquard y flecos. Sweat. Scroll. Repeat.",
-      en: "Quick-dry microfiber with jacquard stripes and fringe. Sweat. Scroll. Repeat."
-    },
-    specs: {
-      es: "MICROFIBRA QUICK-DRY · 100×40 CM · LAZO COLGADOR · BUNNY BORDADO",
-      en: "QUICK-DRY MICROFIBER · 100×40 CM · HANGING LOOP · EMBROIDERED BUNNY"
-    },
-    colors: ["#fbf2f7", "#ff4fd8", "#050508"],
-    colorNames: ["ROSADO", "ROSA", "NEGRO"],
-    sizes: ["ÚNICA"],
-    sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/product-gym-towel.jpg",
-    stock: 41, stockMax: 100
-  },
-  {
     id: "rabbit-fuel",
-    num: "DROP 001 · Nº 02",
+    num: "DROP 001 · Nº 01",
     name: "RABBIT FUEL",
     price: 16,
     priceNote: "PACK ×4",
@@ -339,7 +318,7 @@ const PRODUCTS = [
   },
   {
     id: "plush",
-    num: "DROP 001 · Nº 03",
+    num: "DROP 001 · Nº 02",
     name: "RABBIT FUEL PLUSH",
     price: 35,
     priceNote: "",
@@ -359,6 +338,27 @@ const PRODUCTS = [
     img: "/assets/plush-white.jpg",
     imgPos: "50% 42%",
     stock: 28, stockMax: 60
+  },
+  {
+    id: "gym-towel",
+    num: "DROP 001 · Nº 03",
+    name: "GYM TOWEL",
+    price: 29,
+    priceNote: "",
+    desc: {
+      es: "Microfibra quick-dry con franjas jacquard y flecos. Sweat. Scroll. Repeat.",
+      en: "Quick-dry microfiber with jacquard stripes and fringe. Sweat. Scroll. Repeat."
+    },
+    specs: {
+      es: "MICROFIBRA QUICK-DRY · 100×40 CM · LAZO COLGADOR · BUNNY BORDADO",
+      en: "QUICK-DRY MICROFIBER · 100×40 CM · HANGING LOOP · EMBROIDERED BUNNY"
+    },
+    colors: ["#fbf2f7", "#ff4fd8", "#050508"],
+    colorNames: ["ROSADO", "ROSA", "NEGRO"],
+    sizes: ["ÚNICA"],
+    sizeLabel: { es: "TAMAÑO", en: "SIZE" },
+    img: "/assets/product-gym-towel.jpg",
+    stock: 41, stockMax: 100
   }
 ];
 

@@ -344,7 +344,10 @@ body::after {
   margin-top: .05em;
   box-shadow: 8px 8px 0 var(--ink);
 }
-.ht-word { display: inline-block; }
+/* nowrap: las letras son inline-block sueltas (por la animación de entrada) y
+   sin esto se envuelven en varias filas que la línea recorta. Al forzar una sola
+   línea, el desbordamiento sí es horizontal y fitTitle() puede reducir la fuente. */
+.ht-word { display: inline-block; white-space: nowrap; }
 .ht-word .ch {
   display: inline-block;
   transform: translateY(115%) rotate(6deg);
@@ -1350,7 +1353,8 @@ body::after {
   .stats { grid-template-columns: 1fr 1fr; }
   .stat:nth-child(2) { border-right: none; }
   .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 4px solid var(--line-dark); }
-  .hero-title { font-size: clamp(88px, 24vw, 130px); }
+  /* sin override de tamaño: el clamp base ya da 58px aquí, que es lo máximo que
+     admite "FOLLOW THE" en una línea. fitTitle() queda como red de seguridad. */
   .hero-visual { min-height: 400px; }
   .hv-back { right: 0; }
   .stamp-spin { bottom: 0; }
