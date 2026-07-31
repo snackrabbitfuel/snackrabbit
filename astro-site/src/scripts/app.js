@@ -48,7 +48,7 @@ const I18N = {
     "card.low": "¡ÚLTIMAS UNIDADES!",
     "card.view": "Ver {name}",
     "card.addAria": "Añadir {name} al carrito",
-    "fuel.kicker": "Nº 04 — EL PRODUCTO HÉROE",
+    "fuel.kicker": "Nº 02 — EL PRODUCTO HÉROE",
     "fuel.title": "ENERGÍA<br><em>SIN CUENTOS.</em>",
     "fuel.lead": "Yerba mate + guaraná. Cero taurina, cero cosas raras.",
     "fuel.ing1": "Energía natural, sin el bajón de después.",
@@ -71,15 +71,15 @@ const I18N = {
     "fuel.cta": "PROBAR PACK ×4 — $16",
     "mani.kicker": "MANIFIESTO",
     "mani.title": "CURIOSIDAD,<br>PERO <em class=\"hl\">EN FÍSICO.</em>",
-    "mani.text": "SnackRabbit nació contando curiosidades de 60 segundos. <strong>DROP 001</strong> es exactamente lo mismo, pero en objetos: una chaqueta que se guarda en su propia bolsa, una lata que no te miente y un conejo de peluche que te mira mientras trabajas.",
+    "mani.text": "SnackRabbit nació contando curiosidades de 60 segundos. <strong>DROP 001</strong> es exactamente lo mismo, pero en objetos: una lata que no te miente, una toalla que ha visto más scroll que sudor y un conejo de peluche que te mira mientras trabajas.",
     "mani.fact1": "LA YERBA MATE TIENE MÁS ANTIOXIDANTES QUE EL TÉ VERDE.",
     "mani.fact2": "UNA SEMILLA DE GUARANÁ TIENE ~2× LA CAFEÍNA DE UN GRANO DE CAFÉ.",
     "mani.fact3": "LOS CONEJOS PUEDEN VER CASI 360°. NOSOTROS, SOLO ESTE DROP.",
     "faq.title": "PREGUNTAS FRECUENTES",
     "faq.q1": "¿CUÁNDO LLEGA MI PEDIDO?",
     "faq.a1": "Preparamos en 24 h y entregamos en 48–72 h laborables. Recibirás seguimiento por email en cuanto salga de la madriguera.",
-    "faq.q2": "¿QUÉ TALLA PIDO?",
-    "faq.a2": "El Hoodie Performance es de corte athletic y la Rain Jacket de corte sport: ambos sientan ajustados sin apretar. Si prefieres holgura, sube una talla. Disponibles de S a XXL.",
+    "faq.q2": "¿QUÉ TAMAÑO TIENEN LA TOALLA Y EL PLUSH?",
+    "faq.a2": "La Gym Towel mide 100×40 cm, tamaño gimnasio clásico. El plush es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
     "faq.q3": "¿PUEDO DEVOLVER ALGO?",
     "faq.a3": "Sí: 30 días para textil y plush sin usar con etiqueta. Rabbit Fuel no admite devolución una vez abierto el pack (por razones obvias).",
     "faq.q4": "¿QUÉ LLEVA EXACTAMENTE RABBIT FUEL?",
@@ -176,7 +176,7 @@ const I18N = {
     "card.low": "LOW STOCK!",
     "card.view": "View {name}",
     "card.addAria": "Add {name} to cart",
-    "fuel.kicker": "No. 04 — THE HERO PRODUCT",
+    "fuel.kicker": "No. 02 — THE HERO PRODUCT",
     "fuel.title": "ENERGY,<br><em>NO NONSENSE.</em>",
     "fuel.lead": "Yerba mate + guaraná. Zero taurine, zero weird stuff.",
     "fuel.ing1": "Natural energy without the crash.",
@@ -199,15 +199,15 @@ const I18N = {
     "fuel.cta": "TRY THE 4-PACK — $16",
     "mani.kicker": "MANIFESTO",
     "mani.title": "CURIOSITY,<br>BUT <em class=\"hl\">PHYSICAL.</em>",
-    "mani.text": "SnackRabbit was born telling 60-second curiosities. <strong>DROP 001</strong> is exactly the same, but in objects: a jacket that packs into its own bag, a can that doesn't lie to you, and a plush bunny that watches you work.",
+    "mani.text": "SnackRabbit was born telling 60-second curiosities. <strong>DROP 001</strong> is exactly the same, but in objects: a can that doesn't lie to you, a towel that has seen more scrolling than sweat, and a plush bunny that watches you work.",
     "mani.fact1": "YERBA MATE HAS MORE ANTIOXIDANTS THAN GREEN TEA.",
     "mani.fact2": "A GUARANÁ SEED PACKS ~2× THE CAFFEINE OF A COFFEE BEAN.",
     "mani.fact3": "RABBITS CAN SEE ALMOST 360°. WE CAN ONLY SEE THIS DROP.",
     "faq.title": "FREQUENTLY ASKED QUESTIONS",
     "faq.q1": "WHEN DOES MY ORDER ARRIVE?",
     "faq.a1": "We prepare within 24 h and deliver in 48–72 working hours. You'll get tracking by email as soon as it leaves the burrow.",
-    "faq.q2": "WHICH SIZE SHOULD I ORDER?",
-    "faq.a2": "The Hoodie Performance has an athletic cut and the Rain Jacket a sport cut: both fit close without being tight. If you prefer room, go one size up. Available from S to XXL.",
+    "faq.q2": "HOW BIG ARE THE TOWEL AND THE PLUSH?",
+    "faq.a2": "The Gym Towel is 100×40 cm, classic gym size. The plush is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
     "faq.q3": "CAN I RETURN SOMETHING?",
     "faq.a3": "Yes: 30 days for unused apparel and plush with tags on. Rabbit Fuel can't be returned once the pack is opened (for obvious reasons).",
     "faq.q4": "WHAT EXACTLY IS IN RABBIT FUEL?",
@@ -295,70 +295,8 @@ const sizeName  = s => LANG === "en" ? (SIZE_EN[s] ?? s) : s;
    ============================================================ */
 const PRODUCTS = [
   {
-    id: "rain-jacket",
-    num: "DROP 001 · Nº 01",
-    name: "RAIN JACKET",
-    tagline: { es: "LIGHT. PROTECTIVE. UNSTOPPABLE.", en: "LIGHT. PROTECTIVE. UNSTOPPABLE." },
-    price: 89,
-    priceNote: "",
-    desc: {
-      es: "Impermeable ultraligera de 10.000 mm: corta el viento, respira y se guarda en su propia bolsa.",
-      en: "Ultra-light 10,000 mm shell: blocks the wind, breathes, and packs into its own bag."
-    },
-    specs: {
-      es: "WATERPROOF 10.000MM · TRANSPIRABLE 10.000 G/M²/24H · 220G · FIT SPORT · PACKABLE",
-      en: "WATERPROOF 10,000MM · BREATHABLE 10,000 G/M²/24H · 220G · SPORT FIT · PACKABLE"
-    },
-    features: [
-      { es: ["WATERPROOF", "Protección impermeable 10.000 mm."], en: ["WATERPROOF", "10,000 mm waterproof protection."] },
-      { es: ["BREATHABLE", "Tejido respirable que mantiene tu cuerpo seco."], en: ["BREATHABLE", "Breathable fabric that keeps you dry."] },
-      { es: ["WINDPROOF", "Bloquea el viento, enfócate en lo importante."], en: ["WINDPROOF", "Blocks the wind so you can focus."] },
-      { es: ["ULTRA LIGHT", "Ligera y compacta. Fácil de llevar a cualquier lado."], en: ["ULTRA LIGHT", "Light and compact. Easy to take anywhere."] },
-      { es: ["CIERRES WATERPROOF", "Cremalleras selladas de alta calidad."], en: ["WATERPROOF ZIPPERS", "High-quality sealed zippers."] },
-      { es: ["DETALLES REFLECTIVOS", "Visibilidad y estilo en cualquier condición."], en: ["REFLECTIVE DETAILS", "Visibility and style in any condition."] }
-    ],
-    colors: ["#050508"],
-    colorNames: ["NEGRO"],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    sizeLabel: { es: "TALLA", en: "SIZE" },
-    img: "/assets/product-rain-jacket.jpg",
-    views: ["/assets/product-rain-jacket.jpg", "/assets/jacket-front.jpg", "/assets/jacket-pack.jpg"],
-    stock: 14, stockMax: 60
-  },
-  {
-    id: "hoodie-performance",
-    num: "DROP 001 · Nº 02",
-    name: "HOODIE PERFORMANCE",
-    tagline: { es: "BUILT TO PERFORM. DESIGNED TO STAND OUT.", en: "BUILT TO PERFORM. DESIGNED TO STAND OUT." },
-    price: 75,
-    priceNote: "",
-    desc: {
-      es: "Sudadera técnica Dry-Tech Pro con bordado premium y bolsillos invisibles. Rinde y se nota.",
-      en: "Dry-Tech Pro technical hoodie with premium embroidery and invisible pockets. It performs, and it shows."
-    },
-    specs: {
-      es: "DRY-TECH PRO · 190G · FIT ATHLETIC · 4-WAY STRETCH · BOLSILLOS INVISIBLES",
-      en: "DRY-TECH PRO · 190G · ATHLETIC FIT · 4-WAY STRETCH · HIDDEN POCKETS"
-    },
-    features: [
-      { es: ["ULTRA LIGHTWEIGHT", "Poliéster performance ultra ligero y transpirable."], en: ["ULTRA LIGHTWEIGHT", "Ultra-light, breathable performance polyester."] },
-      { es: ["MAX COMFORT", "Interior ultra suave de secado rápido."], en: ["MAX COMFORT", "Ultra-soft, quick-dry interior."] },
-      { es: ["4-WAY STRETCH", "Libertad total de movimiento sin perder la forma."], en: ["4-WAY STRETCH", "Total freedom of movement without losing shape."] },
-      { es: ["HIDDEN POCKETS", "Bolsillos laterales invisibles con cierre premium."], en: ["HIDDEN POCKETS", "Invisible side pockets with premium zippers."] },
-      { es: ["BORDADO PREMIUM", "Logo pixel bordado de alta definición."], en: ["PREMIUM EMBROIDERY", "High-definition embroidered pixel logo."] },
-      { es: ["DETALLES EXCLUSIVOS", "Tags y acentos en rosa y amarillo Rabbit Fuel."], en: ["EXCLUSIVE DETAILS", "Rabbit Fuel pink and yellow tags and accents."] }
-    ],
-    colors: ["#050508"],
-    colorNames: ["NEGRO"],
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    sizeLabel: { es: "TALLA", en: "SIZE" },
-    img: "/assets/product-hoodie-perf.jpg",
-    views: ["/assets/product-hoodie-perf.jpg", "/assets/hoodie-front.jpg", "/assets/hoodie-side.jpg"],
-    stock: 23, stockMax: 80
-  },
-  {
     id: "gym-towel",
-    num: "DROP 001 · Nº 03",
+    num: "DROP 001 · Nº 01",
     name: "GYM TOWEL",
     price: 29,
     priceNote: "",
@@ -379,7 +317,7 @@ const PRODUCTS = [
   },
   {
     id: "rabbit-fuel",
-    num: "DROP 001 · Nº 04",
+    num: "DROP 001 · Nº 02",
     name: "RABBIT FUEL",
     price: 16,
     priceNote: "PACK ×4",
@@ -397,12 +335,11 @@ const PRODUCTS = [
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
     img: "/assets/product-rabbit-fuel.jpg",
-    imgPos: "50% 26%",
     stock: 87, stockMax: 200
   },
   {
     id: "plush",
-    num: "DROP 001 · Nº 05",
+    num: "DROP 001 · Nº 03",
     name: "RABBIT FUEL PLUSH",
     price: 35,
     priceNote: "",
@@ -489,7 +426,7 @@ if (statProductsNum) statProductsNum.dataset.count = PRODUCTS.length;
   const secs = ["drop", "fuel", "historia", "faq"].map(id => document.getElementById(id));
   const links = $$(".nav-links a");
   addEventListener("scroll", () => {
-    let cur = null;
+    let cur = "#top";
     secs.forEach(s => { if (s && scrollY >= s.offsetTop - 200) cur = "#" + s.id; });
     links.forEach(l => l.classList.toggle("active", l.getAttribute("href") === cur));
   }, { passive: true });

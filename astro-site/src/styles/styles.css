@@ -190,29 +190,47 @@ body::after {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom-color: var(--ink);
-  box-shadow: 0 4px 0 var(--pink);
 }
+.nav::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: -4px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--pink), var(--yellow) 55%, var(--pink));
+  opacity: 0;
+  transition: opacity .3s;
+  pointer-events: none;
+}
+.nav.scrolled::after { opacity: 1; }
 .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .nav-bunny { width: 38px; height: 34px; color: var(--ink); --bunny-eye: var(--pink); transition: transform .3s var(--ease-snap); }
 .nav.scrolled .nav-bunny { color: var(--pink); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); }
 .nav:not(.scrolled) .nav-word { color: var(--ink); }
-.nav:not(.scrolled) .nav-handle { color: var(--ink); }
 .nav:not(.scrolled) .nav-links a { color: rgba(5, 5, 8, .72); }
-.nav:not(.scrolled) .nav-links a:hover, .nav:not(.scrolled) .nav-links a.active { color: var(--ink); border-bottom-color: var(--ink); }
+.nav:not(.scrolled) .nav-links a:hover, .nav:not(.scrolled) .nav-links a.active { color: var(--ink); }
+.nav:not(.scrolled) .nav-links a::after { background: var(--ink); }
 .nav:not(.scrolled) .btn-burger span { background: var(--ink); }
 .nav-brand:hover .nav-bunny { transform: rotate(-8deg) scale(1.12); }
-.nav-word { font-family: var(--f-display); font-style: normal; font-size: 22px; letter-spacing: 1px; color: var(--bone); }
-.nav-handle { font-family: var(--f-pixel); font-style: normal; font-size: 9px; letter-spacing: 2px; color: var(--pink); padding-top: 6px; }
-.nav-links { display: flex; gap: clamp(14px, 2.4vw, 34px); }
+.nav-word { font-family: var(--f-display); font-style: normal; font-size: 22px; letter-spacing: 1.5px; color: var(--bone); }
+.nav-links { display: flex; gap: clamp(18px, 2.6vw, 40px); }
 .nav-links a {
+  position: relative;
   font-family: var(--f-pixel); font-style: normal;
-  font-size: 12px; letter-spacing: 2px;
+  font-size: 11px; letter-spacing: 2.5px;
   color: var(--gray-1); text-decoration: none;
-  padding: 6px 2px;
-  border-bottom: 3px solid transparent;
-  transition: color .2s, border-color .2s;
+  padding: 8px 2px;
+  transition: color .25s;
 }
-.nav-links a:hover, .nav-links a.active { color: var(--pink); border-bottom-color: var(--pink); }
+.nav-links a::after {
+  content: "";
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: var(--pink);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .28s var(--ease-snap);
+}
+.nav-links a:hover, .nav-links a.active { color: var(--pink); }
+.nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
 
 .nav-actions { display: flex; align-items: center; gap: 12px; }
 .btn-lang {
@@ -602,9 +620,9 @@ body::after {
 .drop { padding: clamp(70px, 9vw, 130px) clamp(18px, 5vw, 70px); }
 .drop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(430px, 100%), 1fr));
-  gap: clamp(22px, 3vw, 40px);
-  max-width: 1280px;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: clamp(18px, 2.2vw, 30px);
+  max-width: 1240px;
   margin: 0 auto;
 }
 .pcard {
@@ -614,12 +632,20 @@ body::after {
   transition: transform .3s var(--ease-snap), border-color .3s, box-shadow .3s var(--ease-snap);
   cursor: pointer;
 }
-/* con nº impar de productos, la última card se centra a lo ancho */
+/* con nº impar de productos y 2 columnas, la última card se centra a lo ancho */
 .pcard:last-child:nth-child(odd) {
   grid-column: 1 / -1;
   width: 100%;
   max-width: 620px;
   justify-self: center;
+}
+/* en escritorio caben las 3 en una fila: sin expansión */
+@media (min-width: 1216px) {
+  .pcard:last-child:nth-child(odd) {
+    grid-column: auto;
+    max-width: none;
+    justify-self: stretch;
+  }
 }
 .pcard:hover {
   border-color: var(--pink);
@@ -652,31 +678,31 @@ body::after {
   transition: transform .5s var(--ease-snap);
 }
 .pcard:hover .pcard-media img { transform: scale(1.045) rotate(.4deg); }
-.pcard-body { padding: clamp(20px, 2.4vw, 30px); }
+.pcard-body { padding: clamp(16px, 1.7vw, 22px); }
 .pcard-name {
   font-family: var(--f-display); font-style: normal;
-  font-size: clamp(28px, 3vw, 40px);
+  font-size: clamp(22px, 2vw, 28px);
   letter-spacing: .5px;
   color: var(--bone);
-  margin-bottom: 8px;
+  margin-bottom: 7px;
   text-transform: uppercase;
 }
-.pcard-desc { font-size: 17px; color: var(--gray-1); line-height: 1.45; margin-bottom: 14px; }
+.pcard-desc { font-size: 15px; color: var(--gray-1); line-height: 1.45; margin-bottom: 12px; }
 .pcard-specs {
   font-family: var(--f-pixel); font-style: normal;
-  font-size: 10px; letter-spacing: 2px;
+  font-size: 9px; letter-spacing: 1.5px;
   color: var(--gray-2);
   line-height: 1.9;
-  margin-bottom: 16px;
+  margin-bottom: 13px;
 }
-.pcard-stock { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.pcard-stock { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .pcard-stock-bar { flex: 1; height: 10px; border: 3px solid var(--line-dark); }
 .pcard-stock-bar span { display: block; height: 100%; background: var(--pink); width: 0; transition: width 1s var(--ease-snap) .3s; }
 .pcard-stock-label { font-family: var(--f-pixel); font-style: normal; font-size: 9px; letter-spacing: 2px; color: var(--gray-2); }
 .pcard-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .pcard-swatches { display: flex; gap: 8px; }
 .swatch {
-  width: 22px; height: 22px;
+  width: 18px; height: 18px;
   border: 3px solid var(--ink);
   outline: 2px solid var(--gray-2);
   display: inline-block;
@@ -684,17 +710,17 @@ body::after {
 .pcard-buy { display: flex; align-items: center; gap: 14px; }
 .pcard-price {
   font-family: var(--f-pixel); font-style: normal;
-  font-size: 17px; font-weight: 700;
+  font-size: 15px; font-weight: 700;
   color: var(--pink);
 }
 .pcard-price small { display: block; font-size: 8px; font-weight: 400; color: var(--gray-2); letter-spacing: 1px; text-align: right; }
 .pcard-add {
   font-family: var(--f-pixel); font-style: normal;
-  font-size: 12px; letter-spacing: 2px;
+  font-size: 11px; letter-spacing: 2px;
   background: var(--pink); color: var(--ink);
   border: 4px solid var(--ink);
   box-shadow: 5px 5px 0 var(--ink);
-  padding: 12px 16px;
+  padding: 10px 14px;
   transition: transform .15s var(--ease-snap), box-shadow .15s var(--ease-snap), background .15s;
 }
 .pcard-add:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); background: var(--bone); }
@@ -1329,7 +1355,6 @@ body::after {
 @media (max-width: 1024px) {
   .nav-links { display: none; }
   .btn-burger { display: flex; }
-  .nav-handle { display: none; }
   .hero-inner { grid-template-columns: 1fr; }
   .hero-visual { min-height: 440px; margin-top: 10px; }
   .fuel-inner { grid-template-columns: 1fr; }

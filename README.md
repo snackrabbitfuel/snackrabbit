@@ -1,7 +1,7 @@
 # SNACKRABBIT — DROP 001
 
 Landing page bilingüe (ES/EN) de la primera línea de merch de SnackRabbit
-(@snackrabbit.tv): Rain Jacket, Hoodie Performance, Gym Towel, Rabbit Fuel y el
+(@snackrabbit.tv): Gym Towel, Rabbit Fuel — la bebida energética natural — y el
 Rabbit Fuel Plush.
 
 Este repositorio contiene **dos versiones del mismo sitio**, con idéntico diseño:
