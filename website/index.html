@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNACKRABBIT — DROP 001 · Merch para gente curiosa</title>
+<meta name="description" content="DROP 001 de SnackRabbit: Rain Jacket impermeable, Hoodie Performance, toalla de gimnasio, Rabbit Fuel y el plush oficial. Cero taurina, cero cosas raras.">
+<meta property="og:title" content="SNACKRABBIT — DROP 001">
+<meta property="og:description" content="Sigue al conejo. La curiosidad te trajo hasta aquí; la madriguera hace el resto. Edición limitada: nada se repite.">
+<meta property="og:image" content="assets/product-rabbit-fuel.jpg">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ff4fd8"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g><rect x="4" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="7" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="5" y="6" width="2" height="1" fill="%23ff4fd8"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Serif+Display:ital@1&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============ SVG DEFS: pixel bunny ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="bunny" viewBox="0.9 -0.1 8.2 7.2">
+      <g class="bunny-body" fill="currentColor">
+        <rect x="2" y="0" width="1" height="3"/>
+        <rect x="7" y="0" width="1" height="3"/>
+        <rect x="2" y="3" width="6" height="1"/>
+        <rect x="1" y="4" width="8" height="2"/>
+        <rect x="2" y="6" width="6" height="1"/>
+      </g>
+      <rect class="bunny-eye" x="3" y="4" width="1" height="1" fill="var(--bunny-eye, #050508)"/>
+      <rect class="bunny-eye" x="6" y="4" width="1" height="1" fill="var(--bunny-eye, #050508)"/>
+      <rect class="bunny-muzzle" x="4" y="5" width="2" height="1" fill="var(--bunny-muzzle, #ff4fd8)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <svg class="pre-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+  <div class="pre-bar"><span id="preBarFill"></span></div>
+  <p class="pre-pct" id="prePct">0%</p>
+  <p class="pre-text" data-i18n="pre.loading">CARGANDO EL DROP…</p>
+</div>
+
+<!-- ============ SCROLL PROGRESS ============ -->
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+<!-- ============ CURSOR PIXEL (desktop) ============ -->
+<div class="cursor-px" id="cursorPx" aria-hidden="true"></div>
+
+<!-- ============ NAVBAR ============ -->
+<header class="nav" id="nav">
+  <a class="nav-brand" href="#top" aria-label="SnackRabbit — inicio">
+    <svg class="nav-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+    <span class="nav-word">SNACKRABBIT</span>
+    <span class="nav-handle">@SNACKRABBIT.TV</span>
+  </a>
+
+  <nav class="nav-links" aria-label="Navegación principal">
+    <a href="#drop" data-i18n="nav.drop">EL DROP</a>
+    <a href="#fuel">RABBIT FUEL</a>
+    <a href="#historia" data-i18n="nav.manifesto">MANIFIESTO</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+
+  <div class="nav-actions">
+    <button class="btn-lang" id="btnLang" type="button" aria-label="Cambiar idioma / Change language">
+      <span data-lang-opt="es">ES</span><i>/</i><span data-lang-opt="en">EN</span>
+    </button>
+    <button class="btn-login" id="btnLogin" type="button">
+      <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><rect x="4" y="1" width="4" height="4"/><rect x="2" y="7" width="8" height="4"/></svg>
+      <span id="loginLabel">LOGIN</span>
+    </button>
+    <button class="btn-cart" id="btnCart" type="button" data-i18n-aria="aria.openCart" aria-label="Abrir carrito">
+      <svg class="ico" viewBox="0 0 14 12" aria-hidden="true"><rect x="1" y="1" width="2" height="2"/><rect x="3" y="3" width="10" height="5"/><rect x="4" y="9" width="2" height="2"/><rect x="9" y="9" width="2" height="2"/></svg>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <button class="btn-burger" id="btnBurger" type="button" data-i18n-aria="aria.openMenu" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <nav aria-label="Menú móvil">
+    <a href="#drop" data-i18n="nav.drop" data-i="01">EL DROP</a>
+    <a href="#fuel" data-i="02">RABBIT FUEL</a>
+    <a href="#historia" data-i18n="nav.manifesto" data-i="03">MANIFIESTO</a>
+    <a href="#faq" data-i="04">FAQ</a>
+  </nav>
+  <button class="btn-lang mm-lang" id="btnLangM" type="button" aria-label="Cambiar idioma / Change language">
+    <span data-lang-opt="es">ES</span><i>/</i><span data-lang-opt="en">EN</span>
+  </button>
+  <p class="mm-foot">@SNACKRABBIT.TV · DROP 001</p>
+</div>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-halftone" aria-hidden="true"></div>
+
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="hero-kicker rv" data-i18n="hero.kicker">@SNACKRABBIT.TV PRESENTA</p>
+        <h1 class="hero-title" id="heroTitle" aria-label="SIGUE AL CONEJO.">
+          <span class="hero-hopper" aria-hidden="true"><span class="hh-x"><span class="hh-y"><svg><use href="#bunny"></use></svg></span></span></span>
+          <span class="ht-line"><span class="ht-word" id="htWord1"></span></span>
+          <span class="ht-line ht-line-hl"><span class="ht-word" id="htWord2"></span></span>
+        </h1>
+        <p class="hero-sub rv" data-delay="500" data-i18n-html="hero.sub">La curiosidad te trajo hasta aquí.<br>La madriguera hace el resto.</p>
+        <div class="hero-ctas rv" data-delay="620">
+          <a class="btn btn-ink" href="#drop">SHOP THE DROP ▸</a>
+          <a class="btn btn-ghost" href="#fuel" data-i18n="hero.cta2">VER RABBIT FUEL</a>
+        </div>
+        <p class="hero-meta rv" data-delay="740" data-i18n="hero.meta">DROP 001 · EDICIÓN LIMITADA · NADA SE REPITE · ENVÍO 48H</p>
+      </div>
+
+      <div class="hero-visual" id="heroVisual">
+        <div class="hero-tape" aria-hidden="true">
+          <div class="hero-tape-track">
+            <span data-i18n="hero.tape">100% REAL ▸ SIN COSAS RARAS ▸ EDICIÓN LIMITADA ▸ 100% REAL ▸ SIN COSAS RARAS ▸ EDICIÓN LIMITADA ▸&nbsp;</span>
+            <span data-i18n="hero.tape">100% REAL ▸ SIN COSAS RARAS ▸ EDICIÓN LIMITADA ▸ 100% REAL ▸ SIN COSAS RARAS ▸ EDICIÓN LIMITADA ▸&nbsp;</span>
+          </div>
+        </div>
+        <span class="sticker-views" aria-hidden="true" data-i18n="hero.views">★ VISTO 180 MILLONES DE VECES</span>
+        <figure class="hv-card hv-back" data-depth="14">
+          <img src="assets/plush-white.jpg" alt="Rabbit Fuel Plush" loading="eager">
+        </figure>
+        <figure class="hv-card hv-front" data-depth="26" id="heroCan" title="Click!">
+          <img src="assets/can-tight.jpg" alt="Rabbit Fuel — Natural Energy 250 ml" loading="eager">
+          <figcaption class="hv-tag">RABBIT FUEL ▸ NATURAL ENERGY</figcaption>
+          <span class="hv-tape hv-tape-a" aria-hidden="true"></span>
+          <span class="hv-tape hv-tape-b" aria-hidden="true"></span>
+        </figure>
+
+        <div class="stamp-spin" data-depth="40" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <defs><path id="stampPath" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
+            <circle cx="60" cy="60" r="58" class="stamp-ring stamp-fill"/>
+            <circle cx="60" cy="60" r="34" class="stamp-ring stamp-ring-in"/>
+            <text class="stamp-text"><textPath href="#stampPath" data-i18n="hero.stamp">100% REAL · SIN COSAS RARAS · 100% REAL · </textPath></text>
+            <g transform="translate(38,39) scale(5.5)"><use href="#bunny" width="8.2" height="7.2" color="#ffd400" style="--bunny-eye:#050508"></use></g>
+          </svg>
+        </div>
+        <span class="badge-ltd" data-depth="34" aria-hidden="true" data-i18n-html="hero.badge">EDICIÓN<br>LIMITADA</span>
+      </div>
+    </div>
+
+    <a class="hero-scroll" href="#stats" aria-label="Scroll">▼</a>
+  </section>
+
+  <div class="px-edge" style="--edge:#050508; --edge-a:#ff4fd8" aria-hidden="true"></div>
+
+  <!-- ============ MARQUEE ============ -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span data-i18n="marquee.text">DROP 001 · YA DISPONIBLE ▸ FOCUS · PLAY · REPEAT ▸ ENVÍO 48H ▸ MATE + GUARANÁ ▸ CERO TAURINA ▸ SIN AZÚCAR ▸ 100% REAL ▸ EDICIÓN LIMITADA ▸&nbsp;</span>
+      <span data-i18n="marquee.text">DROP 001 · YA DISPONIBLE ▸ FOCUS · PLAY · REPEAT ▸ ENVÍO 48H ▸ MATE + GUARANÁ ▸ CERO TAURINA ▸ SIN AZÚCAR ▸ 100% REAL ▸ EDICIÓN LIMITADA ▸&nbsp;</span>
+    </div>
+  </div>
+
+  <!-- ============ STATS ============ -->
+  <section class="stats" id="stats">
+    <div class="stat rv"><span class="stat-num" data-count="2.4" data-decimals="1" data-suffix="M">0</span><span class="stat-label" data-i18n="stats.followers">SEGUIDORES</span></div>
+    <div class="stat rv" data-delay="90"><span class="stat-num" data-count="180" data-suffix="M">0</span><span class="stat-label" data-i18n="stats.views">VIEWS TOTALES</span></div>
+    <div class="stat rv" data-delay="180" id="statProducts"><span class="stat-num" data-count="5" data-pad="2">0</span><span class="stat-label" data-i18n="stats.products">PRODUCTOS</span></div>
+    <div class="stat rv" data-delay="270"><span class="stat-num" data-count="48" data-suffix="H">0</span><span class="stat-label" data-i18n="stats.shipping">ENVÍO EXPRESS</span></div>
+  </section>
+
+  <!-- ============ DROP GRID ============ -->
+  <section class="drop" id="drop">
+    <header class="sec-head">
+      <p class="sec-kicker rv" data-i18n="drop.kicker">DROP 001 — YA DISPONIBLE</p>
+      <h2 class="sec-title rv" data-delay="80" data-i18n-html="drop.title">COSAS QUE<br><em>NO NECESITAS.</em></h2>
+      <p class="sec-sub rv" data-delay="160" data-i18n="drop.sub">Pero vas a querer igual: si no lo usaríamos nosotros, no estaría aquí.</p>
+    </header>
+    <div class="drop-grid" id="dropGrid"><!-- cards via JS --></div>
+  </section>
+
+  <!-- ============ RABBIT FUEL ============ -->
+  <section class="fuel" id="fuel">
+    <div class="fuel-inner">
+      <div class="fuel-visual rv">
+        <figure class="fuel-can-wrap" id="fuelCan" title="PSSHT!">
+          <img src="assets/can-tight.jpg" alt="Rabbit Fuel 250 ml — Natural Energy, mate + guaraná">
+          <span class="fuel-psst" id="fuelPsst" aria-hidden="true">PSSHT!</span>
+        </figure>
+        <div class="stamp-spin stamp-fuel" aria-hidden="true">
+          <svg viewBox="0 0 120 120">
+            <defs><path id="stampPath2" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
+            <circle cx="60" cy="60" r="58" class="stamp-ring"/>
+            <text class="stamp-text"><textPath href="#stampPath2">FOCUS · PLAY · REPEAT · NATURAL ENERGY · </textPath></text>
+            <g transform="translate(38,39) scale(5.5)"><use href="#bunny" width="8.2" height="7.2" color="#ffd400" style="--bunny-eye:#050508"></use></g>
+          </svg>
+        </div>
+      </div>
+
+      <div class="fuel-copy">
+        <p class="sec-kicker rv" data-i18n="fuel.kicker">Nº 04 — EL PRODUCTO HÉROE</p>
+        <h2 class="sec-title rv" data-delay="80" data-i18n-html="fuel.title">ENERGÍA<br><em>SIN CUENTOS.</em></h2>
+        <p class="fuel-tagline rv" data-delay="120">FOCUS · PLAY · REPEAT —</p>
+        <p class="fuel-lead rv" data-delay="160" data-i18n="fuel.lead">Yerba mate + guaraná. Cero taurina, cero cosas raras.</p>
+
+        <ul class="fuel-ings">
+          <li class="rv" data-delay="200">
+            <span class="ing-ico" aria-hidden="true">☘</span>
+            <div><strong>YERBA MATE</strong><p data-i18n="fuel.ing1">Energía natural, sin el bajón de después.</p></div>
+          </li>
+          <li class="rv" data-delay="260">
+            <span class="ing-ico" aria-hidden="true">◉</span>
+            <div><strong>GUARANÁ</strong><p data-i18n="fuel.ing2">Enfoque y vitalidad que duran.</p></div>
+          </li>
+          <li class="rv" data-delay="320">
+            <span class="ing-ico" aria-hidden="true">✚</span>
+            <div><strong data-i18n="fuel.ing3name">VITAMINAS B</strong><p data-i18n="fuel.ing3">Rendimiento sostenido.</p></div>
+          </li>
+          <li class="rv" data-delay="380">
+            <span class="ing-ico" aria-hidden="true">ϟ</span>
+            <div><strong data-i18n="fuel.ing4name">ELECTROLITOS</strong><p data-i18n="fuel.ing4">Hidratación mientras juegas.</p></div>
+          </li>
+        </ul>
+
+        <div class="fuel-nutri rv" data-delay="420">
+          <div class="fuel-nutri-table">
+            <p class="fn-title" data-i18n="fuel.nutriTitle">INFORMACIÓN NUTRICIONAL</p>
+            <p class="fn-sub" data-i18n="fuel.nutriSub">(por porción 250 ml)</p>
+            <dl>
+              <div><dt data-i18n="fuel.nEnergy">Energía</dt><dd>90 kcal</dd></div>
+              <div><dt data-i18n="fuel.nCarbs">Carbohidratos</dt><dd>22 g</dd></div>
+              <div><dt data-i18n="fuel.nSugar">Azúcares</dt><dd>0 g</dd></div>
+              <div><dt data-i18n="fuel.nSodium">Sodio</dt><dd>40 mg</dd></div>
+              <div><dt data-i18n="fuel.nTaurine">Taurina</dt><dd>0 mg</dd></div>
+            </dl>
+          </div>
+          <div class="fuel-kcal">
+            <span class="fk-num">90</span>
+            <span class="fk-label" data-i18n="fuel.kcalLabel">KCAL POR PORCIÓN</span>
+          </div>
+        </div>
+
+        <div class="fuel-chips rv" data-delay="460">
+          <span>250 ML</span><span data-i18n="fuel.chipVegan">VEGANA</span><span data-i18n="fuel.chipTaurine">SIN TAURINA</span><span data-i18n="fuel.chipSugar">SIN AZÚCAR</span>
+        </div>
+
+        <div class="hero-ctas rv" data-delay="520">
+          <button class="btn btn-pink" id="btnFuelAdd" type="button" data-i18n="fuel.cta">PROBAR PACK ×4 — $16</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="px-edge" style="--edge:#fbf2f7; --edge-a:#0a0a12" aria-hidden="true"></div>
+
+  <!-- ============ MANIFIESTO ============ -->
+  <section class="paper" id="historia">
+    <div class="paper-inner">
+      <div class="mani-copy">
+        <p class="sec-kicker dark rv" data-i18n="mani.kicker">MANIFIESTO</p>
+        <h2 class="sec-title dark rv" data-delay="80" data-i18n-html="mani.title">CURIOSIDAD,<br>PERO <em class="hl">EN FÍSICO.</em></h2>
+        <p class="mani-text rv" data-delay="160" data-i18n-html="mani.text">SnackRabbit nació contando curiosidades de 60 segundos. <strong>DROP 001</strong> es exactamente lo mismo, pero en objetos: una chaqueta que cabe en su propio bolsillo, una lata que no te miente y un conejo de peluche que te mira mientras trabajas.</p>
+        <ul class="facts">
+          <li class="rv" data-delay="220" data-i18n="mani.fact1">LA YERBA MATE TIENE MÁS ANTIOXIDANTES QUE EL TÉ VERDE.</li>
+          <li class="rv" data-delay="300" data-i18n="mani.fact2">UNA SEMILLA DE GUARANÁ TIENE ~2× LA CAFEÍNA DE UN GRANO DE CAFÉ.</li>
+          <li class="rv" data-delay="380" data-i18n="mani.fact3">LOS CONEJOS PUEDEN VER CASI 360°. NOSOTROS, SOLO ESTE DROP.</li>
+        </ul>
+      </div>
+      <figure class="mani-sticker rv" data-delay="200" aria-hidden="true">
+        <img src="assets/logo-snackrabbit-rosa-1080.png" alt="">
+        <span class="hv-tape hv-tape-a"></span>
+        <figcaption>EST. 2023 · 100% REAL</figcaption>
+      </figure>
+    </div>
+
+    <!-- FAQ -->
+    <div class="faq" id="faq">
+      <h3 class="faq-title rv" data-i18n="faq.title">PREGUNTAS FRECUENTES</h3>
+      <div class="faq-list" id="faqList">
+        <details class="faq-item rv">
+          <summary><span data-i18n="faq.q1">¿CUÁNDO LLEGA MI PEDIDO?</span><span class="faq-x" aria-hidden="true">+</span></summary>
+          <p data-i18n="faq.a1">Preparamos en 24 h y entregamos en 48–72 h laborables. Recibirás seguimiento por email en cuanto salga de la madriguera.</p>
+        </details>
+        <details class="faq-item rv" data-delay="60">
+          <summary><span data-i18n="faq.q2">¿QUÉ TALLA PIDO?</span><span class="faq-x" aria-hidden="true">+</span></summary>
+          <p data-i18n="faq.a2">El Hoodie 400 es oversized: si lo quieres ajustado, baja una talla. La Rain Shell es de corte regular unisex. En caso de duda, quédate con tu talla habitual.</p>
+        </details>
+        <details class="faq-item rv" data-delay="120">
+          <summary><span data-i18n="faq.q3">¿PUEDO DEVOLVER ALGO?</span><span class="faq-x" aria-hidden="true">+</span></summary>
+          <p data-i18n="faq.a3">Sí: 30 días para textil y plush sin usar con etiqueta. Rabbit Fuel no admite devolución una vez abierto el pack (por razones obvias).</p>
+        </details>
+        <details class="faq-item rv" data-delay="180">
+          <summary><span data-i18n="faq.q4">¿QUÉ LLEVA EXACTAMENTE RABBIT FUEL?</span><span class="faq-x" aria-hidden="true">+</span></summary>
+          <p data-i18n="faq.a4">Agua carbonatada, extracto de yerba mate, extracto de guaraná, vitaminas del grupo B y electrolitos. Sin azúcar, sin taurina, vegana. 90 kcal por lata.</p>
+        </details>
+        <details class="faq-item rv" data-delay="240">
+          <summary><span data-i18n="faq.q5">¿EL PLUSH ES OFICIAL?</span><span class="faq-x" aria-hidden="true">+</span></summary>
+          <p data-i18n="faq.a5">Sí. Está basado en el logo pixel de Rabbit Fuel, con bordados de alta calidad y etiqueta oficial. Disponible en blanco y en negro.</p>
+        </details>
+        <details class="faq-item rv" data-delay="300">
+          <summary><span data-i18n="faq.q6">¿HABRÁ DROP 002?</span><span class="faq-x" aria-hidden="true">+</span></summary>
+          <p data-i18n="faq.a6">Sí, pero no diremos cuándo. Únete a La Madriguera y te enterarás antes que nadie.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <div class="px-edge" style="--edge:#ff4fd8; --edge-a:#fbf2f7" aria-hidden="true"></div>
+
+  <!-- ============ NEWSLETTER ============ -->
+  <section class="news" id="newsletter">
+    <div class="news-inner rv">
+      <svg class="news-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+      <h2 class="news-title" data-i18n-html="news.title">ÚNETE A<br>LA MADRIGUERA</h2>
+      <p class="news-sub" data-i18n="news.sub">Un email al mes: drops, curiosidades y cero spam.</p>
+      <form class="news-form" id="newsForm" novalidate>
+        <input type="email" id="newsEmail" name="email" placeholder="TU@EMAIL.COM" data-i18n-ph="news.ph" aria-label="Email" required>
+        <button class="btn btn-ink" type="submit" data-i18n="news.btn">SUSCRIBIRME ▸</button>
+      </form>
+      <p class="news-msg" id="newsMsg" role="status"></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <svg class="foot-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+      <p class="foot-word">SNACKRABBIT</p>
+      <p class="foot-tag" data-i18n-html="foot.tag">Curiosidades virales desde 2023.<br>Ahora también en objetos.</p>
+      <div class="foot-social">
+        <a href="#" data-demo aria-label="TikTok">TIKTOK</a>
+        <a href="#" data-demo aria-label="Instagram">IG</a>
+        <a href="#" data-demo aria-label="YouTube">YT</a>
+        <a href="#" data-demo aria-label="X">X</a>
+      </div>
+    </div>
+    <nav class="foot-col" aria-label="Tienda">
+      <h4 data-i18n="foot.shop">TIENDA</h4>
+      <a href="#drop" data-open-product="rain-jacket">RAIN JACKET</a>
+      <a href="#drop" data-open-product="hoodie-performance">HOODIE PERFORMANCE</a>
+      <a href="#drop" data-open-product="gym-towel">GYM TOWEL</a>
+      <a href="#drop" data-open-product="rabbit-fuel">RABBIT FUEL</a>
+      <a href="#drop" data-open-product="plush">RABBIT FUEL PLUSH</a>
+    </nav>
+    <nav class="foot-col" aria-label="Ayuda">
+      <h4 data-i18n="foot.help">AYUDA</h4>
+      <a href="#faq" data-i18n="foot.shipping">ENVÍOS</a>
+      <a href="#faq" data-i18n="foot.returns">DEVOLUCIONES</a>
+      <a href="#faq" data-i18n="foot.sizes">GUÍA DE TALLAS</a>
+      <a href="mailto:hola@snackrabbit.tv" data-i18n="foot.contact">CONTACTO</a>
+    </nav>
+    <nav class="foot-col" aria-label="Legal">
+      <h4>LEGAL</h4>
+      <a href="#" data-demo data-i18n="foot.terms">TÉRMINOS</a>
+      <a href="#" data-demo data-i18n="foot.privacy">PRIVACIDAD</a>
+      <a href="#" data-demo>COOKIES</a>
+    </nav>
+  </div>
+  <div class="foot-bar">
+    <p data-i18n="foot.bar">© 2026 SNACKRABBIT.TV — HECHO CON CAFEÍNA NATURAL</p>
+    <p class="foot-pay"><span>VISA</span><span>MC</span><span>PAYPAL</span><span>APPLE&nbsp;PAY</span></p>
+  </div>
+  <p class="foot-giant" aria-hidden="true">SNACKRABBIT</p>
+</footer>
+
+<!-- ============ OVERLAY ============ -->
+<div class="overlay" id="overlay" hidden></div>
+
+<!-- ============ LOGIN MODAL ============ -->
+<div class="modal login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" hidden>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Cerrar">✕</button>
+  <svg class="lm-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+  <h2 id="loginTitle" class="lm-title" data-i18n="auth.title">LA MADRIGUERA</h2>
+  <div class="lm-tabs" role="tablist">
+    <button class="lm-tab active" id="tabIn" type="button" role="tab" aria-selected="true" data-i18n="auth.tabIn">ENTRAR</button>
+    <button class="lm-tab" id="tabUp" type="button" role="tab" aria-selected="false" data-i18n="auth.tabUp">CREAR CUENTA</button>
+  </div>
+
+  <form class="lm-form" id="formIn" novalidate>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="tu@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <label><span data-i18n="auth.pass">CONTRASEÑA</span><input type="password" name="pass" placeholder="••••••" autocomplete="current-password" required></label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitIn">ENTRAR ▸</button>
+  </form>
+
+  <form class="lm-form" id="formUp" hidden novalidate>
+    <label><span data-i18n="auth.name">NOMBRE</span><input type="text" name="name" placeholder="Tu nombre" data-i18n-ph="auth.namePh" autocomplete="name" required></label>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="tu@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <label><span data-i18n="auth.pass">CONTRASEÑA</span><input type="password" name="pass" placeholder="Mínimo 6 caracteres" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitUp">CREAR CUENTA ▸</button>
+  </form>
+
+  <p class="lm-note" data-i18n="auth.note">DEMO LOCAL — TU CUENTA SOLO VIVE EN ESTE NAVEGADOR.</p>
+</div>
+
+<!-- ============ PRODUCT MODAL ============ -->
+<div class="modal product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="pmName" hidden>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Cerrar">✕</button>
+  <div class="pm-media">
+    <img id="pmImg" src="" alt="">
+    <div class="pm-thumbs" id="pmThumbs"></div>
+  </div>
+  <div class="pm-info">
+    <p class="pm-num" id="pmNum"></p>
+    <h2 class="pm-name" id="pmName"></h2>
+    <p class="pm-tagline" id="pmTagline"></p>
+    <p class="pm-desc" id="pmDesc"></p>
+    <p class="pm-specs" id="pmSpecs"></p>
+    <ul class="pm-features" id="pmFeatures"></ul>
+
+    <div class="pm-row" id="pmColorsRow">
+      <span class="pm-label">COLOR</span>
+      <div class="pm-swatches" id="pmSwatches"></div>
+    </div>
+    <div class="pm-row" id="pmSizesRow">
+      <span class="pm-label" id="pmSizeLabel">TALLA</span>
+      <div class="pm-sizes" id="pmSizes"></div>
+    </div>
+    <div class="pm-row">
+      <span class="pm-label" data-i18n="pm.qty">CANTIDAD</span>
+      <div class="pm-qty">
+        <button type="button" id="pmMinus" aria-label="−">−</button>
+        <span id="pmQty">1</span>
+        <button type="button" id="pmPlus" aria-label="+">+</button>
+      </div>
+    </div>
+
+    <div class="pm-foot">
+      <span class="pm-price" id="pmPrice"></span>
+      <button class="btn btn-pink" id="pmAdd" type="button" data-i18n="pm.add">AÑADIR AL CARRITO ▸</button>
+    </div>
+    <p class="pm-ship" data-i18n="pm.ship">ENVÍO 48H · DEVOLUCIONES 30 DÍAS · PAGO SEGURO</p>
+  </div>
+</div>
+
+<!-- ============ CART DRAWER ============ -->
+<aside class="cart" id="cartDrawer" aria-label="Carrito" aria-hidden="true">
+  <header class="cart-head">
+    <h2><span data-i18n="cart.title">TU CARRITO</span> <span id="cartHeadCount">(0)</span></h2>
+    <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Cerrar carrito">✕</button>
+  </header>
+  <div class="cart-ship" id="cartShip">
+    <p id="cartShipMsg">ENVÍO GRATIS DESDE $60</p>
+    <div class="cart-ship-bar"><span id="cartShipFill"></span></div>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <footer class="cart-foot">
+    <div class="cart-total"><span>SUBTOTAL</span><span id="cartTotal">$0.00</span></div>
+    <button class="btn btn-pink cart-checkout" id="btnCheckout" type="button" data-i18n="cart.checkout">TRAMITAR PEDIDO ▸</button>
+    <p class="cart-note" data-i18n="cart.note">IMPUESTOS INCLUIDOS · ENVÍO CALCULADO AL PAGAR</p>
+  </footer>
+</aside>
+
+<!-- ============ CHECKOUT SUCCESS ============ -->
+<div class="modal success-modal" id="successModal" role="dialog" aria-modal="true" aria-labelledby="scTitle" hidden>
+  <svg class="lm-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+  <h2 class="lm-title" id="scTitle" data-i18n="sc.title">¡PEDIDO CONFIRMADO!</h2>
+  <p class="sc-order" id="scOrder">#SR-0000</p>
+  <p class="sc-text" data-i18n-html="sc.text">Gracias por apoyar el DROP 001.<br>Tu pedido sale de la madriguera en 24 h. <em>(Demo — no se ha cobrado nada.)</em></p>
+  <button class="btn btn-ink" data-close type="button" data-i18n="sc.btn">SEGUIR CURIOSEANDO ▸</button>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+
+<script src="app.js"></script>
+</body>
+</html>
