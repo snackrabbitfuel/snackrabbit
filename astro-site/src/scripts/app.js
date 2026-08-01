@@ -440,8 +440,6 @@ const PRODUCTS = [
       es: "250 ML · MATE + GUARANÁ · SIN TAURINA · VEGANA · SIN AZÚCAR · 90 KCAL",
       en: "250 ML · MATE + GUARANÁ · ZERO TAURINE · VEGAN · ZERO SUGAR · 90 KCAL"
     },
-    colors: ["#0d0d14", "#ff4fd8", "#ffd400"],
-    colorNames: ["NEGRO", "ROSA", "AMARILLO"],
     sizes: ["PACK ×4", "PACK ×12"],
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
@@ -834,7 +832,7 @@ function renderGrid(instant) {
         </div>
         <div class="pcard-foot">
           <div class="pcard-swatches">
-            ${p.colors.map((c, ci) => `<span class="swatch" style="background:${c}" title="${colorName(p.colorNames[ci])}"></span>`).join("")}
+            ${(p.colors || []).map((c, ci) => `<span class="swatch" style="background:${c}" title="${colorName(p.colorNames[ci])}"></span>`).join("")}
           </div>
           <div class="pcard-buy">
             <span class="pcard-price">${money(p.price)}${p.priceNote ? `<small>${p.priceNote}</small>` : ""}</span>
@@ -845,7 +843,7 @@ function renderGrid(instant) {
     card.querySelector(".pcard-add").addEventListener("click", e => {
       e.stopPropagation();
       const size = p.sizes[Math.floor(p.sizes.length / 2 - .5)] || p.sizes[0];
-      Cart.add(p.id, { size, color: p.colorNames[0], qty: 1 });
+      Cart.add(p.id, { size, color: p.colorNames && p.colorNames[0], qty: 1 });
       confetti.burst(e.clientX, e.clientY, 26);
     });
     card.addEventListener("click", () => ProductModal.open(p.id));
@@ -900,7 +898,7 @@ const ProductModal = (() => {
   }
 
   function populate(keepSelection) {
-    if (!keepSelection) { qty = 1; size = cur.sizes[0]; color = cur.colorNames[0]; vista = 0; }
+    if (!keepSelection) { qty = 1; size = cur.sizes[0]; color = cur.colorNames ? cur.colorNames[0] : null; vista = 0; }
     $("#pmImg").src = srcNow();
     $("#pmImg").alt = cur.name;
     $("#pmImg").style.setProperty("--img-scale", cur.imgScale || 1);
@@ -913,7 +911,9 @@ const ProductModal = (() => {
     $("#pmFeatures").innerHTML = (cur.features || [])
       .map(f => `<li><strong>${f[LANG][0]}</strong><span>${f[LANG][1]}</span></li>`).join("");
     pintarVistas();
-    $("#pmSwatches").innerHTML = cur.colorNames.map((cn, i) =>
+    /* La lata no tiene variantes: sin colorNames la fila de color desaparece */
+    $("#pmColorsRow").hidden = !cur.colorNames;
+    $("#pmSwatches").innerHTML = (cur.colorNames || []).map((cn, i) =>
       `<span class="swatch" style="background:${cur.colors[i]}" data-color="${cn}" title="${colorName(cn)}" role="button" tabindex="0" aria-label="${colorName(cn)}"></span>`).join("");
     $("#pmSizes").innerHTML = cur.sizes.map(s => `<button class="pm-size" type="button" data-size="${s}">${sizeName(s)}</button>`).join("");
     /* al cambiar de color hay que repintar la tira de vistas: cada color tiene la suya */
@@ -952,9 +952,26 @@ const Cart = (() => {
   try { items = JSON.parse(localStorage.getItem(KEY)) || []; } catch { items = []; }
   const save = () => localStorage.setItem(KEY, JSON.stringify(items));
 
-  /* descarta lo guardado de catálogos anteriores (productos que ya no existen) */
-  const kept = items.filter(i => i && PRODUCTS.some(p => p.id === i.id));
-  if (kept.length !== items.length) { items = kept; save(); }
+  const clave = (id, size, color) => `${id}|${size}|${color || ""}`;
+
+  /* Limpia lo guardado de catálogos anteriores: descarta productos que ya no
+     existen, quita el color a los que dejaron de tener variantes (la lata) y
+     fusiona las líneas que queden repetidas al recalcular la clave. */
+  (() => {
+    const antes = items.length;
+    const salida = [];
+    items.forEach(i => {
+      const p = i && PRODUCTS.find(x => x.id === i.id);
+      if (!p) return;
+      if (!p.colorNames) i.color = null;
+      i.key = clave(i.id, i.size, i.color);
+      const ya = salida.find(f => f.key === i.key);
+      if (ya) ya.qty = Math.min(9, ya.qty + i.qty);
+      else salida.push(i);
+    });
+    if (antes !== salida.length || salida.some((i, n) => i !== items[n])) { items = salida; save(); }
+  })();
+
   const count = () => items.reduce((a, i) => a + i.qty, 0);
   const total = () => items.reduce((a, i) => a + i.qty * i.unitPrice, 0);
 
@@ -962,7 +979,7 @@ const Cart = (() => {
     const p = PRODUCTS.find(x => x.id === id);
     const up = unitPrice != null ? unitPrice
       : (p.sizePrices && p.sizePrices[size] != null ? p.sizePrices[size] : p.price);
-    const key = `${id}|${size}|${color}`;
+    const key = clave(id, size, color);
     const found = items.find(i => i.key === key);
     if (found) found.qty = Math.min(9, found.qty + qty);
     else items.push({ key, id, size, color, qty, unitPrice: up });
@@ -1011,7 +1028,7 @@ const Cart = (() => {
         <img src="${thumb}" alt="${p.name}">
         <div>
           <p class="citem-name">${p.name}</p>
-          <p class="citem-var">${sizeName(it.size)} · ${colorName(it.color)}</p>
+          <p class="citem-var">${sizeName(it.size)}${p.colorNames && it.color ? " · " + colorName(it.color) : ""}</p>
           <div class="citem-qty">
             <button type="button" aria-label="−">−</button>
             <span>${it.qty}</span>
@@ -1092,7 +1109,7 @@ $("#btnCheckout").addEventListener("click", () => Checkout.abrir());
 
 /* CTA Rabbit Fuel */
 $("#btnFuelAdd").addEventListener("click", e => {
-  Cart.add("rabbit-fuel", { size: "PACK ×4", color: "NEGRO", qty: 1 });
+  Cart.add("rabbit-fuel", { size: "PACK ×4", qty: 1 });
   confetti.burst(e.clientX, e.clientY, 30);
 });
 
