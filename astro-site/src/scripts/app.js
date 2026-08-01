@@ -523,7 +523,8 @@ const PRODUCTS = [
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
     img: "/assets/towel-white-cutout.webp",
-    imgScale: 1.06
+    imgScale: 1.12,   // el lienzo nativo lleva más margen que el anterior
+    viewScale: 1.06
   }
 ];
 
