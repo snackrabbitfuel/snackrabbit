@@ -115,7 +115,7 @@ const I18N = {
     "faq.q1": "¿CUÁNDO LLEGA MI PEDIDO?",
     "faq.a1": "Preparamos en 24 h y entregamos en 48–72 h laborables. Recibirás seguimiento por email en cuanto salga de la madriguera.",
     "faq.q2": "¿QUÉ TAMAÑO TIENEN LA TOALLA Y EL PLUSH?",
-    "faq.a2": "La Gym Towel mide 100×40 cm, tamaño gimnasio clásico. El plush es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
+    "faq.a2": "La Gym Towel mide 100×50 cm, tamaño gimnasio clásico, y viene en blanco, rosa y negro. El plush es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
     "faq.q3": "¿PUEDO DEVOLVER ALGO?",
     "faq.a3": "Sí: 30 días para textil y plush sin usar con etiqueta. Rabbit Fuel no admite devolución una vez abierto el pack (por razones obvias).",
     "faq.q4": "¿QUÉ LLEVA EXACTAMENTE RABBIT FUEL?",
@@ -305,7 +305,7 @@ const I18N = {
     "faq.q1": "WHEN DOES MY ORDER ARRIVE?",
     "faq.a1": "We prepare within 24 h and deliver in 48–72 working hours. You'll get tracking by email as soon as it leaves the burrow.",
     "faq.q2": "HOW BIG ARE THE TOWEL AND THE PLUSH?",
-    "faq.a2": "The Gym Towel is 100×40 cm, classic gym size. The plush is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
+    "faq.a2": "The Gym Towel is 100×50 cm, classic gym size, and comes in white, pink and black. The plush is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
     "faq.q3": "CAN I RETURN SOMETHING?",
     "faq.a3": "Yes: 30 days for unused apparel and plush with tags on. Rabbit Fuel can't be returned once the pack is opened (for obvious reasons).",
     "faq.q4": "WHAT EXACTLY IS IN RABBIT FUEL?",
@@ -477,19 +477,34 @@ const PRODUCTS = [
     price: 29,
     priceNote: "",
     desc: {
-      es: "Microfibra quick-dry con franjas jacquard y flecos. Sweat. Scroll. Repeat.",
-      en: "Quick-dry microfiber with jacquard stripes and fringe. Sweat. Scroll. Repeat."
+      es: "Microfibra ultraabsorbente con el conejo bordado. Seca rápido y no pesa nada. Sweat, scroll, repeat.",
+      en: "Ultra-absorbent microfiber with the embroidered bunny. Dries fast, weighs nothing. Sweat, scroll, repeat."
     },
     specs: {
-      es: "MICROFIBRA QUICK-DRY · 100×40 CM · LAZO COLGADOR · BUNNY BORDADO",
-      en: "QUICK-DRY MICROFIBER · 100×40 CM · HANGING LOOP · EMBROIDERED BUNNY"
+      es: "100×50 CM · 250 G · 80% POLIÉSTER / 20% POLIAMIDA · BORDADO PREMIUM · LAVADO EN FRÍO",
+      en: "100×50 CM · 250 G · 80% POLYESTER / 20% POLYAMIDE · PREMIUM EMBROIDERY · COLD WASH"
     },
-    colors: ["#fbf2f7", "#ff4fd8", "#050508"],
-    colorNames: ["ROSADO", "ROSA", "NEGRO"],
+    features: [
+      { es: ["ULTRA ABSORBENTE", "Se lleva el sudor al instante."],
+        en: ["ULTRA ABSORBENT", "Soaks up sweat on contact."] },
+      { es: ["SUAVE Y LIGERA", "Cómoda para cualquier rutina."],
+        en: ["SOFT & LIGHTWEIGHT", "Comfortable for any routine."] },
+      { es: ["CALIDAD QUE DURA", "Aguanta lavada tras lavada."],
+        en: ["DURABLE QUALITY", "Holds up wash after wash."] },
+      { es: ["TAMAÑO JUSTO", "Gimnasio, deporte y viaje."],
+        en: ["PERFECT SIZE", "Gym, sports and travel."] }
+    ],
+    colors: ["#f2f2f7", "#d9558a", "#17171b"],
+    colorNames: ["BLANCO", "ROSA", "NEGRO"],
+    imgByColor: {
+      BLANCO: "/assets/towel-white-cutout.webp",
+      ROSA:   "/assets/towel-pink-cutout.webp",
+      NEGRO:  "/assets/towel-black-cutout.webp"
+    },
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/towel-cutout.png",
-    imgScale: .96
+    img: "/assets/towel-white-cutout.webp",
+    imgScale: 1.06
   }
 ];
 
