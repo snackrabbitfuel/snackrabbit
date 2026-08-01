@@ -501,6 +501,15 @@ const PRODUCTS = [
       ROSA:   "/assets/towel-pink-cutout.webp",
       NEGRO:  "/assets/towel-black-cutout.webp"
     },
+    /* Galería por color: producto, plegada, bordado de cerca y acabado del canto */
+    viewsByColor: {
+      BLANCO: ["/assets/towel-white-cutout.webp", "/assets/towel-white-fold.webp",
+               "/assets/towel-white-stitch.webp", "/assets/towel-white-edge.webp"],
+      ROSA:   ["/assets/towel-pink-cutout.webp", "/assets/towel-pink-fold.webp",
+               "/assets/towel-pink-stitch.webp", "/assets/towel-pink-edge.webp"],
+      NEGRO:  ["/assets/towel-black-cutout.webp", "/assets/towel-black-fold.webp",
+               "/assets/towel-black-stitch.webp", "/assets/towel-black-edge.webp"]
+    },
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
     img: "/assets/towel-white-cutout.webp",
@@ -845,26 +854,38 @@ function renderGrid(instant) {
    ============================================================ */
 const ProductModal = (() => {
   const el = $("#productModal");
-  let cur = null, qty = 1, size = null, color = null, view = null;
+  let cur = null, qty = 1, size = null, color = null, vista = 0;
 
   const price = () => (cur.sizePrices && cur.sizePrices[size] != null) ? cur.sizePrices[size] : cur.price;
   const imgFor = c => (cur.imgByColor && cur.imgByColor[c]) || cur.img;
-  /* la imagen la manda el color (plush) o la vista elegida en la galería (textil) */
-  const srcNow = () => cur.imgByColor ? imgFor(color) : (view || cur.img);
+  /* Cada color puede traer su propia galería (la toalla), o el producto una sola
+     galería común, o una única imagen por color. La vista es un índice: al
+     cambiar de color se mantiene, así que si estás mirando el bordado y pasas a
+     otro color, sigues viendo el bordado. */
+  const galeria = c => (cur.viewsByColor && cur.viewsByColor[c]) || cur.views || [imgFor(c)];
+  const srcNow = () => { const g = galeria(color); return g[Math.min(vista, g.length - 1)]; };
+
+  function pintarVistas() {
+    const g = galeria(color), cont = $("#pmThumbs");
+    cont.innerHTML = g.length > 1
+      ? g.map((v, i) => `<button class="pm-thumb" type="button" data-i="${i}" aria-label="${cur.name} ${i + 1}"><img src="${v}" alt=""></button>`).join("")
+      : "";
+    $$(".pm-thumb", cont).forEach(b => b.addEventListener("click", () => { vista = +b.dataset.i; paint(); }));
+  }
 
   function paint() {
+    if (vista >= galeria(color).length) vista = 0;
     $("#pmPrice").textContent = money(price() * qty);
     $("#pmQty").textContent = qty;
     $$(".pm-size", el).forEach(b => b.classList.toggle("sel", b.dataset.size === size));
     $$(".pm-swatches .swatch", el).forEach(s => s.classList.toggle("sel", s.dataset.color === color));
-    $$(".pm-thumb", el).forEach(b => b.classList.toggle("sel", b.dataset.src === view));
+    $$(".pm-thumb", el).forEach(b => b.classList.toggle("sel", +b.dataset.i === vista));
     const img = $("#pmImg"), src = srcNow();
     if (!img.src.endsWith(src)) img.src = src;
   }
 
   function populate(keepSelection) {
-    if (!keepSelection) { qty = 1; size = cur.sizes[0]; color = cur.colorNames[0]; view = cur.views ? cur.views[0] : null; }
-    if (view && !(cur.views || []).includes(view)) view = cur.views ? cur.views[0] : null;
+    if (!keepSelection) { qty = 1; size = cur.sizes[0]; color = cur.colorNames[0]; vista = 0; }
     $("#pmImg").src = srcNow();
     $("#pmImg").alt = cur.name;
     $("#pmImg").style.setProperty("--img-scale", cur.imgScale || 1);
@@ -876,14 +897,14 @@ const ProductModal = (() => {
     $("#pmSizeLabel").textContent = cur.sizeLabel[LANG];
     $("#pmFeatures").innerHTML = (cur.features || [])
       .map(f => `<li><strong>${f[LANG][0]}</strong><span>${f[LANG][1]}</span></li>`).join("");
-    $("#pmThumbs").innerHTML = (cur.views || []).length > 1
-      ? cur.views.map((v, i) => `<button class="pm-thumb" type="button" data-src="${v}" aria-label="${cur.name} ${i + 1}"><img src="${v}" alt=""></button>`).join("")
-      : "";
-    $$(".pm-thumb", el).forEach(b => b.addEventListener("click", () => { view = b.dataset.src; paint(); }));
+    pintarVistas();
     $("#pmSwatches").innerHTML = cur.colorNames.map((cn, i) =>
       `<span class="swatch" style="background:${cur.colors[i]}" data-color="${cn}" title="${colorName(cn)}" role="button" tabindex="0" aria-label="${colorName(cn)}"></span>`).join("");
     $("#pmSizes").innerHTML = cur.sizes.map(s => `<button class="pm-size" type="button" data-size="${s}">${sizeName(s)}</button>`).join("");
-    $$(".pm-swatches .swatch", el).forEach(s => s.addEventListener("click", () => { color = s.dataset.color; paint(); }));
+    /* al cambiar de color hay que repintar la tira de vistas: cada color tiene la suya */
+    $$(".pm-swatches .swatch", el).forEach(s => s.addEventListener("click", () => {
+      color = s.dataset.color; pintarVistas(); paint();
+    }));
     $$(".pm-size", el).forEach(b => b.addEventListener("click", () => { size = b.dataset.size; paint(); }));
     paint();
   }
