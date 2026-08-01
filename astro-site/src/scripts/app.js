@@ -72,12 +72,11 @@ const I18N = {
     "bur.kicker": "MEMBRESÍA · LA MADRIGUERA",
     "bur.title": "LA CURIOSIDAD<br><em>QUE NO SUBIMOS.</em>",
     "bur.sub": "Cada mes: tus latas y una curiosidad que nunca sale en el canal. Impresa, numerada y solo para socios.",
-    "bur.yearHead": "AÑO UNO · 12 CARTAS",
+    "bur.yearHead": "AÑO UNO · DE ENERO A DICIEMBRE",
     "bur.yearNote": "CADA CARTA SE IMPRIME UNA VEZ. NO SE REIMPRIME.",
-    "bur.this": "ESTE MES",
     "bur.prize": "COMPLETA LAS 12 CARTAS DEL AÑO Y EL PLUSH DE LA SERIE ES <b>TUYO. GRATIS.</b>",
     "bur.months": "ENE,FEB,MAR,ABR,MAY,JUN,JUL,AGO,SEP,OCT,NOV,DIC",
-    "bur.cardCap": "CARTA 001 · EL DORSO SOLO EXISTE EN LA CAJA",
+    "bur.cardCap": "ENERO · CARTA 001 — EL DORSO SOLO EXISTE EN LA CAJA",
     "bur.cardAlt": "Carta 001 — El Binky",
     "bur.per": "/MES",
     "bur.t1name": "CURIOSO",
@@ -262,12 +261,11 @@ const I18N = {
     "bur.kicker": "MEMBERSHIP · THE BURROW",
     "bur.title": "THE CURIOSITY<br><em>WE DON'T POST.</em>",
     "bur.sub": "Every month: your cans and one curiosity that never makes it to the channel. Printed, numbered, members only.",
-    "bur.yearHead": "YEAR ONE · 12 CARDS",
+    "bur.yearHead": "YEAR ONE · JANUARY TO DECEMBER",
     "bur.yearNote": "EACH CARD IS PRINTED ONCE. NEVER REPRINTED.",
-    "bur.this": "THIS MONTH",
     "bur.prize": "COLLECT ALL 12 CARDS OF THE YEAR AND THE SERIES PLUSH IS <b>YOURS. FREE.</b>",
     "bur.months": "JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC",
-    "bur.cardCap": "CARD 001 · THE BACK ONLY EXISTS IN THE BOX",
+    "bur.cardCap": "JANUARY · CARD 001 — THE BACK ONLY EXISTS IN THE BOX",
     "bur.cardAlt": "Card 001 — The Binky",
     "bur.per": "/MONTH",
     "bur.t1name": "CURIOUS",
@@ -1340,6 +1338,7 @@ const Madriguera = (() => {
   const sec  = $("#madriguera");
   const btn  = $("#burJoin"), note = $("#burNote"), sel = $("#burSel");
   const KEY  = "sr_burrow_tier_v1";
+  const ANIO_SERIE = 2027;      // Año Uno: enero a diciembre de 2027
   const NOMBRE = { curioso: "bur.t1name", cavador: "bur.t2name" };
 
   let plan = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
@@ -1365,13 +1364,17 @@ const Madriguera = (() => {
     carta.src = `/assets/carta-001-${LANG}.webp`;
     carta.alt = t("bur.cardAlt");
 
-    /* El año arranca el mes en curso: la carta Nº001 es la de este mes */
+    /* Año Uno va de enero a diciembre, así que el número de carta y el mes
+       coinciden para siempre: la 010 cae en octubre y la 012 en diciembre. */
     const meses = t("bur.months").split(",");
-    const mes0 = new Date().getMonth();
-    $$("[data-mes]", sec).forEach(el => {
-      const i = +el.dataset.mes;
-      el.textContent = i === 0 ? t("bur.this") : meses[(mes0 + i) % 12];
-    });
+    $$("[data-mes]", sec).forEach(el => { el.textContent = meses[+el.dataset.mes]; });
+
+    /* Se enciende la casilla del mes en curso; antes de que arranque la serie,
+       la primera, que es la que se está enseñando. */
+    const hoy = new Date();
+    const activa = hoy.getFullYear() === ANIO_SERIE ? hoy.getMonth()
+                 : hoy.getFullYear() < ANIO_SERIE ? 0 : 11;
+    $$(".by-card", sec).forEach((c, i) => c.classList.toggle("on", i === activa));
   }
 
   async function guardar(callado) {

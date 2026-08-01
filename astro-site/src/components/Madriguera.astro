@@ -39,9 +39,8 @@ const CARTAS = Array.from({ length: 12 }, (_, i) => i);
         <li class={i === 0 ? "by-card on" : "by-card"}>
           <span class="by-n">{String(i + 1).padStart(3, "0")}</span>
           <span class="by-face" aria-hidden="true">
-            {i === 0
-              ? <svg class="by-bunny"><use href="#bunny" /></svg>
-              : <span class="by-q">?</span>}
+            <svg class="by-bunny"><use href="#bunny" /></svg>
+            <span class="by-q">?</span>
           </span>
           <span class="by-when" data-mes={i}></span>
         </li>

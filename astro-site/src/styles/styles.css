@@ -949,6 +949,11 @@ body::after {
 .by-card:hover { transform: translateY(-5px); border-color: var(--pink); }
 .by-n { font-family: var(--f-pixel); font-style: normal; font-size: 9px; letter-spacing: 1px; color: var(--gray-2); }
 .by-face { display: grid; place-items: center; }
+/* Cada casilla trae conejo e interrogante; se enseña el que toque, así que la
+   casilla encendida la mueve el JS con solo cambiar la clase. */
+.by-bunny { display: none; }
+.by-card.on .by-bunny { display: block; }
+.by-card.on .by-q { display: none; }
 .by-q { font-family: var(--f-display); font-style: normal; font-size: clamp(20px, 2.2vw, 30px); color: #23233a; }
 .by-card:hover .by-q { color: var(--pink); }
 .by-bunny { width: 28px; height: 25px; color: var(--yellow); --bunny-eye: #050508; --bunny-muzzle: #050508; }
