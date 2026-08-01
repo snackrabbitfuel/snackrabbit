@@ -77,6 +77,8 @@ const I18N = {
     "bur.this": "ESTE MES",
     "bur.prize": "COMPLETA LAS 12 CARTAS DEL AÑO Y EL PLUSH DE LA SERIE ES <b>TUYO. GRATIS.</b>",
     "bur.months": "ENE,FEB,MAR,ABR,MAY,JUN,JUL,AGO,SEP,OCT,NOV,DIC",
+    "bur.cardCap": "CARTA 001 · EL DORSO SOLO EXISTE EN LA CAJA",
+    "bur.cardAlt": "Carta 001 — El Binky",
     "bur.per": "/MES",
     "bur.t1name": "CURIOSO",
     "bur.t1f1": "8 LATAS (2 PACKS ×4)",
@@ -265,6 +267,8 @@ const I18N = {
     "bur.this": "THIS MONTH",
     "bur.prize": "COLLECT ALL 12 CARDS OF THE YEAR AND THE SERIES PLUSH IS <b>YOURS. FREE.</b>",
     "bur.months": "JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC",
+    "bur.cardCap": "CARD 001 · THE BACK ONLY EXISTS IN THE BOX",
+    "bur.cardAlt": "Card 001 — The Binky",
     "bur.per": "/MONTH",
     "bur.t1name": "CURIOUS",
     "bur.t1f1": "8 CANS (2 PACKS ×4)",
@@ -1288,6 +1292,10 @@ const Madriguera = (() => {
     note.textContent = ok
       ? t("bur.noteIn", { email: Auth.user()?.primaryEmailAddress?.emailAddress || "" })
       : t("bur.note");
+
+    const carta = $("#burCarta");
+    carta.src = `/assets/carta-001-${LANG}.webp`;
+    carta.alt = t("bur.cardAlt");
 
     /* El año arranca el mes en curso: la carta Nº001 es la de este mes */
     const meses = t("bur.months").split(",");

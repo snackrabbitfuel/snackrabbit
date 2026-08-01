@@ -20,6 +20,15 @@ const CARTAS = Array.from({ length: 12 }, (_, i) => i);
 
   <!-- ---- Las 12 cartas del año ---- -->
   <div class="bur-year rv" data-delay="120">
+    <!-- La cara de la carta del mes es pública; el dorso, donde está la
+         curiosidad, solo va dentro de la caja. El idioma cambia la imagen. -->
+    <figure class="by-destacada">
+      <img id="burCarta" src="/assets/carta-001-en.webp" width="620" height="864"
+           alt="Card 001 — The Binky" loading="lazy" decoding="async">
+      <figcaption data-i18n="bur.cardCap">CARD 001 · THE BACK ONLY EXISTS IN THE BOX</figcaption>
+    </figure>
+
+    <div class="by-col">
     <div class="by-head">
       <span class="by-head-t" data-i18n="bur.yearHead">YEAR ONE · 12 CARDS</span>
       <span class="by-head-n" data-i18n="bur.yearNote">EACH CARD IS PRINTED ONCE. NEVER REPRINTED.</span>
@@ -39,7 +48,8 @@ const CARTAS = Array.from({ length: 12 }, (_, i) => i);
       ))}
     </ol>
 
-    <p class="by-prize" data-i18n-html="bur.prize">Collect all 12 cards of the year and the club plush is <b>yours. Free.</b></p>
+      <p class="by-prize" data-i18n-html="bur.prize">Collect all 12 cards of the year and the club plush is <b>yours. Free.</b></p>
+    </div>
   </div>
 
   <!-- ---- Los dos niveles ---- -->
