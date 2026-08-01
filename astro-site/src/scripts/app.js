@@ -70,10 +70,12 @@ const I18N = {
     "fuel.chipSugar": "SIN AZÚCAR",
     "fuel.cta": "PROBAR PACK ×4 — $16",
     "pn.title": "MI MADRIGUERA",
-    "pn.cards": "TUS CARTAS",
+    "pn.cards": "TU AÑO",
     "pn.cardsEmpty": "TUS CARTAS APARECEN AQUÍ SEGÚN SE ENVÍAN, UNA AL MES. AÑO UNO EMPIEZA EN ENERO.",
     "pn.cardsSome": "CADA CARTA SE IMPRIME UNA VEZ. COMPLETA LAS DOCE Y EL PLUSH DEL CLUB ES TUYO.",
     "pn.rank": "TU RANGO",
+    "pn.descent": "EL DESCENSO",
+    "pn.cans": "LATAS",
     "pn.rankNone": "AÚN NO HAS REGISTRADO LATAS. CADA LATA LLEVARÁ UN CÓDIGO BAJO LA ANILLA.",
     "pn.rankNext": "{n} LATAS MÁS PARA {rank}",
     "pn.rankTop": "LLEGASTE AL FONDO DE LA MADRIGUERA.",
@@ -281,10 +283,12 @@ const I18N = {
     "fuel.chipSugar": "ZERO SUGAR",
     "fuel.cta": "TRY THE 4-PACK — $16",
     "pn.title": "MY BURROW",
-    "pn.cards": "YOUR CARDS",
+    "pn.cards": "YOUR YEAR",
     "pn.cardsEmpty": "YOUR CARDS SHOW UP HERE AS THEY SHIP, ONE A MONTH. YEAR ONE STARTS IN JANUARY.",
     "pn.cardsSome": "EACH CARD IS PRINTED ONCE. COMPLETE THE TWELVE AND THE CLUB PLUSH IS YOURS.",
     "pn.rank": "YOUR RANK",
+    "pn.descent": "THE DESCENT",
+    "pn.cans": "CANS",
     "pn.rankNone": "NO CANS REGISTERED YET. EVERY CAN WILL CARRY A CODE UNDER THE TAB.",
     "pn.rankNext": "{n} MORE CANS TO {rank}",
     "pn.rankTop": "YOU REACHED THE BOTTOM OF THE BURROW.",
@@ -1490,38 +1494,61 @@ const Madriguera = (() => {
    desbloquea; nunca con datos de mentira. */
 const Panel = (() => {
   const el = $("#panelModal");
-  const RANGOS = [
-    { k: "rank.1", latas: 1 }, { k: "rank.2", latas: 10 }, { k: "rank.3", latas: 30 },
-    { k: "rank.4", latas: 75 }, { k: "rank.5", latas: 150 }, { k: "rank.6", latas: 300 }
-  ];
+  const UMBRALES = [1, 10, 30, 75, 150, 300];
 
-  function pintar() {
+  /* Cuenta arriba desde cero. El progreso es el motor del club entero, así que
+     merece verse crecer en vez de aparecer ya hecho. */
+  function contar(nodo, hasta) {
+    if (reducedMotion || !hasta) { nodo.textContent = hasta; return; }
+    const t0 = performance.now(), dur = 900;
+    (function paso(now) {
+      const p = Math.min(1, (now - t0) / dur);
+      nodo.textContent = Math.round(hasta * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(paso);
+    })(t0);
+  }
+
+  function pintar(animar) {
     const u = Auth.user();
     if (!u) return;
     const m = u.unsafeMetadata || {};
     $("#pnUser").textContent = u.primaryEmailAddress?.emailAddress || "";
 
-    /* ---- cartas del año ---- */
+    /* ---- el año ---- */
     const mias = Array.isArray(m.cartas) ? m.cartas : [];
-    $("#pnCartasN").textContent = `${mias.length} / 12`;
-    $$(".pn-carta", el).forEach((c, i) => c.classList.toggle("tiene", mias.includes(i + 1)));
+    $$(".pn-carta", el).forEach(c => {
+      const n = +c.dataset.carta, tengo = mias.includes(n);
+      c.classList.toggle("tiene", tengo);
+      c.querySelector("img")?.remove();
+      if (!tengo) return;
+      /* La cara de la carta solo existe cuando esa carta ya se ha enviado; si
+         todavía no está publicada, se queda la placa con el número. */
+      const img = new Image();
+      img.src = `/assets/carta-${String(n).padStart(3, "0")}-${LANG}.webp`;
+      img.alt = "";
+      img.onerror = () => { img.remove(); c.classList.remove("tiene"); };
+      c.appendChild(img);
+    });
+    animar ? contar($("#pnCartasN"), mias.length) : ($("#pnCartasN").textContent = mias.length);
     $("#pnCartasNota").textContent = t(mias.length ? "pn.cardsSome" : "pn.cardsEmpty");
 
-    /* ---- rango ---- */
+    /* ---- el descenso ---- */
     const latas = m.rango?.latas || 0;
-    const logrados = RANGOS.filter(r => latas >= r.latas).length;
-    $("#pnRangos").innerHTML = RANGOS.map((r, i) => {
-      const clase = i === logrados - 1 ? "actual" : i < logrados ? "hecho" : "";
-      return `<li class="${clase}"><b>${t(r.k)}</b><i>${r.latas}</i></li>`;
-    }).join("");
-    $("#pnRangoN").textContent = logrados ? t(RANGOS[logrados - 1].k) : "—";
+    const logrados = UMBRALES.filter(x => latas >= x).length;
+    $$(".pn-peldano", el).forEach((li, i) => {
+      li.classList.toggle("hecho", i < logrados);
+      li.classList.toggle("actual", i === logrados - 1);
+    });
+    animar ? contar($("#pnLatasN"), latas) : ($("#pnLatasN").textContent = latas);
+    $("#pnRangoN").textContent = logrados ? t(`rank.${logrados}`) : "—";
 
-    const siguiente = RANGOS[logrados];
-    const desde = logrados ? RANGOS[logrados - 1].latas : 0;
-    $("#pnRangoFill").style.width = siguiente
-      ? Math.min(100, (latas - desde) / (siguiente.latas - desde) * 100) + "%" : "100%";
+    const sig = UMBRALES[logrados], desde = logrados ? UMBRALES[logrados - 1] : 0;
+    const pct = sig ? Math.min(100, (latas - desde) / (sig - desde) * 100) : 100;
+    const barra = $("#pnRangoFill");
+    if (animar) { barra.style.width = "0"; requestAnimationFrame(() => { barra.style.width = pct + "%"; }); }
+    else barra.style.width = pct + "%";
     $("#pnRangoNota").textContent = !latas ? t("pn.rankNone")
-      : siguiente ? t("pn.rankNext", { n: siguiente.latas - latas, rank: t(siguiente.k) })
+      : sig ? t("pn.rankNext", { n: sig - latas, rank: t(`rank.${logrados + 1}`) })
       : t("pn.rankTop");
 
     /* ---- pedidos ---- */
@@ -1529,10 +1556,10 @@ const Panel = (() => {
     $("#pnPedidosN").textContent = pedidos.length || "";
     $("#pnPedidos").innerHTML = pedidos.length
       ? pedidos.map(o => `<div class="pn-pedido"><span>${o.id} · ${o.fecha}</span>` +
-                         `<span>${o.estado || ""} ${money(o.total || 0)}</span></div>`).join("")
+          `<span><i class="pn-estado ${o.estado || ""}">${o.estadoTxt || ""}</i> ${money(o.total || 0)}</span></div>`).join("")
       : `<p class="pn-nota">${t("pn.ordersEmpty")}</p>`;
 
-    /* ---- membresía y envío ---- */
+    /* ---- lo administrativo ---- */
     $("#pnMembresia").innerHTML = m.madriguera?.lista
       ? t("pn.memberYes", { plan: t(m.madriguera.plan === "cavador" ? "bur.t2name" : "bur.t1name") })
       : t("pn.memberNone");
@@ -1542,14 +1569,14 @@ const Panel = (() => {
       : t("pn.shipNone");
   }
 
-  function abrir() { pintar(); UI.open(el); }
+  function abrir() { pintar(true); UI.open(el); }
 
   $("#pnSalir").addEventListener("click", async () => {
     UI.close();
     await Auth.salir();
   });
 
-  return { abrir, refresh: () => { if (!el.hidden) pintar(); } };
+  return { abrir, refresh: () => { if (!el.hidden) pintar(false); } };
 })();
 
 /* ============================================================

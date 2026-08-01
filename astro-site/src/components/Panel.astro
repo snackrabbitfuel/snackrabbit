@@ -1,56 +1,76 @@
 ---
-/* MY BURROW — el panel del cliente. Se abre desde el navbar cuando hay sesión.
-   Lo rellena el módulo Panel de app.js con lo que hay en el perfil de Clerk.
-   Lo que todavía no existe (pedidos, cartas, rango) se muestra con su estado
-   vacío y diciendo qué lo desbloquea, nunca con datos inventados. */
+/* MY BURROW — el panel del cliente.
+   No es una pantalla de ajustes: es un sitio al que se baja. El orden va de
+   identidad (quién eres y qué rango tienes) a colección, descenso y, al final,
+   lo administrativo. Lo rellena el módulo Panel de app.js desde el perfil de
+   Clerk; lo que aún no existe se enseña vacío, nunca inventado. */
 const CARTAS = Array.from({ length: 12 }, (_, i) => i);
 const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const RANGOS = [1, 10, 30, 75, 150, 300];
+const ROMANOS = ["I", "II", "III", "IV", "V", "VI"];
 ---
 
 <!-- ============ PANEL DE CLIENTE ============ -->
 <div class="modal panel-modal" id="panelModal" role="dialog" aria-modal="true" aria-labelledby="pnTitle" hidden>
   <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
+  <div class="pn-mesh" aria-hidden="true"></div>
 
-  <header class="pn-head">
-    <svg class="pn-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
-    <div>
-      <h2 id="pnTitle" class="pn-title" data-i18n="pn.title">MY BURROW</h2>
-      <p class="pn-user" id="pnUser"></p>
+  <!-- ---- Identidad: el rango es lo primero y lo más grande ---- -->
+  <header class="pn-head" style="--i:0">
+    <div class="pn-quien">
+      <svg class="pn-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+      <div>
+        <p class="pn-kicker" data-i18n="pn.title">MY BURROW</p>
+        <p class="pn-user" id="pnUser"></p>
+      </div>
+    </div>
+
+    <div class="pn-rango-hero">
+      <p class="pn-rango-lab" data-i18n="pn.rank">YOUR RANK</p>
+      <p class="pn-rango-n" id="pnRangoN">—</p>
+      <div class="pn-barra"><span id="pnRangoFill"></span></div>
+      <p class="pn-rango-nota" id="pnRangoNota"></p>
     </div>
   </header>
 
   <div class="pn-body">
-    <!-- ---- Colección de cartas ---- -->
-    <section class="pn-bloque">
-      <div class="pn-h3"><span data-i18n="pn.cards">YOUR CARDS</span><b id="pnCartasN">0 / 12</b></div>
+    <!-- ---- El año ---- -->
+    <section class="pn-bloque" style="--i:1">
+      <div class="pn-h3"><span data-i18n="pn.cards">YOUR YEAR</span><b><i id="pnCartasN">0</i> / 12</b></div>
       <ol class="pn-cartas">
         {CARTAS.map((i) => (
-          <li class="pn-carta">
-            <span>{String(i + 1).padStart(3, "0")}</span>
-            <em data-mes={i}>{MESES[i]}</em>
+          <li class="pn-carta" data-carta={i + 1} style={`--i:${i}`}>
+            <span class="pn-c-n">{String(i + 1).padStart(3, "0")}</span>
+            <span class="pn-c-mes" data-mes={i}>{MESES[i]}</span>
           </li>
         ))}
       </ol>
-      <p class="pn-nota" id="pnCartasNota" data-i18n="pn.cardsEmpty">Your cards will appear here as they ship, one a month.</p>
+      <p class="pn-nota" id="pnCartasNota" data-i18n="pn.cardsEmpty">Your cards show up here as they ship, one a month.</p>
     </section>
 
-    <!-- ---- Rango ---- -->
-    <section class="pn-bloque">
-      <div class="pn-h3"><span data-i18n="pn.rank">YOUR RANK</span><b id="pnRangoN"></b></div>
-      <ol class="pn-rangos" id="pnRangos"></ol>
-      <div class="pn-barra"><span id="pnRangoFill"></span></div>
-      <p class="pn-nota" id="pnRangoNota"></p>
+    <!-- ---- El descenso ---- -->
+    <section class="pn-bloque" style="--i:2">
+      <div class="pn-h3"><span data-i18n="pn.descent">THE DESCENT</span><b><i id="pnLatasN">0</i> <span data-i18n="pn.cans">CANS</span></b></div>
+      <ol class="pn-escalera">
+        {RANGOS.map((latas, i) => (
+          <li class="pn-peldano" data-rango={i} style={`--i:${i}`}>
+            <span class="pn-rom">{ROMANOS[i]}</span>
+            <span class="pn-r-nombre" data-i18n={`rank.${i + 1}`}></span>
+            <span class="pn-r-latas">{latas}</span>
+          </li>
+        ))}
+      </ol>
     </section>
 
     <!-- ---- Pedidos ---- -->
-    <section class="pn-bloque">
+    <section class="pn-bloque" style="--i:3">
       <div class="pn-h3"><span data-i18n="pn.orders">ORDERS</span><b id="pnPedidosN"></b></div>
       <div id="pnPedidos"></div>
     </section>
 
-    <!-- ---- Membresía y envío ---- -->
-    <div class="pn-dos">
+    <!-- ---- Lo administrativo, al fondo ---- -->
+    <div class="pn-dos" style="--i:4">
       <section class="pn-bloque">
         <div class="pn-h3"><span data-i18n="pn.member">MEMBERSHIP</span></div>
         <p class="pn-dato" id="pnMembresia"></p>
@@ -63,6 +83,7 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
   </div>
 
   <footer class="pn-pie">
+    <span class="pn-pie-marca">SNACKRABBIT · LA MADRIGUERA</span>
     <button class="pn-salir" id="pnSalir" type="button" data-i18n="pn.out">LOG OUT</button>
   </footer>
 </div>
