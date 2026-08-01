@@ -23,6 +23,7 @@ const I18N = {
     "aria.close": "Cerrar",
     "nav.drop": "EL DROP",
     "nav.manifesto": "MANIFIESTO",
+    "nav.burrow": "LA MADRIGUERA",
     "nav.login": "LOGIN",
     "nav.hello": "HOLA, {name}",
     "hero.kicker": "@SNACKRABBIT.TV PRESENTA",
@@ -43,8 +44,8 @@ const I18N = {
     "drop.title": "COSAS QUE<br><em>NO NECESITAS.</em>",
     "drop.sub": "Pero vas a querer igual: si no lo usaríamos nosotros, no estaría aquí.",
     "card.add": "AÑADIR +",
-    "card.left": "QUEDAN {n}",
-    "card.low": "¡ÚLTIMAS UNIDADES!",
+    "card.ship": "ENVÍO EN 48H",
+    "card.always": "SIEMPRE DISPONIBLE",
     "card.view": "Ver {name}",
     "card.addAria": "Añadir {name} al carrito",
     "fuel.kicker": "Nº 01 — EL PRODUCTO HÉROE",
@@ -68,6 +69,40 @@ const I18N = {
     "fuel.chipTaurine": "SIN TAURINA",
     "fuel.chipSugar": "SIN AZÚCAR",
     "fuel.cta": "PROBAR PACK ×4 — $16",
+    "bur.kicker": "MEMBRESÍA · LA MADRIGUERA",
+    "bur.title": "LA CURIOSIDAD<br><em>QUE NO SUBIMOS.</em>",
+    "bur.sub": "Cada mes: tus latas y una curiosidad que nunca sale en el canal. Impresa, numerada y solo para socios.",
+    "bur.yearHead": "AÑO UNO · 12 CARTAS",
+    "bur.yearNote": "CADA CARTA SE IMPRIME UNA VEZ. NO SE REIMPRIME.",
+    "bur.this": "ESTE MES",
+    "bur.prize": "COMPLETA LAS 12 CARTAS DEL AÑO Y EL PLUSH DE LA SERIE ES <b>TUYO. GRATIS.</b>",
+    "bur.months": "ENE,FEB,MAR,ABR,MAY,JUN,JUL,AGO,SEP,OCT,NOV,DIC",
+    "bur.per": "/MES",
+    "bur.t1name": "CURIOSO",
+    "bur.t1f1": "8 LATAS (2 PACKS ×4)",
+    "bur.t1f2": "CARTA DEL MES NUMERADA",
+    "bur.t1f3": "STICKER EXCLUSIVO",
+    "bur.t1f4": "ENVÍO INCLUIDO",
+    "bur.pick1": "ELEGIR CURIOSO",
+    "bur.best": "MEJOR VALOR",
+    "bur.t2name": "CAVADOR",
+    "bur.t2f1": "16 LATAS (4 PACKS ×4)",
+    "bur.t2f2": "CARTA FOIL — TIRADA MÁS CORTA",
+    "bur.t2f3": "STICKER EXCLUSIVO",
+    "bur.t2f4": "DROPS NUEVOS 48H ANTES",
+    "bur.t2f5": "10% EN TODA LA TIENDA",
+    "bur.pick2": "ELEGIR CAVADOR",
+    "bur.annual": "PLAN ANUAL: PAGAS 11 MESES, RECIBES 12 — Y EL PIN «AÑO UNO».",
+    "bur.foundTitle": "LOS PRIMEROS 100",
+    "bur.foundText": "Los 100 primeros socios reciben la carta 000 —que no se vuelve a emitir— y su nombre en el Muro de la Madriguera.",
+    "bur.cta": "ENTRAR EN LA LISTA ▸",
+    "bur.ctaIn": "ESTÁS EN LA LISTA ✓",
+    "bur.note": "TODAVÍA NO COBRAMOS NADA. TE ESCRIBIMOS A TI PRIMERO CUANDO ABRAMOS.",
+    "bur.noteIn": "GUARDADO EN TU CUENTA. TE AVISAMOS EN {email} ANTES DE ABRIR.",
+    "bur.sel": "PLAN ELEGIDO: {tier}",
+    "bur.needAcc": "CREA TU CUENTA PARA GUARDAR TU PLAZA",
+    "bur.joined": "★ ESTÁS EN LA LISTA DE LA MADRIGUERA",
+    "bur.errSave": "NO PUDIMOS GUARDAR TU PLAZA. INTÉNTALO OTRA VEZ.",
     "mani.kicker": "MANIFIESTO",
     "mani.title": "CURIOSIDAD,<br>PERO <em class=\"hl\">EN FÍSICO.</em>",
     "mani.text": "SnackRabbit nació contando curiosidades de 60 segundos. <strong>DROP 001</strong> es exactamente lo mismo, pero en objetos: una lata que no te miente, una toalla que ha visto más scroll que sudor y un conejo de peluche que te mira mientras trabajas.",
@@ -87,11 +122,11 @@ const I18N = {
     "faq.a5": "Sí. Está basado en el logo pixel de Rabbit Fuel, con bordados de alta calidad y etiqueta oficial. Disponible en blanco y en negro.",
     "faq.q6": "¿HABRÁ DROP 002?",
     "faq.a6": "Sí, pero no diremos cuándo. Únete a La Madriguera y te enterarás antes que nadie.",
-    "news.title": "ÚNETE A<br>LA MADRIGUERA",
+    "news.title": "ÚNETE A<br>LA LISTA",
     "news.sub": "Un email al mes: drops, curiosidades y cero spam.",
     "news.ph": "TU@EMAIL.COM",
     "news.btn": "SUSCRIBIRME ▸",
-    "news.ok": "★ BIENVENIDO A LA MADRIGUERA. REVISA TU BANDEJA.",
+    "news.ok": "★ ESTÁS DENTRO. REVISA TU BANDEJA.",
     "news.err": "✕ ESE EMAIL NO PARECE UN EMAIL.",
     "foot.tag": "Curiosidades virales desde 2023.<br>Ahora también en objetos.",
     "foot.shop": "TIENDA",
@@ -176,6 +211,7 @@ const I18N = {
     "aria.close": "Close",
     "nav.drop": "THE DROP",
     "nav.manifesto": "MANIFESTO",
+    "nav.burrow": "THE BURROW",
     "nav.login": "LOGIN",
     "nav.hello": "HI, {name}",
     "hero.kicker": "@SNACKRABBIT.TV PRESENTS",
@@ -196,8 +232,8 @@ const I18N = {
     "drop.title": "STUFF YOU<br><em>DON'T NEED.</em>",
     "drop.sub": "You'll want it anyway: if we wouldn't use it ourselves, it wouldn't be here.",
     "card.add": "ADD +",
-    "card.left": "{n} LEFT",
-    "card.low": "LOW STOCK!",
+    "card.ship": "SHIPS IN 48H",
+    "card.always": "ALWAYS IN STOCK",
     "card.view": "View {name}",
     "card.addAria": "Add {name} to cart",
     "fuel.kicker": "No. 01 — THE HERO PRODUCT",
@@ -221,6 +257,40 @@ const I18N = {
     "fuel.chipTaurine": "ZERO TAURINE",
     "fuel.chipSugar": "ZERO SUGAR",
     "fuel.cta": "TRY THE 4-PACK — $16",
+    "bur.kicker": "MEMBERSHIP · THE BURROW",
+    "bur.title": "THE CURIOSITY<br><em>WE DON'T POST.</em>",
+    "bur.sub": "Every month: your cans and one curiosity that never makes it to the channel. Printed, numbered, members only.",
+    "bur.yearHead": "YEAR ONE · 12 CARDS",
+    "bur.yearNote": "EACH CARD IS PRINTED ONCE. NEVER REPRINTED.",
+    "bur.this": "THIS MONTH",
+    "bur.prize": "COLLECT ALL 12 CARDS OF THE YEAR AND THE SERIES PLUSH IS <b>YOURS. FREE.</b>",
+    "bur.months": "JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC",
+    "bur.per": "/MONTH",
+    "bur.t1name": "CURIOUS",
+    "bur.t1f1": "8 CANS (2 PACKS ×4)",
+    "bur.t1f2": "NUMBERED CARD OF THE MONTH",
+    "bur.t1f3": "EXCLUSIVE STICKER",
+    "bur.t1f4": "SHIPPING INCLUDED",
+    "bur.pick1": "CHOOSE CURIOUS",
+    "bur.best": "BEST VALUE",
+    "bur.t2name": "DIGGER",
+    "bur.t2f1": "16 CANS (4 PACKS ×4)",
+    "bur.t2f2": "FOIL CARD — SHORTER PRINT RUN",
+    "bur.t2f3": "EXCLUSIVE STICKER",
+    "bur.t2f4": "NEW DROPS 48H EARLY",
+    "bur.t2f5": "10% OFF THE WHOLE STORE",
+    "bur.pick2": "CHOOSE DIGGER",
+    "bur.annual": "ANNUAL PLAN: PAY 11 MONTHS, GET 12 — PLUS THE \"YEAR ONE\" PIN.",
+    "bur.foundTitle": "THE FIRST 100",
+    "bur.foundText": "The first 100 members get card 000 — never issued again — and their name on the Burrow Wall.",
+    "bur.cta": "JOIN THE LIST ▸",
+    "bur.ctaIn": "YOU'RE ON THE LIST ✓",
+    "bur.note": "WE'RE NOT CHARGING YET. YOU GET WRITTEN TO FIRST WHEN THE DOORS OPEN.",
+    "bur.noteIn": "SAVED TO YOUR ACCOUNT. WE'LL WRITE TO {email} BEFORE WE OPEN.",
+    "bur.sel": "PLAN PICKED: {tier}",
+    "bur.needAcc": "CREATE YOUR ACCOUNT TO HOLD YOUR SPOT",
+    "bur.joined": "★ YOU'RE ON THE BURROW LIST",
+    "bur.errSave": "WE COULDN'T SAVE YOUR SPOT. TRY AGAIN.",
     "mani.kicker": "MANIFESTO",
     "mani.title": "CURIOSITY,<br>BUT <em class=\"hl\">PHYSICAL.</em>",
     "mani.text": "SnackRabbit was born telling 60-second curiosities. <strong>DROP 001</strong> is exactly the same, but in objects: a can that doesn't lie to you, a towel that has seen more scrolling than sweat, and a plush bunny that watches you work.",
@@ -240,11 +310,11 @@ const I18N = {
     "faq.a5": "Yes. It's based on the official Rabbit Fuel pixel logo, with high-quality embroidery and the official tag. Available in white and black.",
     "faq.q6": "WILL THERE BE A DROP 002?",
     "faq.a6": "Yes, but we won't say when. Join The Burrow and you'll know before anyone else.",
-    "news.title": "JOIN<br>THE BURROW",
+    "news.title": "JOIN<br>THE LIST",
     "news.sub": "One email a month: drops, curiosities, zero spam.",
     "news.ph": "YOU@EMAIL.COM",
     "news.btn": "SUBSCRIBE ▸",
-    "news.ok": "★ WELCOME TO THE BURROW. CHECK YOUR INBOX.",
+    "news.ok": "★ YOU'RE IN. CHECK YOUR INBOX.",
     "news.err": "✕ THAT EMAIL DOESN'T LOOK LIKE AN EMAIL.",
     "foot.tag": "Viral curiosities since 2023.<br>Now also in objects.",
     "foot.shop": "SHOP",
@@ -372,8 +442,7 @@ const PRODUCTS = [
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
     img: "/assets/can-cutout.png",
-    imgScale: 1,
-    stock: 87, stockMax: 200
+    imgScale: 1
   },
   {
     id: "plush",
@@ -395,8 +464,7 @@ const PRODUCTS = [
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
     img: "/assets/plush-cutout.png",
-    imgScale: .74,   // es casi cuadrado: sin esto domina la tarjeta
-    stock: 28, stockMax: 60
+    imgScale: .74   // es casi cuadrado: sin esto domina la tarjeta
   },
   {
     id: "gym-towel",
@@ -417,8 +485,7 @@ const PRODUCTS = [
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
     img: "/assets/towel-cutout.png",
-    imgScale: .96,
-    stock: 41, stockMax: 100
+    imgScale: .96
   }
 ];
 
@@ -715,19 +782,16 @@ function renderGrid(instant) {
     card.tabIndex = 0;
     card.setAttribute("role", "button");
     card.setAttribute("aria-label", t("card.view", { name: p.name }));
-    const low = p.stock <= 15;
     const esc = ` style="--img-scale:${p.imgScale || 1}"`;
     card.innerHTML = `
       <p class="pcard-num">${p.num}</p>
-      ${low ? `<span class="pcard-stock-flag">${t("card.low")}</span>` : ""}
       <div class="pcard-media"><img src="${p.img}" alt="${p.name}" loading="lazy"${esc}></div>
       <div class="pcard-body">
         <h3 class="pcard-name">${p.name}</h3>
         <p class="pcard-desc">${p.desc[LANG]}</p>
         <p class="pcard-specs">${p.specs[LANG]}</p>
-        <div class="pcard-stock">
-          <div class="pcard-stock-bar"><span data-fill="${Math.round(p.stock / p.stockMax * 100)}"></span></div>
-          <span class="pcard-stock-label">${t("card.left", { n: p.stock })}</span>
+        <div class="pcard-tags">
+          <span class="ptag">${t("card.ship")}</span><span class="ptag">${t("card.always")}</span>
         </div>
         <div class="pcard-foot">
           <div class="pcard-swatches">
@@ -751,8 +815,6 @@ function renderGrid(instant) {
 
     if (instant) {
       card.classList.add("in");
-      const bar = card.querySelector("[data-fill]");
-      if (bar) bar.style.width = bar.dataset.fill + "%";
     } else {
       revealIO.observe(card);
     }
@@ -995,6 +1057,7 @@ const Auth = (() => {
   const formIn = $("#formIn"), formUp = $("#formUp"), formCode = $("#formCode");
   let clerk = null, listo = false, fallo = false;
   let pendiente = null;   // { email, nombre } mientras se verifica el correo
+  const oyentes = [];     // otros módulos que quieren enterarse de login/logout
 
   /* Clerk pesa ~1,4 MB, así que va en su propio chunk y no se descarga con la
      página: arranca cuando el navegador está ocioso (o al instante si el
@@ -1008,8 +1071,8 @@ const Auth = (() => {
         clerk = new Clerk(PK);
         await clerk.load();
         listo = true;
-        clerk.addListener(paintNav);   // sesión restaurada, login o logout
-        paintNav();
+        clerk.addListener(cambio);     // sesión restaurada, login o logout
+        cambio();
       } catch (e) {
         fallo = true;
         console.error("[auth] Clerk no pudo cargarse:", e);
@@ -1063,10 +1126,16 @@ const Auth = (() => {
     else { label.textContent = t("nav.login"); btn.classList.remove("logged"); }
   }
 
+  function cambio() {
+    paintNav();
+    oyentes.forEach(f => { try { f(); } catch (e) { console.error("[auth] oyente:", e); } });
+  }
+  const alCambiar = fn => { oyentes.push(fn); };
+
   /* Sesión iniciada: cerrar, saludar y celebrar (igual que antes) */
   async function entrar(sessionId, saludo, nombre) {
     await clerk.setActive({ session: sessionId });
-    paintNav(); UI.close();
+    cambio(); UI.close();
     toast(t(saludo, { name: (nombre || "").toUpperCase() }));
   }
 
@@ -1162,20 +1231,130 @@ const Auth = (() => {
     if (!u) { paso("in"); UI.open(modal); return; }
     if (confirm(t("auth.logoutConfirm", { name: nombreDe(u) }))) {
       await clerk.signOut();
-      paintNav();
+      cambio();
       toast(t("auth.out"));
     }
   });
 
-  /* Guarda los datos de envío en el perfil del cliente (merge, no reemplaza) */
-  async function guardarEnvio(envio) {
+  /* Guarda un dato en el perfil del cliente conservando el resto: se manda
+     siempre el objeto completo porque Clerk reemplaza unsafeMetadata entero. */
+  async function guardarMeta(clave, valor) {
     const u = usuario();
     if (!u) return false;
-    await u.updateMetadata({ unsafeMetadata: { envio } });
+    await u.updateMetadata({ unsafeMetadata: { ...(u.unsafeMetadata || {}), [clave]: valor } });
     return true;
   }
+  const guardarEnvio = envio => guardarMeta("envio", envio);
 
-  return { paintNav, user: usuario, guardarEnvio };
+  /* Abre el modal directamente en "crear cuenta" (lo usa La Madriguera) */
+  function abrirRegistro() {
+    iniciar();
+    paso("up");
+    UI.open(modal);
+  }
+
+  return { paintNav, user: usuario, guardarEnvio, guardarMeta, alCambiar, abrirRegistro };
+})();
+
+/* ============================================================
+   LA MADRIGUERA (club de suscripción)
+   ============================================================
+   Todavía no cobra: esto es la lista de fundadores. La plaza y el plan
+   elegido se guardan en el perfil de Clerk (unsafeMetadata.madriguera), así
+   que quedan en el panel de clientes y sobreviven a cambiar de dispositivo.
+   Cuando la pasarela de pagos esté activa, este mismo botón pasa al checkout
+   de la suscripción y el campo `lista` distingue a los fundadores. */
+const Madriguera = (() => {
+  const sec  = $("#madriguera");
+  const btn  = $("#burJoin"), note = $("#burNote"), sel = $("#burSel");
+  const KEY  = "sr_burrow_tier_v1";
+  const NOMBRE = { curioso: "bur.t1name", cavador: "bur.t2name" };
+
+  let plan = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
+  if (plan !== "curioso" && plan !== "cavador") plan = "cavador";
+  let queria = false;   // pulsó sin sesión: se completa solo al crear la cuenta
+  let tocado = false;   // ha elegido plan en esta visita: manda su elección
+
+  const ficha  = () => Auth.user()?.unsafeMetadata?.madriguera || null;
+  const dentro = () => !!ficha()?.lista;
+
+  function pintar() {
+    $$(".tier", sec).forEach(c => c.classList.toggle("sel", c.dataset.tier === plan));
+    sel.textContent = t("bur.sel", { tier: t(NOMBRE[plan]) });
+
+    const ok = dentro();
+    btn.textContent = t(ok ? "bur.ctaIn" : "bur.cta");
+    btn.classList.toggle("joined", ok);
+    note.textContent = ok
+      ? t("bur.noteIn", { email: Auth.user()?.primaryEmailAddress?.emailAddress || "" })
+      : t("bur.note");
+
+    /* El año arranca el mes en curso: la carta Nº001 es la de este mes */
+    const meses = t("bur.months").split(",");
+    const mes0 = new Date().getMonth();
+    $$("[data-mes]", sec).forEach(el => {
+      const i = +el.dataset.mes;
+      el.textContent = i === 0 ? t("bur.this") : meses[(mes0 + i) % 12];
+    });
+  }
+
+  async function guardar(callado) {
+    btn.disabled = true;
+    try {
+      await Auth.guardarMeta("madriguera", {
+        lista: true,
+        plan,
+        desde: ficha()?.desde || new Date().toISOString().slice(0, 10)
+      });
+      pintar();
+      if (!callado) {
+        const r = btn.getBoundingClientRect();
+        confetti.burst(r.left + r.width / 2, r.top + r.height / 2, 34);
+        toast(t("bur.joined"));
+      }
+    } catch (e) {
+      console.error("[madriguera] no se pudo guardar:", e);
+      toast(t("bur.errSave"));
+    } finally { btn.disabled = false; }
+  }
+
+  function elegir(p) {
+    if (p !== "curioso" && p !== "cavador") return;
+    plan = p; tocado = true;
+    try { localStorage.setItem(KEY, p); } catch {}
+    pintar();
+    if (dentro()) guardar(true);      // ya es fundador: solo cambia de plan
+  }
+
+  sec.addEventListener("click", e => {
+    const card = e.target.closest(".tier");
+    if (card) elegir(card.dataset.tier);
+  });
+  $$(".tier", sec).forEach(c => c.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(c.dataset.tier); }
+  }));
+
+  btn.addEventListener("click", () => {
+    if (!Auth.user()) {          // sin cuenta no hay dónde guardar la plaza
+      queria = true;
+      toast(t("bur.needAcc"));
+      Auth.abrirRegistro();
+      return;
+    }
+    if (dentro()) return void toast(t("bur.joined"));
+    guardar(false);
+  });
+
+  Auth.alCambiar(() => {
+    /* El plan vive en la cuenta: al entrar desde otro dispositivo manda ese,
+       salvo que en esta visita ya haya elegido uno distinto. */
+    const guardado = ficha()?.plan;
+    if (!tocado && guardado) plan = guardado;
+    if (queria && Auth.user()) { queria = false; guardar(false); }
+    pintar();
+  });
+
+  return { refresh: pintar };
 })();
 
 /* ============================================================
@@ -1316,6 +1495,7 @@ function applyLang() {
   renderGrid(langBooted);      // primera vez con reveal animado; después instantáneo
   Cart.render();
   Auth.paintNav();
+  Madriguera.refresh();
   ProductModal.refreshLang();
   langBooted = true;
 }

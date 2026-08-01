@@ -1,0 +1,91 @@
+---
+/* LA MADRIGUERA — club de suscripción mensual.
+   Todavía NO cobra: el botón apunta a una lista de fundadores que se guarda en
+   el perfil de Clerk (unsafeMetadata.madriguera). Cuando la pasarela de pagos
+   esté activa, ese mismo botón pasa al checkout de la suscripción.
+   Las etiquetas de mes y el estado del botón los pinta el módulo Madriguera
+   de app.js (dependen del idioma y de la sesión). */
+const CARTAS = Array.from({ length: 12 }, (_, i) => i);
+---
+
+<!-- ============ LA MADRIGUERA (CLUB) ============ -->
+<section class="burrow" id="madriguera">
+  <div class="burrow-mesh" aria-hidden="true"></div>
+
+  <header class="sec-head">
+    <p class="sec-kicker rv" data-i18n="bur.kicker">MEMBERSHIP · THE BURROW</p>
+    <h2 class="sec-title rv" data-delay="80" data-i18n-html="bur.title">THE CURIOSITY<br><em>WE DON'T POST.</em></h2>
+    <p class="sec-sub rv" data-delay="160" data-i18n="bur.sub">Every month: your cans and one curiosity that never makes it to the channel — printed, numbered, members only.</p>
+  </header>
+
+  <!-- ---- Las 12 cartas del año ---- -->
+  <div class="bur-year rv" data-delay="120">
+    <div class="by-head">
+      <span class="by-head-t" data-i18n="bur.yearHead">YEAR ONE · 12 CARDS</span>
+      <span class="by-head-n" data-i18n="bur.yearNote">EACH CARD IS PRINTED ONCE. NEVER REPRINTED.</span>
+    </div>
+
+    <ol class="by-grid">
+      {CARTAS.map((i) => (
+        <li class={i === 0 ? "by-card on" : "by-card"}>
+          <span class="by-n">{String(i + 1).padStart(3, "0")}</span>
+          <span class="by-face" aria-hidden="true">
+            {i === 0
+              ? <svg class="by-bunny"><use href="#bunny" /></svg>
+              : <span class="by-q">?</span>}
+          </span>
+          <span class="by-when" data-mes={i}></span>
+        </li>
+      ))}
+    </ol>
+
+    <p class="by-prize" data-i18n-html="bur.prize">Collect all 12 cards of the year and the club plush is <b>yours. Free.</b></p>
+  </div>
+
+  <!-- ---- Los dos niveles ---- -->
+  <div class="bur-tiers">
+    <article class="tier rv" data-tier="curioso" data-delay="60" tabindex="0" role="button">
+      <p class="tier-name" data-i18n="bur.t1name">CURIOUS</p>
+      <p class="tier-price">$29<small data-i18n="bur.per">/MONTH</small></p>
+      <ul class="tier-list">
+        <li data-i18n="bur.t1f1">8 CANS (2 PACKS ×4)</li>
+        <li data-i18n="bur.t1f2">NUMBERED CARD OF THE MONTH</li>
+        <li data-i18n="bur.t1f3">EXCLUSIVE STICKER</li>
+        <li data-i18n="bur.t1f4">SHIPPING INCLUDED</li>
+      </ul>
+      <button class="tier-pick" type="button" data-tier-pick="curioso" data-i18n="bur.pick1">CHOOSE CURIOUS</button>
+    </article>
+
+    <article class="tier tier-best rv" data-tier="cavador" data-delay="150" tabindex="0" role="button">
+      <span class="tier-flag" data-i18n="bur.best">MOST CHOSEN</span>
+      <p class="tier-name" data-i18n="bur.t2name">DIGGER</p>
+      <p class="tier-price">$49<small data-i18n="bur.per">/MONTH</small></p>
+      <ul class="tier-list">
+        <li data-i18n="bur.t2f1">16 CANS (4 PACKS ×4)</li>
+        <li data-i18n="bur.t2f2">FOIL CARD — SHORTER PRINT RUN</li>
+        <li data-i18n="bur.t2f3">EXCLUSIVE STICKER</li>
+        <li data-i18n="bur.t2f4">NEW DROPS 48H EARLY</li>
+        <li data-i18n="bur.t2f5">10% OFF THE WHOLE STORE</li>
+      </ul>
+      <button class="tier-pick" type="button" data-tier-pick="cavador" data-i18n="bur.pick2">CHOOSE DIGGER</button>
+    </article>
+  </div>
+
+  <p class="bur-annual rv" data-i18n="bur.annual">ANNUAL PLAN: PAY 11 MONTHS, GET 12 — PLUS THE "YEAR ONE" PIN.</p>
+
+  <!-- ---- Fundadores + lista ---- -->
+  <div class="bur-join rv" data-delay="120">
+    <div class="bj-founders">
+      <span class="bj-000" aria-hidden="true">000</span>
+      <div>
+        <p class="bj-title" data-i18n="bur.foundTitle">THE FIRST 100</p>
+        <p class="bj-text" data-i18n="bur.foundText">The first 100 members get card 000 — never issued again — and their name on the Burrow Wall.</p>
+      </div>
+    </div>
+    <div class="bj-action">
+      <p class="bj-sel" id="burSel"></p>
+      <button class="btn btn-pink" id="burJoin" type="button">JOIN THE LIST ▸</button>
+      <p class="bj-note" id="burNote">WE'RE NOT CHARGING YET. YOU GET WRITTEN TO FIRST WHEN THE DOORS OPEN.</p>
+    </div>
+  </div>
+</section>
