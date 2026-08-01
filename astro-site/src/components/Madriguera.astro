@@ -6,6 +6,10 @@
    Las etiquetas de mes y el estado del botón los pinta el módulo Madriguera
    de app.js (dependen del idioma y de la sesión). */
 const CARTAS = Array.from({ length: 12 }, (_, i) => i);
+/* Los meses ya salen en el HTML: así la rejilla no aparece vacía antes de que
+   arranque el JS, que solo los reescribe al cambiar de idioma. */
+const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+               "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 ---
 
 <!-- ============ LA MADRIGUERA (CLUB) ============ -->
@@ -25,12 +29,12 @@ const CARTAS = Array.from({ length: 12 }, (_, i) => i);
     <figure class="by-destacada">
       <img id="burCarta" src="/assets/carta-001-en.webp" width="620" height="864"
            alt="Card 001 — The Binky" loading="lazy" decoding="async">
-      <figcaption data-i18n="bur.cardCap">CARD 001 · THE BACK ONLY EXISTS IN THE BOX</figcaption>
+      <figcaption data-i18n="bur.cardCap">JANUARY · CARD 001 — THE BACK ONLY EXISTS IN THE BOX</figcaption>
     </figure>
 
     <div class="by-col">
     <div class="by-head">
-      <span class="by-head-t" data-i18n="bur.yearHead">YEAR ONE · 12 CARDS</span>
+      <span class="by-head-t" data-i18n="bur.yearHead">YEAR ONE · JANUARY TO DECEMBER</span>
       <span class="by-head-n" data-i18n="bur.yearNote">EACH CARD IS PRINTED ONCE. NEVER REPRINTED.</span>
     </div>
 
@@ -42,7 +46,7 @@ const CARTAS = Array.from({ length: 12 }, (_, i) => i);
             <svg class="by-bunny"><use href="#bunny" /></svg>
             <span class="by-q">?</span>
           </span>
-          <span class="by-when" data-mes={i}></span>
+          <span class="by-when" data-mes={i}>{MESES[i]}</span>
         </li>
       ))}
     </ol>
