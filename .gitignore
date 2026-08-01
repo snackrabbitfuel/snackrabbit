@@ -3,7 +3,9 @@ dist/
 .astro/
 .DS_Store
 
-# Material fuente pesado que no forma parte del sitio
-assets/
+# Material fuente pesado que no forma parte del sitio.
+# Con barra inicial: solo la carpeta assets/ de la raíz, NO astro-site/public/assets,
+# que sí forma parte del sitio y tiene que versionarse.
+/assets/
 _to_delete/
 *.zip
