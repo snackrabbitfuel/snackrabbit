@@ -45,9 +45,6 @@ body {
   color: var(--bone);
   font-family: var(--f-serif);
   font-style: italic;
-  /* `clip` recorta igual que `hidden` pero sin crear contenedor de scroll, así
-     que no reintroduce el problema del navbar en iOS. */
-  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -185,7 +182,7 @@ body::after {
 
 /* ============ NAVBAR ============ */
 .nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  position: sticky; top: 0; z-index: 900;
   height: var(--nav-h);
   display: flex; align-items: center; justify-content: space-between;
   gap: 18px;
@@ -221,18 +218,6 @@ body::after {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
-}
-/* Prolongación del fondo hacia arriba. En iOS, al colapsar la barra del
-   navegador, la barra fija puede quedar desplazada y deja ver la página por
-   encima; esta franja tapa ese hueco con el mismo negro. Fuera de iOS cae
-   fuera de pantalla y no se ve. */
-.nav.scrolled::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 100%;
-  height: 140px;
-  background: #0a0a12;
-  pointer-events: none;
 }
 .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .nav-bunny { width: 38px; height: 34px; color: var(--ink); --bunny-eye: var(--pink); transition: transform .3s var(--ease-snap); }
@@ -343,11 +328,11 @@ body::after {
 /* ============ HERO ============ */
 .hero {
   position: relative;
-  min-height: 100svh;
+  min-height: calc(100svh - var(--nav-h));
   background: var(--pink);
   color: var(--ink);
   display: flex; flex-direction: column; justify-content: center;
-  padding: calc(var(--nav-h) + 30px) clamp(18px, 5vw, 70px) 90px;
+  padding: 30px clamp(18px, 5vw, 70px) 90px;
   overflow: hidden;
 }
 .hero-halftone {
