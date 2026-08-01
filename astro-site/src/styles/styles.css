@@ -32,6 +32,12 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 16px);
+  /* El recorte horizontal vive aquí, NO en el body. Con `overflow-x: hidden` en
+     el body, iOS convierte al body en contenedor de scroll y el navbar fijo deja
+     de anclarse a la ventana: al hacer scroll se despega y se ve la página por
+     encima de él. En el elemento raíz el recorte se propaga a la ventana y el
+     `position: fixed` sigue funcionando. */
+  overflow-x: hidden;
 }
 
 body {
@@ -39,7 +45,9 @@ body {
   color: var(--bone);
   font-family: var(--f-serif);
   font-style: italic;
-  overflow-x: hidden;
+  /* `clip` recorta igual que `hidden` pero sin crear contenedor de scroll, así
+     que no reintroduce el problema del navbar en iOS. */
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
