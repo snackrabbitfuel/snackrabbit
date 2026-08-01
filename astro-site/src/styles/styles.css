@@ -1630,7 +1630,7 @@ body::after {
   font-family: var(--f-pixel); font-style: normal;
 }
 .pn-carta span { font-size: 7.5px; color: var(--gray-2); }
-.pn-carta em { font-style: normal; font-size: 6px; letter-spacing: .5px; color: #3a3a52; }
+.pn-carta em { font-style: normal; font-size: 6px; letter-spacing: .5px; color: #4d4d6b; }
 .pn-carta.tiene { border-color: var(--yellow); background: linear-gradient(180deg, rgba(255,212,0,.15), transparent); }
 .pn-carta.tiene span, .pn-carta.tiene em { color: var(--yellow); }
 
@@ -1640,7 +1640,7 @@ body::after {
   font-family: var(--f-pixel); font-style: normal;
 }
 .pn-rangos b { display: block; font-size: 7.5px; letter-spacing: .4px; color: var(--gray-2); font-weight: 400; line-height: 1.4; }
-.pn-rangos i { display: block; font-style: normal; font-size: 7px; color: #3a3a52; margin-top: 5px; }
+.pn-rangos i { display: block; font-style: normal; font-size: 7px; color: #4d4d6b; margin-top: 5px; }
 .pn-rangos li.hecho { border-color: var(--pink); }
 .pn-rangos li.hecho b { color: var(--pink); }
 .pn-rangos li.actual { border-color: var(--yellow); background: rgba(255, 212, 0, .1); }
@@ -1655,8 +1655,10 @@ body::after {
 .pn-pedido {
   display: flex; justify-content: space-between; gap: 12px;
   font-family: var(--f-pixel); font-style: normal; font-size: 9.5px; letter-spacing: 1px;
+  color: var(--gray-1);
   padding: 9px 0; border-bottom: 2px solid var(--line-dark);
 }
+.pn-pedido span:last-child { color: var(--bone); }
 .pn-pedido:last-child { border-bottom: 0; }
 .pn-pie { border-top: 5px solid var(--ink); padding: 13px clamp(14px, 1.8vw, 22px); display: flex; justify-content: flex-end; }
 .pn-salir {
