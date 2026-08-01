@@ -446,6 +446,9 @@ const PRODUCTS = [
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
     img: "/assets/can-cutout.png",
+    /* Una sola galería: la lata no tiene variantes, solo ángulos */
+    views: ["/assets/can-cutout.png", "/assets/can-top.webp", "/assets/can-back.webp",
+            "/assets/can-label.webp", "/assets/can-mood.webp"],
     imgScale: 1
   },
   {
@@ -465,10 +468,17 @@ const PRODUCTS = [
     colors: ["#f2f2f7", "#17171b"],
     colorNames: ["BLANCO", "NEGRO"],
     imgByColor: { BLANCO: "/assets/plush-cutout.png", NEGRO: "/assets/plush-black-cutout.png" },
+    viewsByColor: {
+      BLANCO: ["/assets/plush-cutout.png", "/assets/plush-white-34.webp",
+               "/assets/plush-white-side.webp", "/assets/plush-white-back.webp"],
+      NEGRO:  ["/assets/plush-black-cutout.png", "/assets/plush-black-34.webp",
+               "/assets/plush-black-side.webp", "/assets/plush-black-back.webp"]
+    },
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
     img: "/assets/plush-cutout.png",
-    imgScale: .74   // es casi cuadrado: sin esto domina la tarjeta
+    imgScale: .74,  // es casi cuadrado: sin esto domina la tarjeta
+    viewScale: 1    // las vistas de galería ya vienen encuadradas
   },
   {
     id: "gym-towel",
@@ -881,6 +891,10 @@ const ProductModal = (() => {
     $$(".pm-swatches .swatch", el).forEach(s => s.classList.toggle("sel", s.dataset.color === color));
     $$(".pm-thumb", el).forEach(b => b.classList.toggle("sel", +b.dataset.i === vista));
     const img = $("#pmImg"), src = srcNow();
+    /* imgScale está calibrado para el recorte del producto; las demás vistas de
+       la galería ya vienen con su propio aire, así que pueden llevar otro ajuste. */
+    img.style.setProperty("--img-scale",
+      (vista === 0 ? cur.imgScale : (cur.viewScale ?? cur.imgScale)) || 1);
     if (!img.src.endsWith(src)) img.src = src;
   }
 

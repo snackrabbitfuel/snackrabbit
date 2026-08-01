@@ -4,10 +4,6 @@ dist/
 .DS_Store
 
 # Material fuente pesado que no forma parte del sitio
-export/
-export 2/
-design_handoff_merch_store/
+assets/
+_to_delete/
 *.zip
-
-# Documentos internos de negocio (no publicar en el repo público)
-estrategia/
