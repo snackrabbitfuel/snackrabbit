@@ -69,6 +69,28 @@ const I18N = {
     "fuel.chipTaurine": "SIN TAURINA",
     "fuel.chipSugar": "SIN AZÚCAR",
     "fuel.cta": "PROBAR PACK ×4 — $16",
+    "pn.title": "MI MADRIGUERA",
+    "pn.cards": "TUS CARTAS",
+    "pn.cardsEmpty": "TUS CARTAS APARECEN AQUÍ SEGÚN SE ENVÍAN, UNA AL MES. AÑO UNO EMPIEZA EN ENERO.",
+    "pn.cardsSome": "CADA CARTA SE IMPRIME UNA VEZ. COMPLETA LAS DOCE Y EL PLUSH DEL CLUB ES TUYO.",
+    "pn.rank": "TU RANGO",
+    "pn.rankNone": "AÚN NO HAS REGISTRADO LATAS. CADA LATA LLEVARÁ UN CÓDIGO BAJO LA ANILLA.",
+    "pn.rankNext": "{n} LATAS MÁS PARA {rank}",
+    "pn.rankTop": "LLEGASTE AL FONDO DE LA MADRIGUERA.",
+    "pn.orders": "PEDIDOS",
+    "pn.ordersEmpty": "TODAVÍA NO HAY PEDIDOS. APARECERÁN AQUÍ, CON SEGUIMIENTO, CUANDO ABRA LA TIENDA.",
+    "pn.member": "MEMBRESÍA",
+    "pn.memberNone": "Todavía no estás en la lista de fundadores.",
+    "pn.memberYes": "Lista de fundadores · plan <b>{plan}</b>",
+    "pn.ship": "ENVÍO",
+    "pn.shipNone": "Aún no hay dirección guardada. Se guarda con tu primer pedido.",
+    "pn.out": "CERRAR SESIÓN",
+    "rank.1": "LA SEÑAL",
+    "rank.2": "EL RASTRO",
+    "rank.3": "LA CAÍDA",
+    "rank.4": "BAJO TIERRA",
+    "rank.5": "EL SILENCIO",
+    "rank.6": "EL CONEJO",
     "bur.kicker": "MEMBRESÍA · LA MADRIGUERA",
     "bur.title": "LA CURIOSIDAD<br><em>QUE NO SUBIMOS.</em>",
     "bur.sub": "Cada mes: tus latas y una curiosidad que nunca sale en el canal. Impresa, numerada y solo para socios.",
@@ -258,6 +280,28 @@ const I18N = {
     "fuel.chipTaurine": "ZERO TAURINE",
     "fuel.chipSugar": "ZERO SUGAR",
     "fuel.cta": "TRY THE 4-PACK — $16",
+    "pn.title": "MY BURROW",
+    "pn.cards": "YOUR CARDS",
+    "pn.cardsEmpty": "YOUR CARDS SHOW UP HERE AS THEY SHIP, ONE A MONTH. YEAR ONE STARTS IN JANUARY.",
+    "pn.cardsSome": "EACH CARD IS PRINTED ONCE. COMPLETE THE TWELVE AND THE CLUB PLUSH IS YOURS.",
+    "pn.rank": "YOUR RANK",
+    "pn.rankNone": "NO CANS REGISTERED YET. EVERY CAN WILL CARRY A CODE UNDER THE TAB.",
+    "pn.rankNext": "{n} MORE CANS TO {rank}",
+    "pn.rankTop": "YOU REACHED THE BOTTOM OF THE BURROW.",
+    "pn.orders": "ORDERS",
+    "pn.ordersEmpty": "NO ORDERS YET. THEY SHOW UP HERE, WITH TRACKING, ONCE THE STORE OPENS.",
+    "pn.member": "MEMBERSHIP",
+    "pn.memberNone": "You are not on the founder list yet.",
+    "pn.memberYes": "Founder list · plan <b>{plan}</b>",
+    "pn.ship": "SHIPPING",
+    "pn.shipNone": "No address saved yet. It gets saved with your first order.",
+    "pn.out": "LOG OUT",
+    "rank.1": "THE SIGNAL",
+    "rank.2": "THE TRAIL",
+    "rank.3": "THE FALL",
+    "rank.4": "UNDERGROUND",
+    "rank.5": "THE SILENCE",
+    "rank.6": "THE RABBIT",
     "bur.kicker": "MEMBERSHIP · THE BURROW",
     "bur.title": "THE CURIOSITY<br><em>WE DON'T POST.</em>",
     "bur.sub": "Every month: your cans and one curiosity that never makes it to the channel. Printed, numbered, members only.",
@@ -1299,11 +1343,7 @@ const Auth = (() => {
     iniciar();                      // por si el usuario se adelanta al idle
     const u = usuario();
     if (!u) { paso("in"); UI.open(modal); return; }
-    if (confirm(t("auth.logoutConfirm", { name: nombreDe(u) }))) {
-      await clerk.signOut();
-      cambio();
-      toast(t("auth.out"));
-    }
+    Panel.abrir();          // con sesión, el botón lleva a MY BURROW
   });
 
   /* Guarda un dato en el perfil del cliente conservando el resto: se manda
@@ -1323,7 +1363,13 @@ const Auth = (() => {
     UI.open(modal);
   }
 
-  return { paintNav, user: usuario, guardarEnvio, guardarMeta, alCambiar, abrirRegistro };
+  async function salir() {
+    await clerk.signOut();
+    cambio();
+    toast(t("auth.out"));
+  }
+
+  return { paintNav, user: usuario, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir };
 })();
 
 /* ============================================================
@@ -1434,6 +1480,76 @@ const Madriguera = (() => {
   });
 
   return { refresh: pintar };
+})();
+
+/* ============================================================
+   PANEL DE CLIENTE (MY BURROW)
+   ============================================================
+   Todo sale del perfil de Clerk. Lo que aún no existe —pedidos, cartas,
+   latas registradas— se enseña con su estado vacío y diciendo qué lo
+   desbloquea; nunca con datos de mentira. */
+const Panel = (() => {
+  const el = $("#panelModal");
+  const RANGOS = [
+    { k: "rank.1", latas: 1 }, { k: "rank.2", latas: 10 }, { k: "rank.3", latas: 30 },
+    { k: "rank.4", latas: 75 }, { k: "rank.5", latas: 150 }, { k: "rank.6", latas: 300 }
+  ];
+
+  function pintar() {
+    const u = Auth.user();
+    if (!u) return;
+    const m = u.unsafeMetadata || {};
+    $("#pnUser").textContent = u.primaryEmailAddress?.emailAddress || "";
+
+    /* ---- cartas del año ---- */
+    const mias = Array.isArray(m.cartas) ? m.cartas : [];
+    $("#pnCartasN").textContent = `${mias.length} / 12`;
+    $$(".pn-carta", el).forEach((c, i) => c.classList.toggle("tiene", mias.includes(i + 1)));
+    $("#pnCartasNota").textContent = t(mias.length ? "pn.cardsSome" : "pn.cardsEmpty");
+
+    /* ---- rango ---- */
+    const latas = m.rango?.latas || 0;
+    const logrados = RANGOS.filter(r => latas >= r.latas).length;
+    $("#pnRangos").innerHTML = RANGOS.map((r, i) => {
+      const clase = i === logrados - 1 ? "actual" : i < logrados ? "hecho" : "";
+      return `<li class="${clase}"><b>${t(r.k)}</b><i>${r.latas}</i></li>`;
+    }).join("");
+    $("#pnRangoN").textContent = logrados ? t(RANGOS[logrados - 1].k) : "—";
+
+    const siguiente = RANGOS[logrados];
+    const desde = logrados ? RANGOS[logrados - 1].latas : 0;
+    $("#pnRangoFill").style.width = siguiente
+      ? Math.min(100, (latas - desde) / (siguiente.latas - desde) * 100) + "%" : "100%";
+    $("#pnRangoNota").textContent = !latas ? t("pn.rankNone")
+      : siguiente ? t("pn.rankNext", { n: siguiente.latas - latas, rank: t(siguiente.k) })
+      : t("pn.rankTop");
+
+    /* ---- pedidos ---- */
+    const pedidos = Array.isArray(m.pedidos) ? m.pedidos : [];
+    $("#pnPedidosN").textContent = pedidos.length || "";
+    $("#pnPedidos").innerHTML = pedidos.length
+      ? pedidos.map(o => `<div class="pn-pedido"><span>${o.id} · ${o.fecha}</span>` +
+                         `<span>${o.estado || ""} ${money(o.total || 0)}</span></div>`).join("")
+      : `<p class="pn-nota">${t("pn.ordersEmpty")}</p>`;
+
+    /* ---- membresía y envío ---- */
+    $("#pnMembresia").innerHTML = m.madriguera?.lista
+      ? t("pn.memberYes", { plan: t(m.madriguera.plan === "cavador" ? "bur.t2name" : "bur.t1name") })
+      : t("pn.memberNone");
+    const e = m.envio;
+    $("#pnEnvio").innerHTML = e
+      ? `<b>${e.name || ""}</b><br>${[e.address, e.city, e.country].filter(Boolean).join(", ")}`
+      : t("pn.shipNone");
+  }
+
+  function abrir() { pintar(); UI.open(el); }
+
+  $("#pnSalir").addEventListener("click", async () => {
+    UI.close();
+    await Auth.salir();
+  });
+
+  return { abrir, refresh: () => { if (!el.hidden) pintar(); } };
 })();
 
 /* ============================================================
@@ -1575,6 +1691,7 @@ function applyLang() {
   Cart.render();
   Auth.paintNav();
   Madriguera.refresh();
+  Panel.refresh();
   ProductModal.refreshLang();
   langBooted = true;
 }

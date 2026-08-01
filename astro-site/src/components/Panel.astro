@@ -1,0 +1,68 @@
+---
+/* MY BURROW — el panel del cliente. Se abre desde el navbar cuando hay sesión.
+   Lo rellena el módulo Panel de app.js con lo que hay en el perfil de Clerk.
+   Lo que todavía no existe (pedidos, cartas, rango) se muestra con su estado
+   vacío y diciendo qué lo desbloquea, nunca con datos inventados. */
+const CARTAS = Array.from({ length: 12 }, (_, i) => i);
+const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+               "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+---
+
+<!-- ============ PANEL DE CLIENTE ============ -->
+<div class="modal panel-modal" id="panelModal" role="dialog" aria-modal="true" aria-labelledby="pnTitle" hidden>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
+
+  <header class="pn-head">
+    <svg class="pn-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+    <div>
+      <h2 id="pnTitle" class="pn-title" data-i18n="pn.title">MY BURROW</h2>
+      <p class="pn-user" id="pnUser"></p>
+    </div>
+  </header>
+
+  <div class="pn-body">
+    <!-- ---- Colección de cartas ---- -->
+    <section class="pn-bloque">
+      <div class="pn-h3"><span data-i18n="pn.cards">YOUR CARDS</span><b id="pnCartasN">0 / 12</b></div>
+      <ol class="pn-cartas">
+        {CARTAS.map((i) => (
+          <li class="pn-carta">
+            <span>{String(i + 1).padStart(3, "0")}</span>
+            <em data-mes={i}>{MESES[i]}</em>
+          </li>
+        ))}
+      </ol>
+      <p class="pn-nota" id="pnCartasNota" data-i18n="pn.cardsEmpty">Your cards will appear here as they ship, one a month.</p>
+    </section>
+
+    <!-- ---- Rango ---- -->
+    <section class="pn-bloque">
+      <div class="pn-h3"><span data-i18n="pn.rank">YOUR RANK</span><b id="pnRangoN"></b></div>
+      <ol class="pn-rangos" id="pnRangos"></ol>
+      <div class="pn-barra"><span id="pnRangoFill"></span></div>
+      <p class="pn-nota" id="pnRangoNota"></p>
+    </section>
+
+    <!-- ---- Pedidos ---- -->
+    <section class="pn-bloque">
+      <div class="pn-h3"><span data-i18n="pn.orders">ORDERS</span><b id="pnPedidosN"></b></div>
+      <div id="pnPedidos"></div>
+    </section>
+
+    <!-- ---- Membresía y envío ---- -->
+    <div class="pn-dos">
+      <section class="pn-bloque">
+        <div class="pn-h3"><span data-i18n="pn.member">MEMBERSHIP</span></div>
+        <p class="pn-dato" id="pnMembresia"></p>
+      </section>
+      <section class="pn-bloque">
+        <div class="pn-h3"><span data-i18n="pn.ship">SHIPPING</span></div>
+        <p class="pn-dato" id="pnEnvio"></p>
+      </section>
+    </div>
+  </div>
+
+  <footer class="pn-pie">
+    <button class="pn-salir" id="pnSalir" type="button" data-i18n="pn.out">LOG OUT</button>
+  </footer>
+</div>
