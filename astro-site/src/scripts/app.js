@@ -30,11 +30,11 @@ const I18N = {
     "hero.title2": "CONEJO.",
     "hero.sub": "La curiosidad te trajo hasta aquí.<br>La madriguera hace el resto.",
     "hero.cta2": "VER RABBIT FUEL",
-    "hero.meta": "DROP 001 · EDICIÓN LIMITADA · NADA SE REPITE · ENVÍO 48H",
-    "hero.tape": "100% REAL ▸ SIN COSAS RARAS ▸ EDICIÓN LIMITADA ▸ 100% REAL ▸ SIN COSAS RARAS ▸ EDICIÓN LIMITADA ▸ ",
+    "hero.meta": "SIN AZÚCAR · SIN TAURINA · MATE + GUARANÁ · ENVÍO 48H",
+    "hero.tape": "100% REAL ▸ SIN COSAS RARAS ▸ SIN AZÚCAR ▸ 100% REAL ▸ SIN COSAS RARAS ▸ SIN AZÚCAR ▸ ",
     "hero.stamp": "100% REAL · SIN COSAS RARAS · 100% REAL · ",
-    "hero.badge": "EDICIÓN<br>LIMITADA",
-    "marquee.text": "DROP 001 · YA DISPONIBLE ▸ FOCUS · PLAY · REPEAT ▸ ENVÍO 48H ▸ MATE + GUARANÁ ▸ CERO TAURINA ▸ SIN AZÚCAR ▸ 100% REAL ▸ EDICIÓN LIMITADA ▸ ",
+    "hero.badge": "CERO<br>AZÚCAR",
+    "marquee.text": "DROP 001 · YA DISPONIBLE ▸ FOCUS · PLAY · REPEAT ▸ ENVÍO 48H ▸ MATE + GUARANÁ ▸ CERO TAURINA ▸ SIN AZÚCAR ▸ 100% REAL ▸ SIN COSAS RARAS ▸ ",
     "stats.followers": "SEGUIDORES",
     "stats.views": "VIEWS TOTALES",
     "stats.products": "PRODUCTOS",
@@ -125,6 +125,21 @@ const I18N = {
     "auth.errNet": "NO HAY CONEXIÓN CON EL SERVIDOR. INTÉNTALO DE NUEVO.",
     "auth.errGeneric": "ALGO SALIÓ MAL. INTÉNTALO DE NUEVO.",
     "auth.loading": "CONECTANDO…",
+    "ck.title": "ENVÍO",
+    "ck.sub": "¿Dónde te lo lleva el conejo?",
+    "ck.name": "NOMBRE COMPLETO",
+    "ck.email": "EMAIL",
+    "ck.phone": "TELÉFONO",
+    "ck.address": "DIRECCIÓN",
+    "ck.city": "CIUDAD",
+    "ck.zip": "CÓDIGO POSTAL",
+    "ck.country": "PAÍS",
+    "ck.notes": "INDICACIONES DE ENTREGA (OPCIONAL)",
+    "ck.submit": "CONFIRMAR PEDIDO ▸",
+    "ck.note": "DEMO — NO SE COBRA NADA.",
+    "ck.noteSaved": "GUARDAMOS TUS DATOS PARA LA PRÓXIMA COMPRA · DEMO, NO SE COBRA NADA.",
+    "ck.errRequired": "COMPLETA LOS CAMPOS OBLIGATORIOS.",
+    "ck.errPhone": "ESE TELÉFONO NO PARECE VÁLIDO.",
     "auth.errMissing": "TU CUENTA DE CLERK PIDE CAMPOS QUE NO ENVIAMOS ({fields}). DESACTÍVALOS EN EL PANEL.",
     "auth.errName": "PON UN NOMBRE (MÍN. 2 LETRAS).",
     "auth.errEmail": "ESE EMAIL NO PARECE UN EMAIL.",
@@ -168,11 +183,11 @@ const I18N = {
     "hero.title2": "RABBIT.",
     "hero.sub": "Curiosity got you this far.<br>The burrow does the rest.",
     "hero.cta2": "SEE RABBIT FUEL",
-    "hero.meta": "DROP 001 · LIMITED EDITION · NOTHING COMES BACK · 48H SHIPPING",
-    "hero.tape": "100% REAL ▸ NO WEIRD STUFF ▸ LIMITED EDITION ▸ 100% REAL ▸ NO WEIRD STUFF ▸ LIMITED EDITION ▸ ",
+    "hero.meta": "ZERO SUGAR · ZERO TAURINE · MATE + GUARANÁ · 48H SHIPPING",
+    "hero.tape": "100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ ",
     "hero.stamp": "100% REAL · NO WEIRD STUFF · 100% REAL · ",
-    "hero.badge": "LIMITED<br>EDITION",
-    "marquee.text": "DROP 001 · OUT NOW ▸ FOCUS · PLAY · REPEAT ▸ 48H SHIPPING ▸ MATE + GUARANÁ ▸ ZERO TAURINE ▸ ZERO SUGAR ▸ 100% REAL ▸ LIMITED EDITION ▸ ",
+    "hero.badge": "ZERO<br>SUGAR",
+    "marquee.text": "DROP 001 · OUT NOW ▸ FOCUS · PLAY · REPEAT ▸ 48H SHIPPING ▸ MATE + GUARANÁ ▸ ZERO TAURINE ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ",
     "stats.followers": "FOLLOWERS",
     "stats.views": "TOTAL VIEWS",
     "stats.products": "PRODUCTS",
@@ -263,6 +278,21 @@ const I18N = {
     "auth.errNet": "CAN'T REACH THE SERVER. PLEASE TRY AGAIN.",
     "auth.errGeneric": "SOMETHING WENT WRONG. PLEASE TRY AGAIN.",
     "auth.loading": "CONNECTING…",
+    "ck.title": "SHIPPING",
+    "ck.sub": "Where should the rabbit deliver?",
+    "ck.name": "FULL NAME",
+    "ck.email": "EMAIL",
+    "ck.phone": "PHONE",
+    "ck.address": "ADDRESS",
+    "ck.city": "CITY",
+    "ck.zip": "POSTAL CODE",
+    "ck.country": "COUNTRY",
+    "ck.notes": "DELIVERY NOTES (OPTIONAL)",
+    "ck.submit": "PLACE ORDER ▸",
+    "ck.note": "DEMO — NO PAYMENT IS TAKEN.",
+    "ck.noteSaved": "WE SAVE YOUR DETAILS FOR NEXT TIME · DEMO, NO PAYMENT IS TAKEN.",
+    "ck.errRequired": "PLEASE FILL IN THE REQUIRED FIELDS.",
+    "ck.errPhone": "THAT PHONE NUMBER DOESN'T LOOK VALID.",
     "auth.errMissing": "YOUR CLERK APP REQUIRES FIELDS WE DO NOT SEND ({fields}). TURN THEM OFF IN THE DASHBOARD.",
     "auth.errName": "ENTER A NAME (MIN. 2 LETTERS).",
     "auth.errEmail": "THAT EMAIL DOESN'T LOOK LIKE AN EMAIL.",
@@ -888,15 +918,60 @@ const Cart = (() => {
 
 $("#btnCart").addEventListener("click", () => UI.open($("#cartDrawer")));
 
-/* Checkout demo */
-$("#btnCheckout").addEventListener("click", () => {
-  if (!Cart.count()) { toast(t("cart.emptyToast")); return; }
-  const n = String(Math.floor(1000 + Math.random() * 9000));
-  $("#scOrder").textContent = "#SR-" + n;
-  Cart.clear();
-  UI.open($("#successModal"));
-  setTimeout(() => confetti.burst(innerWidth / 2, innerHeight / 3, 80), 250);
-});
+/* ============================================================
+   CHECKOUT — datos de envío
+   El teléfono se pide aquí porque es dato logístico, no de identidad: el login
+   sigue siendo solo email + contraseña. Si hay sesión, el formulario se rellena
+   con lo que el cliente guardó la última vez y se vuelve a guardar en su perfil
+   de Clerk (unsafeMetadata), así queda también en el panel de clientes.
+   ============================================================ */
+const Checkout = (() => {
+  const modal = $("#checkoutModal"), form = $("#formCheckout");
+  const CAMPOS = ["name", "email", "phone", "address", "city", "zip", "country", "notes"];
+  const LOCAL = "sr_envio_v1";
+
+  const guardadoLocal = () => { try { return JSON.parse(localStorage.getItem(LOCAL)) || {}; } catch { return {}; } };
+
+  function abrir() {
+    if (!Cart.count()) { toast(t("cart.emptyToast")); return; }
+    const u = Auth.user();
+    const previo = { ...guardadoLocal(), ...(u?.unsafeMetadata?.envio || {}) };
+    CAMPOS.forEach(c => { form[c].value = previo[c] || ""; });
+    if (u) {                                   // lo que ya sabemos de la cuenta
+      form.name.value = form.name.value || [u.firstName, u.lastName].filter(Boolean).join(" ");
+      form.email.value = form.email.value || u.primaryEmailAddress?.emailAddress || "";
+    }
+    $("#ckTotal").textContent = money(Cart.total());
+    $("#ckNote").textContent = t(u ? "ck.noteSaved" : "ck.note");
+    form.querySelector(".lm-err").textContent = "";
+    UI.open(modal);
+  }
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = form.querySelector(".lm-err");
+    const datos = Object.fromEntries(CAMPOS.map(c => [c, form[c].value.trim()]));
+    if (CAMPOS.filter(c => c !== "notes").some(c => !datos[c])) return err.textContent = t("ck.errRequired");
+    if (datos.phone.replace(/[^0-9]/g, "").length < 7) return err.textContent = t("ck.errPhone");
+
+    const b = form.querySelector(".lm-submit");
+    b.setAttribute("aria-busy", "true"); b.disabled = true;
+    try { localStorage.setItem(LOCAL, JSON.stringify(datos)); } catch {}
+    // si hay cuenta, los datos viajan al perfil del cliente en Clerk
+    try { await Auth.guardarEnvio(datos); }
+    catch (ex) { console.warn("[checkout] no se pudo guardar en el perfil:", ex); }
+    b.setAttribute("aria-busy", "false"); b.disabled = false;
+
+    $("#scOrder").textContent = "#SR-" + String(Math.floor(1000 + Math.random() * 9000));
+    Cart.clear();
+    UI.open($("#successModal"));
+    setTimeout(() => confetti.burst(innerWidth / 2, innerHeight / 3, 80), 250);
+  });
+
+  return { abrir };
+})();
+
+$("#btnCheckout").addEventListener("click", () => Checkout.abrir());
 
 /* CTA Rabbit Fuel */
 $("#btnFuelAdd").addEventListener("click", e => {
@@ -1092,7 +1167,15 @@ const Auth = (() => {
     }
   });
 
-  return { paintNav };
+  /* Guarda los datos de envío en el perfil del cliente (merge, no reemplaza) */
+  async function guardarEnvio(envio) {
+    const u = usuario();
+    if (!u) return false;
+    await u.updateMetadata({ unsafeMetadata: { envio } });
+    return true;
+  }
+
+  return { paintNav, user: usuario, guardarEnvio };
 })();
 
 /* ============================================================

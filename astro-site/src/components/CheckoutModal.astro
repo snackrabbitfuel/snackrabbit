@@ -1,0 +1,37 @@
+---
+/* Datos de envío. El teléfono se pide aquí (es dato logístico), NO en el login.
+   Si hay sesión de Clerk, se rellena solo y se guarda en el perfil del cliente
+   para la próxima compra. La lógica vive en el módulo Checkout de app.js. */
+---
+
+<!-- ============ CHECKOUT / ENVÍO ============ -->
+<div class="modal checkout-modal" id="checkoutModal" role="dialog" aria-modal="true" aria-labelledby="ckTitle" hidden>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
+  <svg class="lm-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
+  <h2 id="ckTitle" class="lm-title" data-i18n="ck.title">SHIPPING</h2>
+  <p class="ck-sub" data-i18n="ck.sub">Where should the rabbit deliver?</p>
+
+  <form class="lm-form ck-form" id="formCheckout" novalidate>
+    <label><span data-i18n="ck.name">FULL NAME</span>
+      <input type="text" name="name" autocomplete="name" required></label>
+    <label><span data-i18n="ck.email">EMAIL</span>
+      <input type="email" name="email" autocomplete="email" required></label>
+    <label><span data-i18n="ck.phone">PHONE</span>
+      <input type="tel" name="phone" inputmode="tel" autocomplete="tel" placeholder="+57 300 000 0000" required></label>
+    <label class="ck-wide"><span data-i18n="ck.address">ADDRESS</span>
+      <input type="text" name="address" autocomplete="street-address" required></label>
+    <label><span data-i18n="ck.city">CITY</span>
+      <input type="text" name="city" autocomplete="address-level2" required></label>
+    <label><span data-i18n="ck.zip">POSTAL CODE</span>
+      <input type="text" name="zip" autocomplete="postal-code" required></label>
+    <label class="ck-wide"><span data-i18n="ck.country">COUNTRY</span>
+      <input type="text" name="country" autocomplete="country-name" required></label>
+    <label class="ck-wide"><span data-i18n="ck.notes">DELIVERY NOTES (OPTIONAL)</span>
+      <input type="text" name="notes" autocomplete="off"></label>
+
+    <p class="lm-err ck-wide" role="alert"></p>
+    <div class="ck-total ck-wide"><span data-i18n="cart.title">YOUR CART</span><span id="ckTotal">$0.00</span></div>
+    <button class="btn btn-pink lm-submit ck-wide" type="submit" data-i18n="ck.submit">PLACE ORDER ▸</button>
+    <p class="lm-note ck-wide" id="ckNote" data-i18n="ck.note">DEMO — NO PAYMENT IS TAKEN.</p>
+  </form>
+</div>
