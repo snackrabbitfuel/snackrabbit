@@ -209,6 +209,18 @@ body::after {
   pointer-events: none;
 }
 .nav.scrolled::after { opacity: 1; }
+/* Prolongación del fondo hacia arriba. En iOS, al colapsar la barra del
+   navegador, la barra fija puede quedar desplazada y deja ver la página por
+   encima; esta franja tapa ese hueco con el mismo negro. Fuera de iOS cae
+   fuera de pantalla y no se ve. */
+.nav.scrolled::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 100%;
+  height: 140px;
+  background: #0a0a12;
+  pointer-events: none;
+}
 .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
 .nav-bunny { width: 38px; height: 34px; color: var(--ink); --bunny-eye: var(--pink); transition: transform .3s var(--ease-snap); }
 .nav.scrolled .nav-bunny { color: var(--pink); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); }
