@@ -114,7 +114,18 @@ const I18N = {
     "auth.namePh": "Tu nombre",
     "auth.submitIn": "ENTRAR ▸",
     "auth.submitUp": "CREAR CUENTA ▸",
-    "auth.note": "DEMO LOCAL — TU CUENTA SOLO VIVE EN ESTE NAVEGADOR.",
+    "auth.note": "ACCESO SEGURO · NUNCA VEMOS TU CONTRASEÑA.",
+    "auth.code": "CÓDIGO DE VERIFICACIÓN",
+    "auth.codeSent": "Te enviamos un código de 6 dígitos a <strong>{email}</strong>.",
+    "auth.submitCode": "VERIFICAR ▸",
+    "auth.resend": "REENVIAR CÓDIGO",
+    "auth.resent": "CÓDIGO REENVIADO ▸",
+    "auth.errCode": "CÓDIGO INCORRECTO O CADUCADO.",
+    "auth.errWeakPass": "CONTRASEÑA DEMASIADO DÉBIL O FILTRADA. PRUEBA OTRA.",
+    "auth.errNet": "NO HAY CONEXIÓN CON EL SERVIDOR. INTÉNTALO DE NUEVO.",
+    "auth.errGeneric": "ALGO SALIÓ MAL. INTÉNTALO DE NUEVO.",
+    "auth.loading": "CONECTANDO…",
+    "auth.errMissing": "TU CUENTA DE CLERK PIDE CAMPOS QUE NO ENVIAMOS ({fields}). DESACTÍVALOS EN EL PANEL.",
     "auth.errName": "PON UN NOMBRE (MÍN. 2 LETRAS).",
     "auth.errEmail": "ESE EMAIL NO PARECE UN EMAIL.",
     "auth.errPass": "CONTRASEÑA: MÍNIMO 6 CARACTERES.",
@@ -241,7 +252,18 @@ const I18N = {
     "auth.namePh": "Your name",
     "auth.submitIn": "SIGN IN ▸",
     "auth.submitUp": "CREATE ACCOUNT ▸",
-    "auth.note": "LOCAL DEMO — YOUR ACCOUNT LIVES ONLY IN THIS BROWSER.",
+    "auth.note": "SECURE SIGN-IN · WE NEVER SEE YOUR PASSWORD.",
+    "auth.code": "VERIFICATION CODE",
+    "auth.codeSent": "We sent a 6-digit code to <strong>{email}</strong>.",
+    "auth.submitCode": "VERIFY ▸",
+    "auth.resend": "RESEND CODE",
+    "auth.resent": "CODE RESENT ▸",
+    "auth.errCode": "WRONG OR EXPIRED CODE.",
+    "auth.errWeakPass": "PASSWORD TOO WEAK OR FOUND IN A BREACH. TRY ANOTHER.",
+    "auth.errNet": "CAN'T REACH THE SERVER. PLEASE TRY AGAIN.",
+    "auth.errGeneric": "SOMETHING WENT WRONG. PLEASE TRY AGAIN.",
+    "auth.loading": "CONNECTING…",
+    "auth.errMissing": "YOUR CLERK APP REQUIRES FIELDS WE DO NOT SEND ({fields}). TURN THEM OFF IN THE DASHBOARD.",
     "auth.errName": "ENTER A NAME (MIN. 2 LETTERS).",
     "auth.errEmail": "THAT EMAIL DOESN'T LOOK LIKE AN EMAIL.",
     "auth.errPass": "PASSWORD: AT LEAST 6 CHARACTERS.",
@@ -886,73 +908,191 @@ $("#btnFuelAdd").addEventListener("click", e => {
    LOGIN DEMO (localStorage)
    ============================================================ */
 const Auth = (() => {
-  const USERS = "sr_users_v1", SESS = "sr_session_v1";
+  /* Autenticación real con Clerk usando "custom flows": Clerk no pinta nada,
+     toda la interfaz es la nuestra. La clave publicable es pública por diseño
+     (Clerk documenta que es seguro exponerla); la clave secreta no se usa aquí
+     ni debe estar nunca en el cliente. */
+  const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY
+          || "pk_test_ZWxlZ2FudC1pbXBhbGEtNTguY2xlcmsuYWNjb3VudHMuZGV2JA";
+
   const modal = $("#loginModal");
   const tabIn = $("#tabIn"), tabUp = $("#tabUp");
-  const formIn = $("#formIn"), formUp = $("#formUp");
+  const formIn = $("#formIn"), formUp = $("#formUp"), formCode = $("#formCode");
+  let clerk = null, listo = false, fallo = false;
+  let pendiente = null;   // { email, nombre } mientras se verifica el correo
 
-  const getUsers = () => { try { return JSON.parse(localStorage.getItem(USERS)) || {}; } catch { return {}; } };
-  const session = () => { try { return JSON.parse(localStorage.getItem(SESS)); } catch { return null; } };
-  const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
+  /* Clerk pesa ~1,4 MB, así que va en su propio chunk y no se descarga con la
+     página: arranca cuando el navegador está ocioso (o al instante si el
+     usuario pulsa el botón antes). Así la landing no paga ese coste. */
+  let arranque = null;
+  function iniciar() {
+    if (arranque) return arranque;
+    arranque = (async () => {
+      try {
+        const { Clerk } = await import("@clerk/clerk-js");
+        clerk = new Clerk(PK);
+        await clerk.load();
+        listo = true;
+        clerk.addListener(paintNav);   // sesión restaurada, login o logout
+        paintNav();
+      } catch (e) {
+        fallo = true;
+        console.error("[auth] Clerk no pudo cargarse:", e);
+      }
+    })();
+    return arranque;
+  }
+  if ("requestIdleCallback" in window) requestIdleCallback(iniciar, { timeout: 3000 });
+  else setTimeout(iniciar, 1500);
 
-  function switchTab(up) {
-    tabIn.classList.toggle("active", !up); tabUp.classList.toggle("active", up);
-    tabIn.setAttribute("aria-selected", !up); tabUp.setAttribute("aria-selected", up);
-    formIn.hidden = up; formUp.hidden = !up;
+  /* Traduce los códigos de error de Clerk a NUESTROS mensajes de marca */
+  function traducirError(err) {
+    const c = err?.errors?.[0]?.code || "";
+    if (c === "form_identifier_exists") return t("auth.errExists");
+    if (c === "form_password_pwned" || c === "form_password_length_too_short"
+        || c === "form_password_not_strong_enough") return t("auth.errWeakPass");
+    if (c === "form_password_incorrect" || c === "form_identifier_not_found") return t("auth.errBad");
+    if (c === "form_code_incorrect" || c === "verification_expired"
+        || c === "form_param_nil") return t("auth.errCode");
+    if (c === "form_param_format_invalid") return t("auth.errEmail");
+    if (!err?.errors) return t("auth.errNet");
+    return t("auth.errGeneric");
+  }
+
+  const ocupado = (form, si) => {
+    const b = form.querySelector(".lm-submit");
+    b.setAttribute("aria-busy", si ? "true" : "false");
+    b.disabled = si;
+  };
+
+  function paso(cual) {   // "in" | "up" | "code"
+    formIn.hidden = cual !== "in";
+    formUp.hidden = cual !== "up";
+    formCode.hidden = cual !== "code";
+    modal.classList.toggle("step-code", cual === "code");
+    const up = cual === "up";
+    tabIn.classList.toggle("active", cual === "in"); tabUp.classList.toggle("active", up);
+    tabIn.setAttribute("aria-selected", cual === "in"); tabUp.setAttribute("aria-selected", up);
     $$(".lm-err").forEach(e => e.textContent = "");
   }
-  tabIn.addEventListener("click", () => switchTab(false));
-  tabUp.addEventListener("click", () => switchTab(true));
+  tabIn.addEventListener("click", () => paso("in"));
+  tabUp.addEventListener("click", () => paso("up"));
+
+  const usuario = () => (listo && clerk.user) ? clerk.user : null;
+  const nombreDe = u => u.firstName || (u.primaryEmailAddress?.emailAddress || "").split("@")[0] || "";
 
   function paintNav() {
-    const s = session();
+    const u = usuario();
     const label = $("#loginLabel"), btn = $("#btnLogin");
-    if (s) { label.textContent = t("nav.hello", { name: s.name.split(" ")[0].toUpperCase() }); btn.classList.add("logged"); }
+    if (u) { label.textContent = t("nav.hello", { name: nombreDe(u).split(" ")[0].toUpperCase() }); btn.classList.add("logged"); }
     else { label.textContent = t("nav.login"); btn.classList.remove("logged"); }
   }
 
-  formUp.addEventListener("submit", e => {
+  /* Sesión iniciada: cerrar, saludar y celebrar (igual que antes) */
+  async function entrar(sessionId, saludo, nombre) {
+    await clerk.setActive({ session: sessionId });
+    paintNav(); UI.close();
+    toast(t(saludo, { name: (nombre || "").toUpperCase() }));
+  }
+
+  /* ---------------- CREAR CUENTA ---------------- */
+  formUp.addEventListener("submit", async e => {
     e.preventDefault();
     const err = formUp.querySelector(".lm-err");
-    const name = formUp.name.value.trim(), email = formUp.email.value.trim().toLowerCase(), pass = formUp.pass.value;
-    if (name.length < 2) return err.textContent = t("auth.errName");
-    if (!emailOk(email)) return err.textContent = t("auth.errEmail");
-    if (pass.length < 6) return err.textContent = t("auth.errPass");
-    const users = getUsers();
-    if (users[email]) return err.textContent = t("auth.errExists");
-    users[email] = { name, pass };
-    localStorage.setItem(USERS, JSON.stringify(users));
-    localStorage.setItem(SESS, JSON.stringify({ email, name }));
-    paintNav(); UI.close();
-    toast(t("auth.welcome", { name: name.toUpperCase() }));
-    confetti.burst(innerWidth / 2, 120, 40);
-    formUp.reset();
+    const nombre = formUp.name.value.trim();
+    const email = formUp.email.value.trim().toLowerCase();
+    const pass = formUp.pass.value;
+    if (nombre.length < 2) return err.textContent = t("auth.errName");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err.textContent = t("auth.errEmail");
+    if (pass.length < 8) return err.textContent = t("auth.errPass");
+    if (!listo) return err.textContent = t(fallo ? "auth.errNet" : "auth.loading");
+
+    ocupado(formUp, true); err.textContent = "";
+    try {
+      const su = await clerk.client.signUp.create({ emailAddress: email, password: pass, firstName: nombre });
+      if (su.status === "complete") {                       // sin verificación de email
+        await entrar(su.createdSessionId, "auth.welcome", nombre);
+        confetti.burst(innerWidth / 2, 120, 40);
+        formUp.reset();
+      } else {                                              // hace falta el código
+        await su.prepareEmailAddressVerification({ strategy: "email_code" });
+        pendiente = { email, nombre };
+        $("#lmSent").innerHTML = t("auth.codeSent", { email });
+        paso("code");
+        formCode.code.value = ""; formCode.code.focus();
+      }
+    } catch (ex) { err.textContent = traducirError(ex); }
+    finally { ocupado(formUp, false); }
   });
 
-  formIn.addEventListener("submit", e => {
+  /* ---------------- VERIFICAR CÓDIGO ---------------- */
+  formCode.addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = formCode.querySelector(".lm-err");
+    const code = formCode.code.value.trim();
+    if (code.length !== 6) return err.textContent = t("auth.errCode");
+    ocupado(formCode, true); err.textContent = "";
+    try {
+      const su = await clerk.client.signUp.attemptEmailAddressVerification({ code });
+      if (su.status !== "complete") {
+        // Suele significar que el panel de Clerk exige campos que este
+        // formulario no pide (p. ej. teléfono o nombre de usuario).
+        console.warn("[auth] registro incompleto:", su.status, "faltan:", su.missingFields, su.unverifiedFields);
+        return err.textContent = su.missingFields?.length
+          ? t("auth.errMissing", { fields: su.missingFields.join(", ") })
+          : t("auth.errGeneric");
+      }
+      await entrar(su.createdSessionId, "auth.welcome", pendiente?.nombre);
+      confetti.burst(innerWidth / 2, 120, 40);
+      formUp.reset(); formCode.reset(); pendiente = null; paso("in");
+    } catch (ex) { err.textContent = traducirError(ex); }
+    finally { ocupado(formCode, false); }
+  });
+
+  $("#lmResend").addEventListener("click", async e => {
+    const b = e.currentTarget;
+    b.disabled = true;
+    try {
+      await clerk.client.signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      toast(t("auth.resent"));
+    } catch (ex) { formCode.querySelector(".lm-err").textContent = traducirError(ex); }
+    setTimeout(() => { b.disabled = false; }, 30000);   // evita spam de correos
+  });
+
+  /* ---------------- ENTRAR ---------------- */
+  formIn.addEventListener("submit", async e => {
     e.preventDefault();
     const err = formIn.querySelector(".lm-err");
     const email = formIn.email.value.trim().toLowerCase(), pass = formIn.pass.value;
-    if (!emailOk(email)) return err.textContent = t("auth.errEmail");
-    const u = getUsers()[email];
-    if (!u || u.pass !== pass) return err.textContent = t("auth.errBad");
-    localStorage.setItem(SESS, JSON.stringify({ email, name: u.name }));
-    paintNav(); UI.close();
-    toast(t("auth.back", { name: u.name.toUpperCase() }));
-    formIn.reset();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err.textContent = t("auth.errEmail");
+    if (!listo) return err.textContent = t(fallo ? "auth.errNet" : "auth.loading");
+
+    ocupado(formIn, true); err.textContent = "";
+    try {
+      const si = await clerk.client.signIn.create({ strategy: "password", identifier: email, password: pass });
+      if (si.status !== "complete") {
+        console.warn("[auth] inicio de sesión incompleto:", si.status);
+        return err.textContent = t("auth.errGeneric");
+      }
+      await entrar(si.createdSessionId, "auth.back", si.userData?.firstName || email.split("@")[0]);
+      formIn.reset();
+    } catch (ex) { err.textContent = traducirError(ex); }
+    finally { ocupado(formIn, false); }
   });
 
-  $("#btnLogin").addEventListener("click", () => {
-    const s = session();
-    if (!s) { switchTab(false); UI.open(modal); return; }
-    if (confirm(t("auth.logoutConfirm", { name: s.name }))) {
-      localStorage.removeItem(SESS);
+  /* ---------------- BOTÓN DEL NAVBAR ---------------- */
+  $("#btnLogin").addEventListener("click", async () => {
+    iniciar();                      // por si el usuario se adelanta al idle
+    const u = usuario();
+    if (!u) { paso("in"); UI.open(modal); return; }
+    if (confirm(t("auth.logoutConfirm", { name: nombreDe(u) }))) {
+      await clerk.signOut();
       paintNav();
       toast(t("auth.out"));
     }
   });
 
-  return { session, paintNav };
+  return { paintNav };
 })();
 
 /* ============================================================

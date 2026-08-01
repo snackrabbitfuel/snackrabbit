@@ -1,6 +1,7 @@
 ---
-/* Login/registro DEMO: app.js guarda usuarios y sesión en localStorage.
-   No hay backend — no debe usarse con contraseñas reales. */
+/* Login y registro reales con Clerk (custom flows): la autenticación la hace
+   Clerk, pero toda la interfaz es nuestra — este marcado no lo genera Clerk.
+   La lógica vive en el módulo Auth de app.js. */
 ---
 
 <!-- ============ LOGIN MODAL ============ -->
@@ -25,8 +26,23 @@
     <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="you@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
     <label><span data-i18n="auth.pass">PASSWORD</span><input type="password" name="pass" placeholder="At least 6 characters" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
     <p class="lm-err" role="alert"></p>
+    <!-- Clerk monta aquí su verificación anti-bots. Sin este elemento usa un
+         CAPTCHA invisible que puede bloquear a usuarios legítimos sin avisar. -->
+    <div id="clerk-captcha"></div>
     <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitUp">CREATE ACCOUNT ▸</button>
   </form>
 
-  <p class="lm-note" data-i18n="auth.note">LOCAL DEMO — YOUR ACCOUNT LIVES ONLY IN THIS BROWSER.</p>
+  <form class="lm-form" id="formCode" hidden novalidate>
+    <p class="lm-sent" id="lmSent" data-i18n="auth.codeSent">We sent a 6-digit code to your email.</p>
+    <label class="lm-code-label">
+      <span data-i18n="auth.code">VERIFICATION CODE</span>
+      <input class="lm-code" type="text" name="code" inputmode="numeric" pattern="[0-9]*"
+             autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
+    </label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitCode">VERIFY ▸</button>
+    <button class="lm-resend" id="lmResend" type="button" data-i18n="auth.resend">RESEND CODE</button>
+  </form>
+
+  <p class="lm-note" data-i18n="auth.note">SECURE SIGN-IN · WE NEVER SEE YOUR PASSWORD.</p>
 </div>

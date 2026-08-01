@@ -1154,6 +1154,42 @@ body::after {
   margin-top: 20px;
 }
 
+/* ---- paso de verificación por email (mismo lenguaje visual del modal) ---- */
+.lm-sent {
+  font-size: 16px; line-height: 1.45;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.lm-sent strong { font-style: normal; color: var(--pink); }
+.lm-code-label { justify-items: center; }
+.lm-code {
+  font-family: var(--f-pixel) !important; font-style: normal;
+  font-size: 28px !important;
+  letter-spacing: 12px;
+  text-align: center;
+  text-indent: 12px;          /* compensa el letter-spacing del último dígito */
+  padding: 16px 10px !important;
+  width: 100%;
+}
+.lm-code::placeholder { color: #cfc4cd; letter-spacing: 12px; }
+.lm-resend {
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 10px; letter-spacing: 2px;
+  background: none; border: none;
+  color: var(--gray-2);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding: 4px;
+  transition: color .2s;
+}
+.lm-resend:hover { color: var(--ink); }
+.lm-resend[disabled] { opacity: .45; text-decoration: none; cursor: default; }
+/* durante la verificación las pestañas no aplican */
+.login-modal.step-code .lm-tabs { display: none; }
+.lm-submit[aria-busy="true"] { opacity: .6; pointer-events: none; }
+/* widget anti-bots de Clerk: solo aparece si sospecha del visitante */
+#clerk-captcha:not(:empty) { margin: 2px 0 6px; display: flex; justify-content: center; }
+
 /* Product modal */
 .product-modal {
   width: min(940px, calc(100vw - 32px));

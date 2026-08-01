@@ -93,3 +93,36 @@ rotaciones y hasta la misma altura total de página, 8424 px).
 - `@astrojs/image` o `<Image />` para servir AVIF/WebP responsivos.
 
 La versión original en HTML plano sigue intacta en `../website/` como referencia.
+
+## Login con Clerk
+
+La autenticación real la hace [Clerk](https://clerk.com) mediante **custom flows**:
+Clerk no dibuja ninguna interfaz, solo resuelve la autenticación. Todo el modal
+(el conejo pixel, "LA MADRIGUERA", pestañas, errores) es nuestro y vive en
+`src/components/LoginModal.astro` + el módulo `Auth` de `src/scripts/app.js`.
+
+- **Clave publicable**: `PUBLIC_CLERK_PUBLISHABLE_KEY` en `.env` (y en Vercel para
+  producción). Es pública por diseño; la clave secreta `sk_...` no se usa aquí y
+  nunca debe llegar al cliente.
+- **Carga diferida**: el SDK pesa ~1,4 MB, así que va en su propio chunk y se
+  descarga cuando el navegador está ocioso, o al pulsar el botón de login. La
+  landing no paga ese coste.
+- **Errores traducidos**: los códigos de Clerk (`form_identifier_exists`,
+  `form_password_pwned`…) se mapean a los mensajes en ES/EN del diccionario
+  `I18N`, para que el usuario nunca vea texto genérico de Clerk.
+- **Anti-bots**: el `<div id="clerk-captcha">` dentro del formulario de registro
+  es obligatorio; sin él, Clerk usa un CAPTCHA invisible que puede bloquear a
+  usuarios legítimos sin avisar.
+
+### Configuración necesaria en el panel de Clerk
+
+En *User & Authentication → Email, Phone, Username*, el registro debe pedir
+**solo email y contraseña**. Si teléfono o nombre de usuario están marcados como
+obligatorios, `signUp` devolverá `missing_requirements` y el formulario mostrará
+qué campos faltan.
+
+### Pruebas
+
+En instancias de desarrollo, cualquier correo con el sufijo `+clerk_test`
+(p. ej. `algo+clerk_test@example.com`) se verifica con el código fijo `424242`,
+sin enviar emails reales.
