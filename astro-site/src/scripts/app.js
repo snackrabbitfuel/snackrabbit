@@ -1173,8 +1173,19 @@ const Auth = (() => {
      toda la interfaz es la nuestra. La clave publicable es pública por diseño
      (Clerk documenta que es seguro exponerla); la clave secreta no se usa aquí
      ni debe estar nunca en el cliente. */
-  const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY
-          || "pk_test_ZWxlZ2FudC1pbXBhbGEtNTguY2xlcmsuYWNjb3VudHMuZGV2JA";
+  /* La de reserva es la instancia de DESARROLLO y existe solo para trabajar en
+     local. En producción manda la variable de entorno de Vercel. */
+  const PK_DESARROLLO = "pk_test_ZWxlZ2FudC1pbXBhbGEtNTguY2xlcmsuYWNjb3VudHMuZGV2JA";
+  const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY || PK_DESARROLLO;
+
+  /* Así fue como una instancia de desarrollo acabó atendiendo a clientes reales
+     sin que nadie lo notara: la reserva tapaba la falta de configuración. Ahora
+     lo dice en voz alta. */
+  if (PK.startsWith("pk_test_") && !/^(localhost|127\.|192\.168\.|\[::1\])/.test(location.hostname)) {
+    console.warn("[auth] Clerk está usando la instancia de DESARROLLO en un dominio " +
+                 "público. Define PUBLIC_CLERK_PUBLISHABLE_KEY con la clave pk_live " +
+                 "en Vercel y vuelve a desplegar.");
+  }
 
   const modal = $("#loginModal");
   const tabIn = $("#tabIn"), tabUp = $("#tabUp");
