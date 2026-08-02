@@ -100,14 +100,32 @@ Pendiente, por orden de dependencia:
 2. Rellenar `astro-site/src/data/empresa.ts` con los datos legales. Mientras
    tengan corchetes salen resaltados en amarillo en las páginas.
 3. URLs de TikTok, YouTube y X para el footer. Instagram ya está.
-4. **Ningún correo se manda solo todavía.** Las cinco plantillas de
-   `src/emails/` solo las usa la ruta de pruebas. Apuntarse a la newsletter
-   guarda el contacto y JOIN THE LIST marca el perfil, pero ninguna de las dos
-   escribe a nadie. Conectarlo pide una ruta de servidor que compruebe la sesión
-   de Clerk antes de enviar —si no, es una URL pública que manda correos a
-   cualquiera— y para eso hace falta `CLERK_SECRET_KEY` en Vercel. Es la misma
-   clave que necesitará el webhook de Stripe para escribir `publicMetadata`.
+4. **La newsletter sigue sin mandar nada.** Se apunta el contacto y ya. No se
+   conectó como la lista de fundadores porque la forma del problema es otra:
+   ahí no hay sesión de Clerk que verificar —cualquiera se apunta sin cuenta—,
+   así que el servidor tendría que fiarse del correo que le manden y eso es
+   precisamente el vector de spam. Lo correcto es **doble opt-in**: se envía un
+   enlace de confirmación y solo se da de alta a quien lo pulsa. Es además la
+   buena práctica del sector y protege la reputación del dominio. Es una
+   decisión de producto, no solo trabajo.
 5. Borrar `/api/probar-correo` cuando se terminen de revisar los correos.
+
+## Correos automáticos
+
+`/api/apuntarse` es la única ruta que envía sola: avisa a quien se apunta a la
+lista de fundadores. Su seguridad **no** está en una lista de permitidos sino en
+la forma, y conviene entenderla antes de escribir otra ruta que mande correos:
+
+- Verifica el token de sesión de Clerk con `@clerk/backend`. Un JWT no se
+  verifica a mano.
+- **El destinatario no lo elige quien llama**: sale de la cuenta detrás del
+  token. Con un token robado solo se le escribe a su propio dueño.
+- Una vez por cuenta, marcado en `publicMetadata.fundadorAvisado`. En
+  `unsafeMetadata` el cliente podría borrar la marca y dispararlo en bucle.
+- Se marca **después** de enviar. Al revés, un fallo dejaría a alguien sin su
+  correo para siempre; así el peor caso es un duplicado.
+
+Las otras cuatro plantillas de `src/emails/` esperan a Stripe.
 
 ## Correo
 
