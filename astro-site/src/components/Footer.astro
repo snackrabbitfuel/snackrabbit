@@ -1,3 +1,7 @@
+---
+import { EMPRESA } from "../data/empresa";
+---
+
 <!-- ============ FOOTER ============ -->
 <footer class="footer">
   <div class="foot-grid">
@@ -21,16 +25,16 @@
     </nav>
     <nav class="foot-col" aria-label="Help">
       <h4 data-i18n="foot.help">HELP</h4>
-      <a href="#faq" data-i18n="foot.shipping">SHIPPING</a>
-      <a href="#faq" data-i18n="foot.returns">RETURNS</a>
+      <a href="/shipping" data-i18n="foot.shipping">SHIPPING</a>
+      <a href="/returns" data-i18n="foot.returns">RETURNS</a>
       <a href="#faq" data-i18n="foot.sizes">SIZE GUIDE</a>
-      <a href="mailto:hola@snackrabbit.tv" data-i18n="foot.contact">CONTACT</a>
+      <a href={`mailto:${EMPRESA.email}`} data-i18n="foot.contact">CONTACT</a>
     </nav>
     <nav class="foot-col" aria-label="Legal">
       <h4>LEGAL</h4>
-      <a href="#" data-demo data-i18n="foot.terms">TERMS</a>
-      <a href="#" data-demo data-i18n="foot.privacy">PRIVACY</a>
-      <a href="#" data-demo>COOKIES</a>
+      <a href="/terms" data-i18n="foot.terms">TERMS</a>
+      <a href="/privacy" data-i18n="foot.privacy">PRIVACY</a>
+      <a href="/privacy#cookies">COOKIES</a>
     </nav>
   </div>
   <div class="foot-bar">

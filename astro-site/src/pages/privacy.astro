@@ -1,0 +1,106 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { EMPRESA } from "../data/empresa";
+const H = (t: string) => `<span class="hueco">${t}</span>`;
+---
+
+<LegalLayout title="Privacy Policy" kicker="LEGAL · PRIVACY">
+
+  <h2>The short version</h2>
+  <p>
+    We collect what we need to send you a box and let you back into your account, and nothing else.
+    We do not sell your data, we do not run advertising trackers on this site, and we never see your
+    password or your card number.
+  </p>
+
+  <h2>Who is responsible for your data</h2>
+  <p>
+    <strong set:html={EMPRESA.nombre.startsWith("[") ? H(EMPRESA.nombre) : EMPRESA.nombre} />,
+    at <span set:html={EMPRESA.direccion.startsWith("[") ? H(EMPRESA.direccion) : EMPRESA.direccion} />.
+    For anything about your data, write to <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>.
+  </p>
+
+  <h2>What we collect, and why</h2>
+  <ul>
+    <li><strong>Your name and email address</strong>, when you create an account. We need them to identify you and to send you order and shipping emails.</li>
+    <li><strong>Your shipping address and phone number</strong>, when you place an order. The carrier needs both to deliver the parcel.</li>
+    <li><strong>Your order history</strong>, so you can see it in your account and so we can handle returns.</li>
+    <li><strong>Your membership plan</strong>, if you join The Burrow, so we know what to send you each month.</li>
+    <li><strong>Your email address</strong>, if you subscribe to our list. You can unsubscribe from any email we send.</li>
+  </ul>
+  <p>
+    We do not ask for, and do not want, any information about your health, beliefs or anything else
+    in those categories.
+  </p>
+
+  <h2>What we never see</h2>
+  <ul>
+    <li><strong>Your password.</strong> Accounts are handled by Clerk. Your password is set with them and we have no way of reading it.</li>
+    <li><strong>Your card number.</strong> Payments are handled by Stripe on their own secure pages. We receive a confirmation that a payment succeeded, along with the last digits and the card brand, and nothing more.</li>
+  </ul>
+
+  <h2>Who else handles it</h2>
+  <p>
+    We keep the list of companies that touch your data as short as we can. Today it is:
+  </p>
+  <ul>
+    <li><strong>Clerk</strong> — accounts, sign-in and the data attached to your profile.</li>
+    <li><strong>Stripe</strong> — payments, subscriptions and order records.</li>
+    <li><strong>Vercel</strong> — hosting of this website and its server logs.</li>
+    <li><strong>The carrier</strong> that delivers your parcel, which receives your name, address and phone number for that delivery.</li>
+  </ul>
+  <p>
+    Each of them acts on our instructions. We do not sell your data to anyone, and we do not share it
+    for anyone else's advertising.
+  </p>
+
+  <h2>Cookies and what your browser stores</h2>
+  <p>
+    This site does not use advertising or profiling cookies. What it does use is your browser's local
+    storage, which stays on your device:
+  </p>
+  <ul>
+    <li><strong>Your cart</strong>, so it survives closing the tab.</li>
+    <li><strong>Your language choice</strong>, so we do not ask twice.</li>
+    <li><strong>Your session</strong>, set by Clerk so you stay signed in.</li>
+  </ul>
+  <p>
+    Clearing your browser data removes all of it.
+  </p>
+
+  <h2>How long we keep it</h2>
+  <p>
+    Your account data stays for as long as your account exists. Order records are kept for as long as
+    tax and accounting rules require, which is normally several years, even after you close your
+    account. Marketing emails stop the moment you unsubscribe.
+  </p>
+
+  <h2>Your rights</h2>
+  <p>
+    You can ask us to show you the data we hold about you, correct it, delete it, or send it to you in
+    a portable format. You can also object to us using it for marketing, at any time, and we will
+    stop. Write to <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> and we will reply within 30
+    days. If you ask us to delete your account, we will, keeping only what tax rules force us to keep.
+  </p>
+
+  <h2>Where your data lives</h2>
+  <p>
+    Our providers store data on servers in the United States and other countries. If you write to us
+    from somewhere with stricter rules on international transfers, tell us and we will explain how
+    that specific case is handled.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    This store is not intended for children. We do not knowingly create accounts for anyone under 16.
+    If you believe a child has given us their data, write to us and we will delete it.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If we change how we handle your data, we will update this page and change the date at the top. If
+    the change is significant, we will email the people it affects rather than expecting them to
+    notice.
+  </p>
+
+</LegalLayout>

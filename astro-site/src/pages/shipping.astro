@@ -1,0 +1,88 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { EMPRESA, ENVIO_GRATIS } from "../data/empresa";
+const H = (t: string) => `<span class="hueco">${t}</span>`;
+---
+
+<LegalLayout title="Shipping" kicker="LEGAL · SHIPPING">
+
+  <h2>The short version</h2>
+  <p>
+    We prepare your order within 24 business hours and it arrives in 48 to 72 business hours. Over
+    ${ENVIO_GRATIS}, shipping is on us. You get a tracking link by email the moment it leaves.
+  </p>
+
+  <h2>Where we ship</h2>
+  <p>
+    We currently ship to
+    <span set:html={EMPRESA.envios.startsWith("[") ? H(EMPRESA.envios) : EMPRESA.envios} />.
+    If your country is not on that list yet, join the mailing list — we announce new destinations
+    there first.
+  </p>
+
+  <h2>Times and costs</h2>
+  <ul>
+    <li><strong>Preparation:</strong> within 24 business hours of your order.</li>
+    <li><strong>Delivery:</strong> 48 to 72 business hours after that, for standard destinations.</li>
+    <li><strong>Free shipping</strong> on orders over ${ENVIO_GRATIS}. Below that, the cost is calculated at checkout before you pay.</li>
+  </ul>
+  <p>
+    Business hours means working days. An order placed on Friday evening is prepared on Monday.
+    Public holidays and peak periods can add a day, and we would rather say so here than surprise you.
+  </p>
+
+  <h2>Membership boxes</h2>
+  <p>
+    The Burrow works on a single monthly cut-off, not on your individual join date. Members are
+    charged at the start of the month and the boxes go out together in the first week. That is
+    deliberate: it means everyone receives that month's card at roughly the same time.
+  </p>
+  <p>
+    If you join mid-month, your first box goes out with the next cut-off, and we tell you the date
+    when you subscribe.
+  </p>
+
+  <h2>Tracking</h2>
+  <p>
+    As soon as the parcel is collected you receive an email with the carrier and the tracking number.
+    The same information is in your account, under MY BURROW. Tracking can take a few hours to start
+    updating after you receive it; that is the carrier's system, not a lost parcel.
+  </p>
+
+  <h2>If the address is wrong</h2>
+  <p>
+    We ship to the address you enter, exactly as you enter it. If you spot a mistake, write to
+    <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> immediately — if the parcel has not left,
+    we fix it for free. Once it has been collected we cannot change it, and a reshipment to a
+    corrected address is charged again.
+  </p>
+
+  <h2>Parcels that come back to us</h2>
+  <p>
+    If a parcel is returned because nobody collected it or the address was incomplete, we contact you.
+    You can have it sent again, paying the new shipping, or take a refund of the products minus the
+    original shipping cost.
+  </p>
+
+  <h2>Lost or damaged in transit</h2>
+  <p>
+    If tracking stops moving for more than 7 business days, or the box arrives damaged, tell us. We
+    open the claim with the carrier — that is our job, not yours — and we send a replacement or refund
+    you. You do not wait for the carrier to decide before we resolve it.
+  </p>
+
+  <h2>Customs and duties</h2>
+  <p>
+    For international destinations, any import duties or taxes charged by your country are set by your
+    customs authority and paid by you on delivery. We cannot calculate them in advance or mark a
+    parcel as a gift to avoid them.
+  </p>
+
+  <h2>Heat, cold and drinks</h2>
+  <p>
+    Rabbit Fuel travels well, but cans do not enjoy being left in a freezing porch for two days. If
+    you are ordering to a place with extreme weather, consider having it delivered somewhere it can be
+    collected the same day.
+  </p>
+
+</LegalLayout>

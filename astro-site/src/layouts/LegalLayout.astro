@@ -1,0 +1,75 @@
+---
+/* Marco de las páginas legales.
+   No carga app.js a propósito: ese guion espera el carrito, el hero y los
+   modales de la portada, y aquí reventaría. Estas páginas son estáticas y no
+   necesitan JavaScript para nada.
+   La tipografía del cuerpo tampoco es la de la marca: DM Serif Display va en
+   cursiva y leer diez párrafos legales en cursiva es un castigo. Los titulares
+   sí conservan Anton, así que la página sigue siendo de SnackRabbit. */
+import "../styles/styles.css";
+import { EMPRESA, ACTUALIZADO } from "../data/empresa";
+
+interface Props { title: string; kicker: string; }
+const { title, kicker } = Astro.props;
+
+const PAGINAS = [
+  { href: "/terms",    txt: "TERMS" },
+  { href: "/privacy",  txt: "PRIVACY" },
+  { href: "/returns",  txt: "RETURNS" },
+  { href: "/shipping", txt: "SHIPPING" },
+];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a12">
+<title>{title} — SNACKRABBIT</title>
+<meta name="description" content={`${title} for SnackRabbit.`}>
+<meta name="robots" content="index, follow">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ff4fd8"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g><rect x="4" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="7" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="5" y="6" width="2" height="1" fill="%23ff4fd8"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="legal-body">
+
+<header class="lg-nav">
+  <a class="lg-brand" href="/">
+    <svg class="lg-bunny" viewBox="0.9 -0.1 8.2 7.2" aria-hidden="true">
+      <g fill="currentColor">
+        <rect x="2" y="0" width="1" height="3"></rect><rect x="7" y="0" width="1" height="3"></rect>
+        <rect x="2" y="3" width="6" height="1"></rect><rect x="1" y="4" width="8" height="2"></rect>
+        <rect x="2" y="6" width="6" height="1"></rect>
+      </g>
+      <rect x="3" y="4" width="1" height="1" fill="#050508"></rect>
+      <rect x="6" y="4" width="1" height="1" fill="#050508"></rect>
+      <rect x="4" y="5" width="2" height="1" fill="#050508"></rect>
+    </svg>
+    <span>SNACKRABBIT</span>
+  </a>
+  <a class="lg-volver" href="/">← BACK TO THE STORE</a>
+</header>
+
+<main class="lg-main">
+  <p class="lg-kicker">{kicker}</p>
+  <h1 class="lg-title">{title}</h1>
+  <p class="lg-fecha">LAST UPDATED · {ACTUALIZADO}</p>
+  <div class="lg-texto"><slot /></div>
+
+  <p class="lg-contacto">
+    Questions about this page? Write to <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>.
+  </p>
+</main>
+
+<footer class="lg-pie">
+  <nav class="lg-pie-links">
+    {PAGINAS.map(p => <a href={p.href}>{p.txt}</a>)}
+  </nav>
+  <p>© 2026 SNACKRABBIT · {EMPRESA.nombre}</p>
+</footer>
+
+</body>
+</html>

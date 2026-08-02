@@ -1,0 +1,76 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { EMPRESA } from "../data/empresa";
+---
+
+<LegalLayout title="Returns & Refunds" kicker="LEGAL · RETURNS">
+
+  <h2>The short version</h2>
+  <p>
+    Thirty days to return apparel and plush, unused and with their tags. Drinks cannot come back once
+    the pack is open, for obvious reasons. If something arrives broken or wrong, it is on us and you
+    do not pay a cent.
+  </p>
+
+  <h2>What you can return</h2>
+  <ul>
+    <li><strong>Gym Towel and Rabbit Fuel Plush</strong> — within 30 days of delivery, unused, unwashed and with their original tags attached.</li>
+    <li><strong>Rabbit Fuel</strong> — an unopened pack can be returned within 30 days. Once a pack has been opened we cannot take it back: it is a food product and it cannot be resold or donated safely.</li>
+    <li><strong>Collectible cards, stickers and pins</strong> that came inside a membership box are part of that box and are not returned separately.</li>
+  </ul>
+
+  <h2>If it arrived damaged, wrong or incomplete</h2>
+  <p>
+    Write to <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> within 14 days of delivery with
+    your order number and a photograph. We will send a replacement or refund you in full, whichever
+    you prefer, and <strong>we pay the return shipping</strong>. You will not be asked to argue with
+    us about it.
+  </p>
+
+  <h2>How to return something</h2>
+  <ol>
+    <li>Email <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a> with your order number and what you want to return.</li>
+    <li>We reply with the return address and instructions. Please wait for that reply — parcels sent back without warning are hard to match to an order.</li>
+    <li>Pack the item as it arrived and send it. Keep the tracking number.</li>
+  </ol>
+  <p>
+    For a change of mind, the return shipping is paid by you. For anything that is our mistake or a
+    defect, it is paid by us.
+  </p>
+
+  <h2>Your refund</h2>
+  <p>
+    Once the return reaches us and we have checked it, we refund you <strong>to the same payment
+    method you used</strong>. We aim to process it within 3 business days of receiving the parcel;
+    after that, how quickly the money appears depends on your bank, usually between 5 and 10 business
+    days.
+  </p>
+  <p>
+    We refund the price of the returned items. The original shipping cost is refunded when the return
+    is our fault, and not when it is a change of mind.
+  </p>
+
+  <h2>Memberships</h2>
+  <p>
+    You can cancel The Burrow at any time from your account, and it takes effect at the end of the
+    month you have already paid for. If the box for that month has already gone out, it is yours; you
+    can still return it under the rules above, and the collectible card can stay with you either way.
+  </p>
+  <p>
+    We do not refund past months of a membership that was used, but if you were charged after you
+    cancelled, that is our error and we refund it immediately.
+  </p>
+
+  <h2>Exchanges</h2>
+  <p>
+    We do not run a separate exchange process. Return what you have, and place a new order for what
+    you want. It is faster for both of us.
+  </p>
+
+  <h2>Your legal rights</h2>
+  <p>
+    This policy is what we offer on top of the law, not instead of it. Whatever rights your local
+    consumer legislation gives you remain exactly as they are.
+  </p>
+
+</LegalLayout>
