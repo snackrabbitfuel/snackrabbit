@@ -17,6 +17,7 @@ import OrderConfirmed, { asunto as a2 } from "../src/emails/order-confirmed";
 import Shipped, { asunto as a3 } from "../src/emails/shipped";
 import WelcomeBurrow, { asunto as a4 } from "../src/emails/welcome-burrow";
 import Monthly, { asunto as a5 } from "../src/emails/monthly";
+import WelcomeFounder, { asunto as a6 } from "../src/emails/welcome-founder";
 
 const AQUI = dirname(fileURLToPath(import.meta.url));
 const SALIDA = resolve(AQUI, "../../assets/04-estrategia/correos");
@@ -28,6 +29,7 @@ const CORREOS = [
   { archivo: "03-shipped",         asunto: a3, el: <Shipped /> },
   { archivo: "04-welcome-burrow",  asunto: a4, el: <WelcomeBurrow /> },
   { archivo: "05-monthly",         asunto: a5, el: <Monthly /> },
+  { archivo: "06-welcome-founder", asunto: a6, el: <WelcomeFounder plan="DIGGER" /> },
 ];
 
 mkdirSync(SALIDA, { recursive: true });

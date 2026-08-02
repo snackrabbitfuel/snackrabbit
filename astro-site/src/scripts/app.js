@@ -1400,7 +1400,14 @@ const Auth = (() => {
     toast(t("auth.out"));
   }
 
-  return { paintNav, user: usuario, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir };
+  /* El token de la sesión en curso. Lo pide el servidor para comprobar quién
+     llama: es lo que le permite sacar el correo de la cuenta en vez de fiarse
+     del que le manden. Caduca solo, así que se pide en el momento de usarlo. */
+  async function token() {
+    try { return (await clerk?.session?.getToken()) || null; } catch { return null; }
+  }
+
+  return { paintNav, user: usuario, token, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir };
 })();
 
 /* ============================================================
@@ -1486,6 +1493,22 @@ const Madriguera = (() => {
     }
   }
 
+  /* Aviso por correo del alta. El servidor decide a quién escribe y se encarga
+     de mandarlo una sola vez, así que desde aquí basta con avisarle.
+     No se espera a que termine ni se le cuenta al usuario si falla: su sitio en
+     la lista ya está guardado, que es lo que vino a hacer, y un aviso de error
+     por un correo que no salió solo sembraría dudas sobre si quedó apuntado. */
+  function avisarPorCorreo() {
+    Auth.token()
+      .then(tk => tk && fetch("/api/apuntarse", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token: tk }),
+      }))
+      .then(r => { if (r && !r.ok) console.warn("[madriguera] el correo de bienvenida no salió:", r.status); })
+      .catch(e => console.warn("[madriguera] el correo de bienvenida no salió:", e));
+  }
+
   async function guardar(callado) {
     btn.disabled = true;
     try {
@@ -1495,6 +1518,7 @@ const Madriguera = (() => {
         desde: ficha()?.desde || new Date().toISOString().slice(0, 10)
       });
       pintar();
+      avisarPorCorreo();
       if (!callado) {
         const r = btn.getBoundingClientRect();
         confetti.burst(r.left + r.width / 2, r.top + r.height / 2, 34);
