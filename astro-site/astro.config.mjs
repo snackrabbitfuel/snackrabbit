@@ -1,9 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import vercel from '@astrojs/vercel';
 
 export default defineConfig({
-  // Sitio 100% estático: el HTML se pre-renderiza en build y no hay servidor.
-  // El comportamiento (carrito, i18n, modales) vive en src/scripts/app.js,
-  // que Astro empaqueta como módulo y sirve con hash de caché.
+  // El sitio sigue siendo estático: todas las páginas se pre-renderizan en build.
+  // El adaptador está solo para las rutas que piden servidor de verdad, que se
+  // marcan una a una con `export const prerender = false`. Hoy es únicamente el
+  // alta en la newsletter; mañana será también el checkout de Stripe.
+  adapter: vercel(),
   site: 'https://www.snackrabbit.co',
 });

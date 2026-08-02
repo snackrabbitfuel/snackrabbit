@@ -153,6 +153,9 @@ const I18N = {
     "news.btn": "SUSCRIBIRME ▸",
     "news.ok": "★ ESTÁS DENTRO. REVISA TU BANDEJA.",
     "news.err": "✕ ESE EMAIL NO PARECE UN EMAIL.",
+    "news.sending": "ENVIANDO…",
+    "news.already": "★ YA ESTABAS EN LA LISTA. TRANQUILO.",
+    "news.fail": "✕ NO PUDIMOS APUNTARTE. INTÉNTALO EN UN RATO.",
     "foot.tag": "Curiosidades virales desde 2023.<br>Ahora también en objetos.",
     "foot.shop": "TIENDA",
     "foot.help": "AYUDA",
@@ -366,6 +369,9 @@ const I18N = {
     "news.btn": "SUBSCRIBE ▸",
     "news.ok": "★ YOU'RE IN. CHECK YOUR INBOX.",
     "news.err": "✕ THAT EMAIL DOESN'T LOOK LIKE AN EMAIL.",
+    "news.sending": "SENDING…",
+    "news.already": "★ YOU WERE ALREADY ON THE LIST. RELAX.",
+    "news.fail": "✕ WE COULD NOT ADD YOU. TRY AGAIN IN A BIT.",
     "foot.tag": "Viral curiosities since 2023.<br>Now also in objects.",
     "foot.shop": "SHOP",
     "foot.help": "HELP",
@@ -1582,19 +1588,43 @@ const Panel = (() => {
 /* ============================================================
    NEWSLETTER
    ============================================================ */
-$("#newsForm").addEventListener("submit", e => {
+$("#newsForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const input = $("#newsEmail"), msg = $("#newsMsg");
+  const input = $("#newsEmail"), msg = $("#newsMsg"), boton = e.submitter;
   const email = input.value.trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     msg.textContent = t("news.err");
     input.focus();
     return;
   }
-  msg.textContent = t("news.ok");
-  const r = e.submitter?.getBoundingClientRect();
-  if (r) confetti.burst(r.left + r.width / 2, r.top, 40);
-  input.value = "";
+
+  msg.textContent = t("news.sending");
+  if (boton) { boton.disabled = true; boton.setAttribute("aria-busy", "true"); }
+  try {
+    const r = await fetch("/api/subscribe", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const { estado } = await r.json().catch(() => ({ estado: "error" }));
+
+    if (estado === "ok" || estado === "yaestaba") {
+      msg.textContent = t(estado === "ok" ? "news.ok" : "news.already");
+      input.value = "";
+      if (estado === "ok") {
+        const c = boton?.getBoundingClientRect();
+        if (c) confetti.burst(c.left + c.width / 2, c.top, 40);
+      }
+    } else {
+      /* Nunca se dice "guardado" si no se guardó: quien lo intente merece saber
+         que hay que volver más tarde. */
+      msg.textContent = t("news.fail");
+    }
+  } catch {
+    msg.textContent = t("news.fail");
+  } finally {
+    if (boton) { boton.disabled = false; boton.removeAttribute("aria-busy"); }
+  }
 });
 
 /* ============================================================

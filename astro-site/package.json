@@ -9,6 +9,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/vercel": "^11.0.4",
     "@clerk/clerk-js": "^6.25.13",
     "astro": "^7.1.6"
   }
