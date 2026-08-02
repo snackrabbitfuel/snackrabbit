@@ -100,8 +100,16 @@ const I18N = {
     "bur.yearNote": "CADA CARTA SE IMPRIME UNA VEZ. NO SE REIMPRIME.",
     "bur.prize": "COMPLETA LAS 12 CARTAS DEL AÑO Y EL PLUSH DE LA SERIE ES <b>TUYO. GRATIS.</b>",
     "bur.months": "ENE,FEB,MAR,ABR,MAY,JUN,JUL,AGO,SEP,OCT,NOV,DIC",
-    "bur.cardCap": "ENERO · CARTA 001 — EL DORSO SOLO EXISTE EN LA CAJA",
-    "bur.cardAlt": "Carta 001 — El Binky",
+    /* Los meses completos son para el pie de la carta destacada: ahí "ENE"
+       parecería una errata. Los abreviados son para las casillas, que no dan
+       para más. */
+    "bur.monthsFull": "ENERO,FEBRERO,MARZO,ABRIL,MAYO,JUNIO,JULIO,AGOSTO,SEPTIEMBRE,OCTUBRE,NOVIEMBRE,DICIEMBRE",
+    "bur.cardCap": "{mes} · CARTA {n} — EL DORSO SOLO EXISTE EN LA CAJA",
+    "bur.cardAlt": "Carta {n} de La Madriguera",
+    /* No "AGOTADA": agotado suena a que puede reponerse, y la regla del club es
+       justo la contraria. Enterrada es definitivo, y además es el idioma de la
+       madriguera. */
+    "bur.gone": "ENTERRADA",
     "bur.per": "/MES",
     "bur.t1name": "CURIOSO",
     "bur.t1f1": "8 LATAS (2 PACKS ×4)",
@@ -316,8 +324,10 @@ const I18N = {
     "bur.yearNote": "EACH CARD IS PRINTED ONCE. NEVER REPRINTED.",
     "bur.prize": "COLLECT ALL 12 CARDS OF THE YEAR AND THE SERIES PLUSH IS <b>YOURS. FREE.</b>",
     "bur.months": "JAN,FEB,MAR,APR,MAY,JUN,JUL,AUG,SEP,OCT,NOV,DEC",
-    "bur.cardCap": "JANUARY · CARD 001 — THE BACK ONLY EXISTS IN THE BOX",
-    "bur.cardAlt": "Card 001 — The Binky",
+    "bur.monthsFull": "JANUARY,FEBRUARY,MARCH,APRIL,MAY,JUNE,JULY,AUGUST,SEPTEMBER,OCTOBER,NOVEMBER,DECEMBER",
+    "bur.cardCap": "{mes} · CARD {n} — THE BACK ONLY EXISTS IN THE BOX",
+    "bur.cardAlt": "Card {n} of The Burrow",
+    "bur.gone": "BURIED",
     "bur.per": "/MONTH",
     "bur.t1name": "CURIOUS",
     "bur.t1f1": "8 CANS (2 PACKS ×4)",
@@ -1408,6 +1418,12 @@ const Madriguera = (() => {
   const ANIO_SERIE = 2027;      // Año Uno: enero a diciembre de 2027
   const NOMBRE = { curioso: "bur.t1name", cavador: "bur.t2name" };
 
+  /* Caras que se pidieron y no existían todavía. Hay que recordarlas: el
+     navegador no vuelve a lanzar `error` si se le pide dos veces la misma URL
+     rota, así que sin esta lista un segundo repintado —al apuntarse a la lista,
+     sin recargar— dejaría el pie anunciando una carta que no se está viendo. */
+  const faltan = new Set();
+
   let plan = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
   if (plan !== "curioso" && plan !== "cavador") plan = "cavador";
   let queria = false;   // pulsó sin sesión: se completa solo al crear la cuenta
@@ -1427,21 +1443,47 @@ const Madriguera = (() => {
       ? t("bur.noteIn", { email: Auth.user()?.primaryEmailAddress?.emailAddress || "" })
       : t("bur.note");
 
-    const carta = $("#burCarta");
-    carta.src = `/assets/carta-001-${LANG}.webp`;
-    carta.alt = t("bur.cardAlt");
-
     /* Año Uno va de enero a diciembre, así que el número de carta y el mes
        coinciden para siempre: la 010 cae en octubre y la 012 en diciembre. */
     const meses = t("bur.months").split(",");
     $$("[data-mes]", sec).forEach(el => { el.textContent = meses[+el.dataset.mes]; });
 
-    /* Se enciende la casilla del mes en curso; antes de que arranque la serie,
-       la primera, que es la que se está enseñando. */
+    /* La casilla del mes en curso; antes de que arranque la serie, la primera,
+       que es la que se está enseñando. */
     const hoy = new Date();
     const activa = hoy.getFullYear() === ANIO_SERIE ? hoy.getMonth()
                  : hoy.getFullYear() < ANIO_SERIE ? 0 : 11;
-    $$(".by-card", sec).forEach((c, i) => c.classList.toggle("on", i === activa));
+
+    /* Tres estados, no dos. Marcar solo la del mes deja las pasadas idénticas a
+       las futuras: en junio se verían cinco "?" que parecen estar por llegar
+       cuando en realidad ya no existen. Se perdería justo lo que esta rejilla
+       tiene que contar, que es que llegar tarde cuesta. */
+    $$(".by-card", sec).forEach((c, i) => {
+      c.classList.toggle("on",  i === activa);
+      c.classList.toggle("ida", i <  activa);
+    });
+
+    /* La carta destacada sigue al mes en curso. Las caras se publican de una en
+       una, el mes que les toca, para no destripar el año: si la de este mes aún
+       no está subida se cae a la 001, que siempre está, en vez de dejar el hueco
+       roto y un pie mintiendo. */
+    const largos = t("bur.monthsFull").split(",");
+    const carta = $("#burCarta"), pie = $("#burCarPie");
+    const rotular = (n) => {
+      carta.alt = t("bur.cardAlt", { n });
+      pie.textContent = t("bur.cardCap", { mes: largos[+n - 1], n });
+    };
+
+    const num = String(activa + 1).padStart(3, "0");
+    const src = `/assets/carta-${num}-${LANG}.webp`;
+    const respaldo = () => { carta.src = `/assets/carta-001-${LANG}.webp`; rotular("001"); };
+
+    if (faltan.has(src)) respaldo();
+    else {
+      carta.onerror = () => { faltan.add(src); carta.onerror = null; respaldo(); };
+      carta.src = src;
+      rotular(num);
+    }
   }
 
   async function guardar(callado) {

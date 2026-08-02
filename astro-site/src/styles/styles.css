@@ -995,6 +995,30 @@ body::after {
   background: linear-gradient(180deg, rgba(255, 212, 0, .14), transparent 62%), var(--card-dark);
 }
 .by-card.on .by-n, .by-card.on .by-when { color: var(--yellow); }
+
+/* Enterrada: el mes ya pasó y esa carta no se reimprime. Tiene que leerse
+   distinta de una futura de un vistazo — si las pasadas y las que faltan se ven
+   igual, la rejilla deja de contar que llegar tarde cuesta.
+   La trama diagonal es la de una casilla tachada; el rosa la mantiene dentro de
+   la marca sin encenderla, porque no es un premio, es una puerta cerrada. */
+.by-gone {
+  display: none;
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 6.5px; letter-spacing: .3px; line-height: 1.15;
+  color: var(--pink); text-align: center; opacity: .85;
+}
+.by-card.ida .by-gone { display: block; }
+.by-card.ida .by-q { display: none; }
+.by-card.ida {
+  border-color: #17172a;
+  background:
+    repeating-linear-gradient(-45deg, transparent 0 4px, rgba(255, 79, 216, .045) 4px 8px),
+    var(--ink);
+}
+.by-card.ida .by-n, .by-card.ida .by-when { color: #3c3c55; }
+/* Sin rebote al pasar por encima: no hay nada que mirar ahí. */
+.by-card.ida:hover { transform: none; border-color: #17172a; }
+.by-card.ida:hover .by-q { color: #23233a; }
 .by-prize {
   margin-top: 16px; padding-top: 14px;
   border-top: 3px dashed var(--line-dark);

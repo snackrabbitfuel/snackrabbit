@@ -29,7 +29,10 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
     <figure class="by-destacada">
       <img id="burCarta" src="/assets/carta-001-en.webp" width="620" height="864"
            alt="Card 001 — The Binky" loading="lazy" decoding="async">
-      <figcaption data-i18n="bur.cardCap">JANUARY · CARD 001 — THE BACK ONLY EXISTS IN THE BOX</figcaption>
+      <!-- Sin data-i18n a propósito: el número y el mes dependen de la fecha, así
+           que este pie lo escribe el JS. El texto de aquí es lo que se ve antes
+           de que arranque. -->
+      <figcaption id="burCarPie">JANUARY · CARD 001 — THE BACK ONLY EXISTS IN THE BOX</figcaption>
     </figure>
 
     <div class="by-col">
@@ -45,6 +48,7 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
           <span class="by-face" aria-hidden="true">
             <svg class="by-bunny"><use href="#bunny" /></svg>
             <span class="by-q">?</span>
+            <span class="by-gone" data-i18n="bur.gone">BURIED</span>
           </span>
           <span class="by-when" data-mes={i}>{MESES[i]}</span>
         </li>
