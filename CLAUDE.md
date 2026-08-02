@@ -100,20 +100,43 @@ Pendiente, por orden de dependencia:
 2. Rellenar `astro-site/src/data/empresa.ts` con los datos legales. Mientras
    tengan corchetes salen resaltados en amarillo en las páginas.
 3. URLs de TikTok, YouTube y X para el footer. Instagram ya está.
-4. **Correo entrante**: el dominio raíz no tiene MX, así que nadie recibe en
-   `@snackrabbit.co`. Resend solo envía. Las respuestas de los clientes y la
-   dirección de las páginas legales se pierden hasta que se active **Cloudflare
-   Email Routing** (gratis, reenvía a Gmail, no choca con Resend porque este
-   usa el subdominio `send.`).
-5. Falta **DMARC**. Gmail y Yahoo lo exigen por encima de 5.000 correos al día.
-   Empezar por `_dmarc` TXT `v=DMARC1; p=none;`, que observa sin bloquear.
-6. Borrar `/api/probar-correo` cuando se terminen de revisar los correos.
+4. **Ningún correo se manda solo todavía.** Las cinco plantillas de
+   `src/emails/` solo las usa la ruta de pruebas. Apuntarse a la newsletter
+   guarda el contacto y JOIN THE LIST marca el perfil, pero ninguna de las dos
+   escribe a nadie. Conectarlo pide una ruta de servidor que compruebe la sesión
+   de Clerk antes de enviar —si no, es una URL pública que manda correos a
+   cualquiera— y para eso hace falta `CLERK_SECRET_KEY` en Vercel. Es la misma
+   clave que necesitará el webhook de Stripe para escribir `publicMetadata`.
+5. Borrar `/api/probar-correo` cuando se terminen de revisar los correos.
 
 ## Correo
 
-`snackrabbit.co` está **verificado en Resend** desde agosto de 2026. Los
-registros viven en Cloudflare: MX y SPF en `send.snackrabbit.co`, DKIM en
-`resend._domainkey`. El remitente es `hello@snackrabbit.co`.
+Terminado y verificado de punta a punta el 2 de agosto de 2026. Todo el DNS
+vive en Cloudflare y **dos proveedores conviven sin pisarse**:
+
+| | Para qué | Dónde vive |
+|---|---|---|
+| **Resend** | correo automático (pedidos, newsletter) | MX y SPF en `send.snackrabbit.co`, DKIM en `resend._domainkey` |
+| **Zoho Mail** | correo humano, entrante y saliente | MX y SPF en la raíz, DKIM en `zoho._domainkey` |
+
+El remitente de la web es `hello@snackrabbit.co`, que además **recibe**: probado
+en los dos sentidos, con DKIM y DMARC en PASS.
+
+DMARC: `v=DMARC1; p=none; rua=...; adkim=r; aspf=r`. Tres cosas que no se tocan
+sin pensarlo dos veces:
+
+- **Un solo SPF en la raíz.** Dos registros SPF invalidan el sistema entero. Por
+  eso Resend tiene el suyo en `send.` y Zoho el suyo en la raíz.
+- **Alineación relajada** (`adkim=r`, `aspf=r`). En estricto, Resend fallaría la
+  validación: manda desde `hello@snackrabbit.co` pero usa `send.` por debajo, y
+  en estricto esos dos dominios tienen que ser idénticos.
+- **`p=none` es deliberado.** Subir a `quarantine` o `reject` sin haber leído
+  antes los informes deja de bloquear a los suplantadores y empieza a bloquear
+  los correos propios, en silencio.
+
+BIMI (el logo junto al correo en Gmail) queda descartado por ahora: pide DMARC
+en reject, un certificado VMC de ~1.000 $/año y una marca registrada. Va después
+de la entidad y de la marca, no antes.
 
 `/api/probar-correo` tiene una **lista de destinatarios permitidos** y no es
 decorativa. Antes la ruta era inofensiva porque Resend solo entrega desde
