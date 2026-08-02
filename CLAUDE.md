@@ -97,12 +97,30 @@ Pendiente, por orden de dependencia:
 
 1. **Registrar la entidad en EE.UU.** → desbloquea Stripe, que es lo que falta
    para cobrar. Hoy el checkout es una demostración: no cobra.
-2. **Verificar `snackrabbit.co` en Resend** (DNS en **Cloudflare**, registros en
-   gris, sin proxy) → los correos podrán salir del dominio y llegar a cualquiera.
-3. Rellenar `astro-site/src/data/empresa.ts` con los datos legales. Mientras
+2. Rellenar `astro-site/src/data/empresa.ts` con los datos legales. Mientras
    tengan corchetes salen resaltados en amarillo en las páginas.
-4. URLs de TikTok, YouTube y X para el footer. Instagram ya está.
-5. Borrar `/api/probar-correo` cuando se terminen de revisar los correos.
+3. URLs de TikTok, YouTube y X para el footer. Instagram ya está.
+4. **Correo entrante**: el dominio raíz no tiene MX, así que nadie recibe en
+   `@snackrabbit.co`. Resend solo envía. Las respuestas de los clientes y la
+   dirección de las páginas legales se pierden hasta que se active **Cloudflare
+   Email Routing** (gratis, reenvía a Gmail, no choca con Resend porque este
+   usa el subdominio `send.`).
+5. Falta **DMARC**. Gmail y Yahoo lo exigen por encima de 5.000 correos al día.
+   Empezar por `_dmarc` TXT `v=DMARC1; p=none;`, que observa sin bloquear.
+6. Borrar `/api/probar-correo` cuando se terminen de revisar los correos.
+
+## Correo
+
+`snackrabbit.co` está **verificado en Resend** desde agosto de 2026. Los
+registros viven en Cloudflare: MX y SPF en `send.snackrabbit.co`, DKIM en
+`resend._domainkey`. El remitente es `hello@snackrabbit.co`.
+
+`/api/probar-correo` tiene una **lista de destinatarios permitidos** y no es
+decorativa. Antes la ruta era inofensiva porque Resend solo entrega desde
+`onboarding@resend.dev` al dueño de la cuenta; con el dominio verificado esa
+red desapareció y una URL pública que manda correos con la marca es un regalo
+para quien quiera quemar la reputación del dominio. Si se amplía la lista, que
+sea a conciencia.
 
 ## Cómo trabaja Diego
 
