@@ -1574,7 +1574,17 @@ const Panel = (() => {
     $("#pnUser").textContent = u.primaryEmailAddress?.emailAddress || "";
 
     /* ---- el año ---- */
-    const mias = Array.isArray(m.cartas) ? m.cartas : [];
+    /* Las cartas se leen de publicMetadata, que solo se escribe desde el
+       servidor —lo hará el webhook de Stripe al cobrar el mes—. En
+       unsafeMetadata no pueden vivir: ese lo cambia el propio cliente desde su
+       navegador, y con el plush del mes 12 de por medio sería regalar el premio
+       a quien sepa abrir la consola.
+       Se sigue mirando unsafeMetadata como respaldo para poder probar el panel
+       antes de que exista la pasarela. */
+    const pub = u.publicMetadata || {};
+    const mias = Array.isArray(pub.cartas) ? pub.cartas
+               : Array.isArray(m.cartas)   ? m.cartas
+               : [];
     $$(".pn-carta", el).forEach(c => {
       const n = +c.dataset.carta, tengo = mias.includes(n);
       c.classList.toggle("tiene", tengo);
