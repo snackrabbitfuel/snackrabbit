@@ -1173,18 +1173,17 @@ const Auth = (() => {
      toda la interfaz es la nuestra. La clave publicable es pública por diseño
      (Clerk documenta que es seguro exponerla); la clave secreta no se usa aquí
      ni debe estar nunca en el cliente. */
-  /* La de reserva es la instancia de DESARROLLO y existe solo para trabajar en
-     local. En producción manda la variable de entorno de Vercel. */
-  const PK_DESARROLLO = "pk_test_ZWxlZ2FudC1pbXBhbGEtNTguY2xlcmsuYWNjb3VudHMuZGV2JA";
-  const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY || PK_DESARROLLO;
-
-  /* Así fue como una instancia de desarrollo acabó atendiendo a clientes reales
-     sin que nadie lo notara: la reserva tapaba la falta de configuración. Ahora
-     lo dice en voz alta. */
-  if (PK.startsWith("pk_test_") && !/^(localhost|127\.|192\.168\.|\[::1\])/.test(location.hostname)) {
-    console.warn("[auth] Clerk está usando la instancia de DESARROLLO en un dominio " +
-                 "público. Define PUBLIC_CLERK_PUBLISHABLE_KEY con la clave pk_live " +
-                 "en Vercel y vuelve a desplegar.");
+  /* Sin valor de reserva a propósito. Antes había uno con la clave de desarrollo
+     y fue justo lo que permitió que una instancia de pruebas atendiera a clientes
+     reales durante días sin que nadie lo notara: tapaba la falta de configuración
+     en silencio. Ahora, si la variable no está, el login falla a la vista y se
+     dice por consola, que es mucho mejor que funcionar a medias.
+     En local la aporta el archivo .env. */
+  const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+  if (!PK) console.error("[auth] falta PUBLIC_CLERK_PUBLISHABLE_KEY. En Vercel es una " +
+                         "variable de entorno; en local va en .env.");
+  if (PK && PK.startsWith("pk_test_") && !/^(localhost|127\.|192\.168\.|\[::1\])/.test(location.hostname)) {
+    console.warn("[auth] Clerk está usando la instancia de DESARROLLO en un dominio público.");
   }
 
   const modal = $("#loginModal");
@@ -1201,6 +1200,7 @@ const Auth = (() => {
   function iniciar() {
     if (arranque) return arranque;
     arranque = (async () => {
+      if (!PK) { fallo = true; return; }
       try {
         const { Clerk } = await import("@clerk/clerk-js");
         clerk = new Clerk(PK);
