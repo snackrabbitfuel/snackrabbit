@@ -11,7 +11,7 @@
  */
 import * as React from "react";
 import {
-  Body, Column, Container, Head, Heading, Hr, Html, Img, Link, Preview, Row, Section, Text,
+  Body, Column, Container, Head, Heading, Hr, Html, Link, Preview, Row, Section, Text,
 } from "@react-email/components";
 
 export const SITIO = "https://www.snackrabbit.co";
@@ -34,6 +34,50 @@ export const F = {
   pixel: "'Courier New', Courier, monospace",
   cuerpo: "Georgia, 'Times New Roman', serif",
 };
+
+
+/* El conejo dibujado con celdas de tabla, no con una imagen.
+ *
+ * Gmail bloquea las imágenes remotas cuando el remitente no está autenticado, y
+ * entonces la cabecera se queda con un icono roto: justo lo que no quieres que
+ * vea alguien que abre tu correo por primera vez. Como el logo es pixel art, es
+ * literalmente una rejilla, así que se puede pintar con celdas de color. Eso se
+ * ve en el 100% de los clientes, con imágenes activadas o no, y pesa cero.
+ *
+ * 0 = fondo (se ve el rosa) · 1 = cuerpo · 2 = ojos y hocico
+ */
+const REJILLA = [
+  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+  [0, 0, 1, 0, 0, 0, 0, 1, 0, 0],
+  [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+  [0, 1, 1, 2, 1, 1, 2, 1, 1, 0],
+  [0, 1, 1, 1, 2, 2, 1, 1, 1, 0],
+  [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+];
+
+export function Conejo({ lado = 5, cuerpo = C.tinta, hueco = C.rosa }) {
+  return (
+    <table role="presentation" cellPadding={0} cellSpacing={0} border={0}
+           style={{ borderCollapse: "collapse", borderSpacing: 0 }}>
+      <tbody>
+        {REJILLA.map((fila, y) => (
+          <tr key={y} style={{ height: `${lado}px` }}>
+            {fila.map((celda, x) => (
+              <td key={x} width={lado} height={lado}
+                  bgcolor={celda === 1 ? cuerpo : celda === 2 ? hueco : undefined}
+                  style={{
+                    width: `${lado}px`, height: `${lado}px`,
+                    lineHeight: `${lado}px`, fontSize: 0, padding: 0,
+                    background: celda === 1 ? cuerpo : celda === 2 ? hueco : "transparent",
+                  }}>&#8203;</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 /* ---------------------------------------------------------------- bloques */
 
@@ -107,8 +151,8 @@ export function Marco({ adelanto, kicker, titular, children }: MarcoProps) {
 
           <Section style={{ background: C.rosa, padding: "20px 26px", border: `4px solid ${C.tinta}` }}>
             <Row>
-              <Column style={{ width: "50px" }}>
-                <Img src={`${SITIO}/assets/logo-email-240.png`} width="38" height="38" alt="SnackRabbit" style={{ display: "block", border: 0 }} />
+              <Column style={{ width: "62px", verticalAlign: "middle" }}>
+                <Conejo />
               </Column>
               <Column style={{ fontFamily: F.display, fontSize: "23px", letterSpacing: "1.5px", color: C.tinta }}>
                 SNACKRABBIT
