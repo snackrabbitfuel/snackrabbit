@@ -6,11 +6,20 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "emails": "tsx scripts/render-emails.tsx"
   },
   "dependencies": {
     "@astrojs/vercel": "^11.0.4",
     "@clerk/clerk-js": "^6.25.13",
-    "astro": "^7.1.6"
+    "@react-email/components": "^1.0.12",
+    "astro": "^7.1.6",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@react-email/render": "^2.1.0",
+    "@types/react": "^19.2.18",
+    "tsx": "^4.23.1"
   }
 }
