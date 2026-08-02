@@ -13,17 +13,29 @@ import Monthly, { asunto as a5 } from "../../emails/monthly";
  *   /api/probar-correo?a=tu@correo.com&p=4
  *
  * Es una ruta pública y manda correos, así que la pregunta obligada es si se
- * puede abusar de ella. No: el remitente está fijado a `onboarding@resend.dev`,
- * la dirección de cortesía de Resend, y Resend **solo** entrega desde ella al
- * correo del dueño de la cuenta. Aunque alguien encuentre esta URL, lo único
- * que puede provocar es que a Diego le llegue un correo suyo.
+ * puede abusar de ella.
  *
- * Esa restricción es de Resend, no de mi código, que es lo que la hace fiable.
- * Aun así, esto es una herramienta de prueba: cuando terminemos, se borra.
+ * Antes no se podía: el remitente era `onboarding@resend.dev` y Resend solo
+ * entrega desde esa dirección al dueño de la cuenta. La protección la ponía
+ * Resend, no este código. Al pasar al dominio verificado esa red desaparece —
+ * ahora el dominio puede escribir a cualquiera— así que la restricción tiene
+ * que vivir aquí: solo se entrega a las direcciones de Diego.
+ *
+ * Sin esa lista, quien encontrara la URL podría mandar correos con la marca de
+ * SnackRabbit a quien quisiera, y las quejas de spam las cobraría el dominio.
+ *
+ * Esto sigue siendo una herramienta de prueba: cuando terminemos, se borra.
  */
 export const prerender = false;
 
-const REMITENTE = "SnackRabbit <onboarding@resend.dev>";
+const REMITENTE = "SnackRabbit <hello@snackrabbit.co>";
+
+/* A quién se le puede mandar una prueba. Si hace falta enseñárselo a alguien
+   más, se añade aquí y se despliega: es deliberadamente incómodo. */
+const PERMITIDOS = [
+  "dieval20@gmail.com",
+  "rabbithole.tv26@gmail.com",
+];
 
 const PLANTILLAS: Record<string, { asunto: string; el: React.ReactElement }> = {
   "1": { asunto: a1, el: React.createElement(WelcomeList) },
@@ -43,12 +55,19 @@ const PLANTILLAS: Record<string, { asunto: string; el: React.ReactElement }> = {
 };
 
 export const GET: APIRoute = async ({ url }) => {
-  const a = url.searchParams.get("a") || "";
+  const a = (url.searchParams.get("a") || "").trim().toLowerCase();
   const p = url.searchParams.get("p") || "1";
   const plantilla = PLANTILLAS[p];
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(a)) {
     return new Response("Falta el destinatario: ?a=tu@correo.com&p=1..5", { status: 400 });
+  }
+  if (!PERMITIDOS.includes(a)) {
+    return new Response(
+      "Esta ruta solo manda pruebas a las direcciones de la lista.\n" +
+      "Para añadir una, se edita PERMITIDOS en el código y se despliega.",
+      { status: 403 },
+    );
   }
   if (!plantilla) {
     return new Response("Plantilla desconocida. Usa p=1 a p=5.", { status: 400 });
