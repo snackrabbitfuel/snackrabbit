@@ -58,7 +58,13 @@ export const POST: APIRoute = async ({ request }) => {
      se le regalan pistas. */
   let userId = "";
   try {
-    const payload = await verifyToken(token, { secretKey });
+    /* authorizedParties ata el token a nuestros dominios. Sin esa lista, un
+       token emitido para otra aplicación de Clerk se aceptaría aquí como si
+       fuera nuestro. */
+    const payload = await verifyToken(token, {
+      secretKey,
+      authorizedParties: [SITIO, "https://snackrabbit.co", "http://localhost:4321"],
+    });
     userId = String(payload.sub || "");
   } catch {
     return responder("nosesion", 401);

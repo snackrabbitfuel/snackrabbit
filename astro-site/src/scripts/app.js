@@ -210,6 +210,7 @@ const I18N = {
     "ck.note": "DEMO — NO SE COBRA NADA.",
     "ck.noteSaved": "GUARDAMOS TUS DATOS PARA LA PRÓXIMA COMPRA · DEMO, NO SE COBRA NADA.",
     "ck.errRequired": "COMPLETA LOS CAMPOS OBLIGATORIOS.",
+    "ck.errEmail": "ESE CORREO NO PARECE VÁLIDO. AHÍ TE MANDAMOS EL SEGUIMIENTO.",
     "ck.errPhone": "ESE TELÉFONO NO PARECE VÁLIDO.",
     "auth.errMissing": "TU CUENTA DE CLERK PIDE CAMPOS QUE NO ENVIAMOS ({fields}). DESACTÍVALOS EN EL PANEL.",
     "auth.errName": "PON UN NOMBRE (MÍN. 2 LETRAS).",
@@ -432,6 +433,7 @@ const I18N = {
     "ck.note": "DEMO — NO PAYMENT IS TAKEN.",
     "ck.noteSaved": "WE SAVE YOUR DETAILS FOR NEXT TIME · DEMO, NO PAYMENT IS TAKEN.",
     "ck.errRequired": "PLEASE FILL IN THE REQUIRED FIELDS.",
+    "ck.errEmail": "THAT EMAIL DOESN'T LOOK VALID. IT IS WHERE YOUR TRACKING GOES.",
     "ck.errPhone": "THAT PHONE NUMBER DOESN'T LOOK VALID.",
     "auth.errMissing": "YOUR CLERK APP REQUIRES FIELDS WE DO NOT SEND ({fields}). TURN THEM OFF IN THE DASHBOARD.",
     "auth.errName": "ENTER A NAME (MIN. 2 LETTERS).",
@@ -1155,11 +1157,25 @@ const Checkout = (() => {
   const LOCAL = "sr_envio_v1";
 
   const guardadoLocal = () => { try { return JSON.parse(localStorage.getItem(LOCAL)) || {}; } catch { return {}; } };
+  const olvidarLocal = () => { try { localStorage.removeItem(LOCAL); } catch {} };
+
+  /* La copia local lleva anotado de quién es.
+   *
+   * Sin eso, el nombre, el teléfono y la dirección de casa de quien compró
+   * antes se le rellenaban al siguiente que abriera el checkout en ese
+   * navegador: un ordenador compartido, el portátil de la familia, un móvil que
+   * se presta. Ahora solo se reutiliza si es de la misma cuenta, o si nadie ha
+   * entrado ni entonces ni ahora. Y al cerrar sesión se borra. */
+  function previoSeguro(u) {
+    const local = guardadoLocal();
+    const suyo = u ? local._de === u.id : local._de == null;
+    return { ...(suyo ? local : {}), ...(u?.unsafeMetadata?.envio || {}) };
+  }
 
   function abrir() {
     if (!Cart.count()) { toast(t("cart.emptyToast")); return; }
     const u = Auth.user();
-    const previo = { ...guardadoLocal(), ...(u?.unsafeMetadata?.envio || {}) };
+    const previo = previoSeguro(u);
     CAMPOS.forEach(c => { form[c].value = previo[c] || ""; });
     if (u) {                                   // lo que ya sabemos de la cuenta
       form.name.value = form.name.value || [u.firstName, u.lastName].filter(Boolean).join(" ");
@@ -1176,11 +1192,16 @@ const Checkout = (() => {
     const err = form.querySelector(".lm-err");
     const datos = Object.fromEntries(CAMPOS.map(c => [c, form[c].value.trim()]));
     if (CAMPOS.filter(c => c !== "notes").some(c => !datos[c])) return err.textContent = t("ck.errRequired");
+    /* Que el campo no esté vacío no lo convierte en un correo. Sin esta
+       comprobación se aceptaba cualquier cosa, y a esa dirección es a donde iba
+       a ir la confirmación del pedido y el seguimiento del envío. */
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email)) return err.textContent = t("ck.errEmail");
     if (datos.phone.replace(/[^0-9]/g, "").length < 7) return err.textContent = t("ck.errPhone");
 
     const b = form.querySelector(".lm-submit");
     b.setAttribute("aria-busy", "true"); b.disabled = true;
-    try { localStorage.setItem(LOCAL, JSON.stringify(datos)); } catch {}
+    const u = Auth.user();
+    try { localStorage.setItem(LOCAL, JSON.stringify({ ...datos, _de: u?.id || null })); } catch {}
     // si hay cuenta, los datos viajan al perfil del cliente en Clerk
     try { await Auth.guardarEnvio(datos); }
     catch (ex) { console.warn("[checkout] no se pudo guardar en el perfil:", ex); }
@@ -1192,7 +1213,7 @@ const Checkout = (() => {
     setTimeout(() => confetti.burst(innerWidth / 2, innerHeight / 3, 80), 250);
   });
 
-  return { abrir };
+  return { abrir, olvidarLocal };
 })();
 
 $("#btnCheckout").addEventListener("click", () => Checkout.abrir());
@@ -1424,6 +1445,10 @@ const Auth = (() => {
 
   async function salir() {
     await clerk.signOut();
+    /* La dirección guardada en el navegador se va con la sesión: si no, el
+       siguiente que abra el checkout en este ordenador se encuentra el nombre,
+       el teléfono y la dirección de casa del anterior. */
+    Checkout.olvidarLocal();
     cambio();
     toast(t("auth.out"));
   }
@@ -1653,8 +1678,13 @@ const Panel = (() => {
     animar ? contar($("#pnCartasN"), mias.length) : ($("#pnCartasN").textContent = mias.length);
     $("#pnCartasNota").textContent = t(mias.length ? "pn.cardsSome" : "pn.cardsEmpty");
 
-    /* ---- el descenso ---- */
-    const latas = m.rango?.latas || 0;
+    /* ---- el descenso ----
+       Las latas se leen de publicMetadata por lo mismo que las cartas: en
+       unsafeMetadata cualquiera se pone 300 desde la consola y aparece como
+       THE RABBIT. El día que esos rangos den un pin o un plush, sería regalar
+       objetos físicos a quien sepa abrir el navegador. */
+    const latasCruda = Number(pub.rango?.latas ?? m.rango?.latas);
+    const latas = Number.isFinite(latasCruda) && latasCruda > 0 ? Math.floor(latasCruda) : 0;
     const logrados = UMBRALES.filter(x => latas >= x).length;
     $$(".pn-peldano", el).forEach((li, i) => {
       li.classList.toggle("hecho", i < logrados);
@@ -1672,25 +1702,77 @@ const Panel = (() => {
       : sig ? t("pn.rankNext", { n: sig - latas, rank: t(`rank.${logrados + 1}`) })
       : t("pn.rankTop");
 
-    /* ---- pedidos ---- */
-    const pedidos = Array.isArray(m.pedidos) ? m.pedidos : [];
+    /* ---- pedidos ----
+       Con nodos y textContent, no con innerHTML. Estos datos los escribirá el
+       webhook de Stripe, pero hasta que exista los escribe quien tenga la
+       consola abierta: un «<img onerror=…>» metido en el nombre de un pedido se
+       ejecutaba al pintar el panel.
+       Y el importe se convierte a número: money() hace n.toFixed(2), así que un
+       total guardado como texto —que es justo como lo modela la plantilla del
+       correo— lanzaba y dejaba el panel sin abrirse. */
+    const pedidos = Array.isArray(pub.pedidos) ? pub.pedidos
+                  : Array.isArray(m.pedidos)   ? m.pedidos
+                  : [];
     $("#pnPedidosN").textContent = pedidos.length || "";
-    $("#pnPedidos").innerHTML = pedidos.length
-      ? pedidos.map(o => `<div class="pn-pedido"><span>${o.id} · ${o.fecha}</span>` +
-          `<span><i class="pn-estado ${o.estado || ""}">${o.estadoTxt || ""}</i> ${money(o.total || 0)}</span></div>`).join("")
-      : `<p class="pn-nota">${t("pn.ordersEmpty")}</p>`;
+    const caja = $("#pnPedidos");
+    caja.textContent = "";
+    if (!pedidos.length) {
+      const p = document.createElement("p");
+      p.className = "pn-nota";
+      p.textContent = t("pn.ordersEmpty");
+      caja.appendChild(p);
+    } else {
+      pedidos.forEach(o => {
+        const fila = document.createElement("div");
+        fila.className = "pn-pedido";
+
+        const izq = document.createElement("span");
+        izq.textContent = [o?.id, o?.fecha].filter(Boolean).join(" · ") || "—";
+
+        const est = document.createElement("i");
+        /* La clase sale de una lista cerrada: si viniera del dato, se podría
+           colar cualquier cosa dentro del atributo. */
+        est.className = "pn-estado" +
+          (o?.estado === "entregado" ? " entregado" : o?.estado === "en" ? " en" : "");
+        est.textContent = o?.estadoTxt || "";
+
+        const n = Number(o?.total);
+        const der = document.createElement("span");
+        der.append(est, document.createTextNode(" " + money(Number.isFinite(n) ? n : 0)));
+
+        fila.append(izq, der);
+        caja.appendChild(fila);
+      });
+    }
 
     /* ---- lo administrativo ---- */
+    /* Aquí sí va innerHTML: el texto sale entero del diccionario de la casa
+       —lleva un <b>— y lo único que decide el dato es qué clave se usa. */
     $("#pnMembresia").innerHTML = m.madriguera?.lista
       ? t("pn.memberYes", { plan: t(m.madriguera.plan === "cavador" ? "bur.t2name" : "bur.t1name") })
       : t("pn.memberNone");
+
     const e = m.envio;
-    $("#pnEnvio").innerHTML = e
-      ? `<b>${e.name || ""}</b><br>${[e.address, e.city, e.country].filter(Boolean).join(", ")}`
-      : t("pn.shipNone");
+    const env = $("#pnEnvio");
+    env.textContent = "";
+    if (!e) env.textContent = t("pn.shipNone");
+    else {
+      const b = document.createElement("b");
+      b.textContent = e.name || "";
+      env.append(b, document.createElement("br"),
+                 document.createTextNode([e.address, e.city, e.country].filter(Boolean).join(", ")));
+    }
   }
 
-  function abrir() { pintar(true); UI.open(el); }
+  /* Se abre primero y se pinta después, dentro de un try.
+     Antes era `pintar(true); UI.open(el);`, así que cualquier excepción al
+     pintar dejaba el panel sin abrirse: el botón del navbar no hacía nada —ni
+     panel, ni error, ni aviso— y solo para el cliente que tuviera el dato roto,
+     que es la avería más difícil de que te reporten. */
+  function abrir() {
+    UI.open(el);
+    try { pintar(true); } catch (err) { console.error("[panel] no se pudo pintar:", err); }
+  }
 
   $("#pnSalir").addEventListener("click", async () => {
     UI.close();

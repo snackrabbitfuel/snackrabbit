@@ -31,12 +31,17 @@ export const prerender = false;
 
 const REMITENTE = "SnackRabbit <hello@snackrabbit.co>";
 
-/* A quién se le puede mandar una prueba. Si hace falta enseñárselo a alguien
-   más, se añade aquí y se despliega: es deliberadamente incómodo. */
-const PERMITIDOS = [
-  "dieval20@gmail.com",
-  "rabbithole.tv26@gmail.com",
-];
+/* A quién se le puede mandar una prueba.
+ *
+ * Sale de una variable de entorno, no del código: este repositorio es público y
+ * estaban aquí las dos direcciones personales de Diego, a la vista de cualquier
+ * rastreador de correos. La variable es `PRUEBA_DESTINOS` en Vercel, con las
+ * direcciones separadas por comas.
+ *
+ * Si no está definida, la ruta no manda nada. Es lo correcto: sin lista, el
+ * único límite de una URL pública que envía correos sería la cuota de Resend. */
+const permitidos = () =>
+  secreto("PRUEBA_DESTINOS").split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
 
 const PLANTILLAS: Record<string, { asunto: string; el: React.ReactElement }> = {
   "1": { asunto: a1, el: React.createElement(WelcomeList) },
@@ -63,10 +68,17 @@ export const GET: APIRoute = async ({ url }) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(a)) {
     return new Response("Falta el destinatario: ?a=tu@correo.com&p=1..5", { status: 400 });
   }
-  if (!PERMITIDOS.includes(a)) {
+  const lista = permitidos();
+  if (!lista.length) {
     return new Response(
-      "Esta ruta solo manda pruebas a las direcciones de la lista.\n" +
-      "Para añadir una, se edita PERMITIDOS en el código y se despliega.",
+      "Falta PRUEBA_DESTINOS en Vercel: los correos permitidos, separados por comas.\n" +
+      "Sin esa lista esta ruta no manda nada, a propósito.",
+      { status: 503 },
+    );
+  }
+  if (!lista.includes(a)) {
+    return new Response(
+      "Esta ruta solo manda pruebas a las direcciones de PRUEBA_DESTINOS.",
       { status: 403 },
     );
   }
