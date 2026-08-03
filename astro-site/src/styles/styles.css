@@ -486,6 +486,9 @@ body::after {
   color: var(--pink);
   text-shadow: 0 2px 14px rgba(5, 5, 8, .6);
 }
+/* PLAY en amarillo, como en la sesión de fotos: rompe la columna rosa por el
+   centro y es lo que hace que el bloque no se lea como un párrafo. */
+.hv-lema em { font-style: normal; color: var(--yellow); }
 .hv-lema::after {
   content: "";
   display: block;
@@ -520,7 +523,10 @@ body::after {
   transition: transform .4s var(--ease-snap), filter .4s var(--ease-snap);
 }
 .hv-obj img { width: 100%; height: auto; display: block; }
-.hero .stamp-spin { z-index: 4; right: -7%; bottom: -6%; }
+/* El sello pasa a la esquina inferior IZQUIERDA. A la derecha se comía la lata,
+   que ahora está de pie sobre la roca y es lo que hay que ver. Aquí además
+   equilibra: lema arriba a la izquierda, sello abajo, lata a la derecha. */
+.hero .stamp-spin { z-index: 4; left: -6%; right: auto; bottom: -7%; }
 .hero .stamp-ring { stroke: var(--yellow); }
 .hero .stamp-text { fill: var(--yellow); }
 .hero-badge { z-index: 4; }
@@ -1992,10 +1998,12 @@ body::after {
   .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 4px solid var(--line-dark); }
   /* sin override de tamaño: el clamp base ya da 58px aquí, que es lo máximo que
      admite "FOLLOW THE" en una línea. fitTitle() queda como red de seguridad. */
-  .hero-visual { min-height: 430px; }
+  .hero-visual { min-height: 470px; }
   /* El escenario es estrecho: la lata se estrecha y se va al borde para dejarle
-     su columna al lema, que si no queda debajo de ella. */
-  .hv-can { right: 6%; left: auto; bottom: 6%; width: 40%; }
+     su columna al lema, que si no queda debajo de ella.
+     El 34% no es estético: la lata mide 2,7 de alto por 1 de ancho, así que a
+     más de eso su altura se sale del panel y la corta la pantalla. */
+  .hv-can { right: 5%; left: auto; bottom: 9%; width: 34%; }
   .hv-lema {
     left: 5%; top: 22%;
     font-size: 13px; letter-spacing: 2.5px; line-height: 1.95;
