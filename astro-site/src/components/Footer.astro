@@ -9,11 +9,23 @@ import { EMPRESA } from "../data/empresa";
       <svg class="foot-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
       <p class="foot-word">SNACKRABBIT</p>
       <p class="foot-tag" data-i18n-html="foot.tag">Viral curiosities since 2023.<br>Now also in objects.</p>
+      <!-- Los iconos van en SVG y con currentColor: heredan el color del enlace,
+           así que el mismo hover que tenían las palabras les sigue valiendo, y
+           no hay imágenes que cargar. El nombre viaja en aria-label, que es lo
+           que lee quien no puede ver el icono. -->
       <div class="foot-social">
-        <a href="#" data-demo aria-label="TikTok">TIKTOK</a>
-        <a href="https://www.instagram.com/snackrabbit.tv/" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
-        <a href="#" data-demo aria-label="YouTube">YT</a>
-        <a href="#" data-demo aria-label="X">X</a>
+        <a href="https://www.tiktok.com/@snackrabbit.tv" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8a5.2 5.2 0 0 1-1.2-3.3h-3.2v12.9a2.6 2.6 0 1 1-2.6-2.6c.27 0 .53.04.78.12V9.6a5.9 5.9 0 0 0-.78-.05 5.9 5.9 0 1 0 5.9 5.9V8.9a8.4 8.4 0 0 0 4.9 1.57V7.2a5.1 5.1 0 0 1-3.8-1.4z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/snackrabbit.tv/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM17.8 6a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4z"/></svg>
+        </a>
+        <!-- TODO DIEGO: falta la URL del canal de YouTube. Hasta que llegue,
+             el enlace avisa de que aún no está en vez de fingir que lleva
+             a alguna parte. -->
+        <a href="#" data-demo aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12s0-3.9-.5-5.7a3 3 0 0 0-2.1-2.1C18.6 3.7 12 3.7 12 3.7s-6.6 0-8.4.5a3 3 0 0 0-2.1 2.1C1 8.1 1 12 1 12s0 3.9.5 5.7a3 3 0 0 0 2.1 2.1c1.8.5 8.4.5 8.4.5s6.6 0 8.4-.5a3 3 0 0 0 2.1-2.1c.5-1.8.5-5.7.5-5.7zM9.8 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
+        </a>
       </div>
     </div>
     <nav class="foot-col" aria-label="Shop">

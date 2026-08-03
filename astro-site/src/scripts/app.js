@@ -180,7 +180,14 @@ const I18N = {
     "auth.email": "EMAIL",
     "auth.emailPh": "tu@email.com",
     "auth.pass": "CONTRASEÑA",
-    "auth.passPh": "Mínimo 6 caracteres",
+    "auth.forgot": "¿OLVIDASTE TU CONTRASEÑA?",
+    "auth.backIn": "← VOLVER A ENTRAR",
+    "auth.lostIntro": "Escribe tu correo y te mandamos un código para poner una contraseña nueva.",
+    "auth.newPass": "CONTRASEÑA NUEVA",
+    "auth.submitLost": "MÁNDAME UN CÓDIGO ▸",
+    "auth.submitReset": "GUARDAR CONTRASEÑA ▸",
+    "auth.resetOk": "CONTRASEÑA CAMBIADA. YA ESTÁS DENTRO.",
+    "auth.passPh": "Mínimo 8 caracteres",
     "auth.name": "NOMBRE",
     "auth.namePh": "Tu nombre",
     "auth.submitIn": "ENTRAR ▸",
@@ -215,7 +222,7 @@ const I18N = {
     "auth.errMissing": "TU CUENTA DE CLERK PIDE CAMPOS QUE NO ENVIAMOS ({fields}). DESACTÍVALOS EN EL PANEL.",
     "auth.errName": "PON UN NOMBRE (MÍN. 2 LETRAS).",
     "auth.errEmail": "ESE EMAIL NO PARECE UN EMAIL.",
-    "auth.errPass": "CONTRASEÑA: MÍNIMO 6 CARACTERES.",
+    "auth.errPass": "CONTRASEÑA: MÍNIMO 8 CARACTERES.",
     "auth.errExists": "YA EXISTE UNA CUENTA CON ESE EMAIL.",
     "auth.errBad": "EMAIL O CONTRASEÑA INCORRECTOS.",
     "auth.welcome": "BIENVENIDO A LA MADRIGUERA, {name} ▸",
@@ -403,7 +410,14 @@ const I18N = {
     "auth.email": "EMAIL",
     "auth.emailPh": "you@email.com",
     "auth.pass": "PASSWORD",
-    "auth.passPh": "At least 6 characters",
+    "auth.forgot": "FORGOT YOUR PASSWORD?",
+    "auth.backIn": "← BACK TO SIGN IN",
+    "auth.lostIntro": "Enter your email and we will send you a code to set a new password.",
+    "auth.newPass": "NEW PASSWORD",
+    "auth.submitLost": "SEND ME A CODE ▸",
+    "auth.submitReset": "SAVE PASSWORD ▸",
+    "auth.resetOk": "PASSWORD CHANGED. YOU'RE IN.",
+    "auth.passPh": "At least 8 characters",
     "auth.name": "NAME",
     "auth.namePh": "Your name",
     "auth.submitIn": "SIGN IN ▸",
@@ -438,7 +452,7 @@ const I18N = {
     "auth.errMissing": "YOUR CLERK APP REQUIRES FIELDS WE DO NOT SEND ({fields}). TURN THEM OFF IN THE DASHBOARD.",
     "auth.errName": "ENTER A NAME (MIN. 2 LETTERS).",
     "auth.errEmail": "THAT EMAIL DOESN'T LOOK LIKE AN EMAIL.",
-    "auth.errPass": "PASSWORD: AT LEAST 6 CHARACTERS.",
+    "auth.errPass": "PASSWORD: AT LEAST 8 CHARACTERS.",
     "auth.errExists": "AN ACCOUNT WITH THAT EMAIL ALREADY EXISTS.",
     "auth.errBad": "WRONG EMAIL OR PASSWORD.",
     "auth.welcome": "WELCOME TO THE BURROW, {name} ▸",
@@ -1248,6 +1262,7 @@ const Auth = (() => {
   const modal = $("#loginModal");
   const tabIn = $("#tabIn"), tabUp = $("#tabUp");
   const formIn = $("#formIn"), formUp = $("#formUp"), formCode = $("#formCode");
+  const formLost = $("#formLost"), formReset = $("#formReset");
   let clerk = null, listo = false, fallo = false;
   let pendiente = null;   // { email, nombre } mientras se verifica el correo
   const oyentes = [];     // otros módulos que quieren enterarse de login/logout
@@ -1297,18 +1312,30 @@ const Auth = (() => {
     b.disabled = si;
   };
 
-  function paso(cual) {   // "in" | "up" | "code"
+  function paso(cual) {   // "in" | "up" | "code" | "lost" | "reset"
     formIn.hidden = cual !== "in";
     formUp.hidden = cual !== "up";
     formCode.hidden = cual !== "code";
-    modal.classList.toggle("step-code", cual === "code");
+    formLost.hidden = cual !== "lost";
+    formReset.hidden = cual !== "reset";
+    /* Las pestañas solo aplican a entrar y registrarse. Verificar un código o
+       recuperar la contraseña no son ninguna de las dos. */
+    modal.classList.toggle("step-code", cual !== "in" && cual !== "up");
     const up = cual === "up";
     tabIn.classList.toggle("active", cual === "in"); tabUp.classList.toggle("active", up);
     tabIn.setAttribute("aria-selected", cual === "in"); tabUp.setAttribute("aria-selected", up);
-    $$(".lm-err").forEach(e => e.textContent = "");
+    $$(".lm-err", modal).forEach(e => e.textContent = "");
   }
   tabIn.addEventListener("click", () => paso("in"));
   tabUp.addEventListener("click", () => paso("up"));
+
+  /* Toda vuelta atrás lleva al principio. Antes el paso del código no tenía
+     salida: quien se equivocaba de correo o cerraba el modal se quedaba
+     encerrado y solo recargando la página volvía a empezar. */
+  $$("[data-volver]", modal).forEach(b => b.addEventListener("click", () => {
+    formLost.reset(); formReset.reset(); formCode.reset();
+    paso("in");
+  }));
 
   const usuario = () => (listo && clerk.user) ? clerk.user : null;
   const nombreDe = u => u.firstName || (u.primaryEmailAddress?.emailAddress || "").split("@")[0] || "";
@@ -1395,6 +1422,64 @@ const Auth = (() => {
       toast(t("auth.resent"));
     } catch (ex) { formCode.querySelector(".lm-err").textContent = traducirError(ex); }
     setTimeout(() => { b.disabled = false; }, 30000);   // evita spam de correos
+  });
+
+  /* ---------------- RECUPERAR CONTRASEÑA ----------------
+   *
+   * No existía. Quien olvidaba la suya se quedaba fuera para siempre, y la
+   * cuenta es donde vive su plaza de fundador, el plan que eligió y su
+   * dirección de envío: no era perder el acceso a una web, era perder eso.
+   *
+   * En Clerk son dos llamadas: se pide un código con la estrategia
+   * reset_password_email_code, y luego se manda ese código junto con la
+   * contraseña nueva. Si sale bien, la sesión queda abierta directamente — no
+   * tiene sentido pedirle que entre otra vez con la contraseña que acaba de
+   * escribir. */
+  $("#lmOlvide").addEventListener("click", () => {
+    formLost.email.value = formIn.email.value;   // si ya lo escribió, no repetirlo
+    paso("lost");
+    formLost.email.focus();
+  });
+
+  formLost.addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = formLost.querySelector(".lm-err");
+    const email = formLost.email.value.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return err.textContent = t("auth.errEmail");
+    if (!listo) return err.textContent = t(fallo ? "auth.errNet" : "auth.loading");
+
+    ocupado(formLost, true); err.textContent = "";
+    try {
+      await clerk.client.signIn.create({ strategy: "reset_password_email_code", identifier: email });
+      $("#lmSentReset").innerHTML = t("auth.codeSent", { email });
+      paso("reset");
+      formReset.code.value = ""; formReset.pass.value = ""; formReset.code.focus();
+    } catch (ex) { err.textContent = traducirError(ex); }
+    finally { ocupado(formLost, false); }
+  });
+
+  formReset.addEventListener("submit", async e => {
+    e.preventDefault();
+    const err = formReset.querySelector(".lm-err");
+    const code = formReset.code.value.trim(), pass = formReset.pass.value;
+    if (code.length !== 6) return err.textContent = t("auth.errCode");
+    if (pass.length < 8) return err.textContent = t("auth.errPass");
+
+    ocupado(formReset, true); err.textContent = "";
+    try {
+      const si = await clerk.client.signIn.attemptFirstFactor({
+        strategy: "reset_password_email_code", code, password: pass,
+      });
+      if (si.status !== "complete") {
+        /* Puede quedar pendiente un segundo factor si la cuenta lo tiene. No es
+           un error, pero este formulario no sabe resolverlo. */
+        console.warn("[auth] recuperación incompleta:", si.status);
+        return err.textContent = t("auth.errGeneric");
+      }
+      await entrar(si.createdSessionId, "auth.resetOk", "");
+      formIn.reset(); formLost.reset(); formReset.reset(); paso("in");
+    } catch (ex) { err.textContent = traducirError(ex); }
+    finally { ocupado(formReset, false); }
   });
 
   /* ---------------- ENTRAR ---------------- */

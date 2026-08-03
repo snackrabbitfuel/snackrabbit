@@ -17,6 +17,7 @@
   <form class="lm-form" id="formIn" novalidate>
     <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="you@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
     <label><span data-i18n="auth.pass">PASSWORD</span><input type="password" name="pass" placeholder="••••••" autocomplete="current-password" required></label>
+    <button class="lm-link" id="lmOlvide" type="button" data-i18n="auth.forgot">FORGOT YOUR PASSWORD?</button>
     <p class="lm-err" role="alert"></p>
     <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitIn">SIGN IN ▸</button>
   </form>
@@ -24,7 +25,7 @@
   <form class="lm-form" id="formUp" hidden novalidate>
     <label><span data-i18n="auth.name">NAME</span><input type="text" name="name" placeholder="Your name" data-i18n-ph="auth.namePh" autocomplete="name" required></label>
     <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="you@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
-    <label><span data-i18n="auth.pass">PASSWORD</span><input type="password" name="pass" placeholder="At least 6 characters" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
+    <label><span data-i18n="auth.pass">PASSWORD</span><input type="password" name="pass" placeholder="At least 8 characters" data-i18n-ph="auth.passPh" autocomplete="new-password" required></label>
     <p class="lm-err" role="alert"></p>
     <!-- Clerk monta aquí su verificación anti-bots. Sin este elemento usa un
          CAPTCHA invisible que puede bloquear a usuarios legítimos sin avisar. -->
@@ -42,6 +43,32 @@
     <p class="lm-err" role="alert"></p>
     <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitCode">VERIFY ▸</button>
     <button class="lm-resend" id="lmResend" type="button" data-i18n="auth.resend">RESEND CODE</button>
+    <!-- Sin esta vuelta, el paso del código era un callejón: quien cerraba el
+         modal o se equivocaba de correo no tenía forma de volver al principio. -->
+    <button class="lm-link" data-volver type="button" data-i18n="auth.backIn">← BACK TO SIGN IN</button>
+  </form>
+
+  <!-- ---- Recuperar contraseña: pedir el código ---- -->
+  <form class="lm-form" id="formLost" hidden novalidate>
+    <p class="lm-sent" data-i18n="auth.lostIntro">Enter your email and we will send you a code to set a new password.</p>
+    <label><span data-i18n="auth.email">EMAIL</span><input type="email" name="email" placeholder="you@email.com" data-i18n-ph="auth.emailPh" autocomplete="email" required></label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitLost">SEND ME A CODE ▸</button>
+    <button class="lm-link" data-volver type="button" data-i18n="auth.backIn">← BACK TO SIGN IN</button>
+  </form>
+
+  <!-- ---- Recuperar contraseña: código + contraseña nueva ---- -->
+  <form class="lm-form" id="formReset" hidden novalidate>
+    <p class="lm-sent" id="lmSentReset" data-i18n="auth.codeSent">We sent a 6-digit code to your email.</p>
+    <label class="lm-code-label">
+      <span data-i18n="auth.code">VERIFICATION CODE</span>
+      <input class="lm-code" type="text" name="code" inputmode="numeric" pattern="[0-9]*"
+             autocomplete="one-time-code" maxlength="6" placeholder="000000" required>
+    </label>
+    <label><span data-i18n="auth.newPass">NEW PASSWORD</span><input type="password" name="pass" data-i18n-ph="auth.passPh" placeholder="At least 8 characters" autocomplete="new-password" required></label>
+    <p class="lm-err" role="alert"></p>
+    <button class="btn btn-pink lm-submit" type="submit" data-i18n="auth.submitReset">SET NEW PASSWORD ▸</button>
+    <button class="lm-link" data-volver type="button" data-i18n="auth.backIn">← BACK TO SIGN IN</button>
   </form>
 
   <p class="lm-note" data-i18n="auth.note">SECURE SIGN-IN · WE NEVER SEE YOUR PASSWORD.</p>

@@ -1328,14 +1328,17 @@ body::after {
 .foot-word { font-family: var(--f-display); font-style: normal; font-size: 30px; color: var(--bone); margin-bottom: 12px; }
 .foot-tag { font-size: 16px; color: var(--gray-2); line-height: 1.5; margin-bottom: 22px; }
 .foot-social { display: flex; gap: 10px; flex-wrap: wrap; }
+/* Cuadrados en vez de etiquetas de texto: el icono se reconoce antes que la
+   palabra y no hay que traducirlo. 44 px de lado es el mínimo cómodo para un
+   dedo, y antes con el texto y su relleno se quedaban por debajo. */
 .foot-social a {
-  font-family: var(--f-pixel); font-style: normal;
-  font-size: 10px; letter-spacing: 2px;
+  display: grid; place-items: center;
+  width: 44px; height: 44px;
   color: var(--bone); text-decoration: none;
   border: 3px solid var(--line-dark);
-  padding: 8px 12px;
   transition: border-color .2s, color .2s, background .2s, transform .2s var(--ease-snap);
 }
+.foot-social svg { width: 20px; height: 20px; fill: currentColor; display: block; }
 .foot-social a:hover { border-color: var(--pink); color: var(--ink); background: var(--pink); transform: translate(-2px,-2px); }
 .foot-social a:nth-child(even):hover { border-color: var(--yellow); background: var(--yellow); }
 .foot-col h4 {
@@ -1488,7 +1491,18 @@ body::after {
 }
 .lm-resend:hover { color: var(--ink); }
 .lm-resend[disabled] { opacity: .45; text-decoration: none; cursor: default; }
-/* durante la verificación las pestañas no aplican */
+/* Mismo aspecto que REENVIAR: son enlaces dentro del formulario, no botones. */
+.lm-link {
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 10px; letter-spacing: 2px;
+  background: none; border: none;
+  color: var(--gray-2);
+  text-decoration: underline; text-underline-offset: 4px;
+  padding: 4px; align-self: flex-start;
+  transition: color .2s;
+}
+.lm-link:hover { color: var(--ink); }
+/* Fuera de las pestañas: verificar y recuperar no son ni entrar ni registrarse */
 .login-modal.step-code .lm-tabs { display: none; }
 .lm-submit[aria-busy="true"] { opacity: .6; pointer-events: none; }
 /* widget anti-bots de Clerk: solo aparece si sospecha del visitante */
