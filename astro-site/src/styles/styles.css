@@ -478,11 +478,11 @@ body::after {
    tres líneas rosas y el guion amarillo debajo. */
 .hv-lema {
   position: absolute;
-  left: 6%; top: 30%;
+  left: 6%; top: 20%;
   z-index: 1;
   font-family: var(--f-pixel); font-style: normal;
   font-size: clamp(15px, 1.9vw, 26px);
-  letter-spacing: 4px; line-height: 2.05;
+  letter-spacing: 4px; line-height: 1.8;
   color: var(--pink);
   text-shadow: 0 2px 14px rgba(5, 5, 8, .6);
 }
@@ -499,7 +499,9 @@ body::after {
 .hero-tape {
   position: absolute;
   left: -22%; right: -22%;
-  bottom: 24%;
+  /* Sube por encima del sello, que vive en la esquina inferior izquierda: a la
+     altura de antes le cruzaba la mitad. El lema sube con ella. */
+  bottom: 34%;
   z-index: 2;
   rotate: -7deg;
   background: var(--yellow);
