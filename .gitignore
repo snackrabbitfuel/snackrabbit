@@ -10,3 +10,20 @@ dist/
 /assets/
 _to_delete/
 *.zip
+
+# Secretos. Este repositorio es PÚBLICO.
+#
+# astro-site/.env sí está versionado a propósito: solo lleva la clave
+# publicable de Clerk, que es pública por diseño, y documenta qué variables
+# necesita el proyecto. Lo que no puede entrar nunca son estos otros:
+#
+# `vercel env pull` —la forma normal de traerse los secretos de producción a
+# la máquina— escribe .env.local. Sin estas reglas, el siguiente `git add -A`
+# publicaba CLERK_SECRET_KEY y RESEND_API_KEY a la vista de cualquiera.
+.env.local
+.env.*.local
+.env.production
+.env.development
+.env.backup
+*.pem
+*.key
