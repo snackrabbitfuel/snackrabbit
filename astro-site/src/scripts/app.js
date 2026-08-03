@@ -230,7 +230,11 @@ const I18N = {
     "cart.free": "★ ENVÍO GRATIS DESBLOQUEADO",
     "cart.empty": "TU CARRITO ESTÁ VACÍO.<br>EL CONEJO ESTÁ ESPERANDO.",
     "cart.checkout": "TRAMITAR PEDIDO ▸",
-    "cart.note": "IMPUESTOS INCLUIDOS · ENVÍO CALCULADO AL PAGAR",
+    /* No decir "impuestos incluidos": con entidad en EE.UU. y Stripe Tax, el
+       impuesto se SUMA en la pantalla de pago. Prometer lo contrario aquí deja
+       al cliente viendo un total mayor del anunciado justo al pagar, y además
+       contradice los Términos, que dicen que se calculan al pagar. */
+    "cart.note": "IMPUESTOS Y ENVÍO SE CALCULAN AL PAGAR",
     "cart.emptyToast": "TU CARRITO ESTÁ VACÍO",
     "cart.removed": "PRODUCTO ELIMINADO",
     "cart.added": "{name} AÑADIDO AL CARRITO ▸",
@@ -448,7 +452,7 @@ const I18N = {
     "cart.free": "★ FREE SHIPPING UNLOCKED",
     "cart.empty": "YOUR CART IS EMPTY.<br>THE BUNNY IS WAITING.",
     "cart.checkout": "CHECKOUT ▸",
-    "cart.note": "TAXES INCLUDED · SHIPPING CALCULATED AT CHECKOUT",
+    "cart.note": "TAXES AND SHIPPING CALCULATED AT CHECKOUT",
     "cart.emptyToast": "YOUR CART IS EMPTY",
     "cart.removed": "ITEM REMOVED",
     "cart.added": "{name} ADDED TO CART ▸",
@@ -998,7 +1002,7 @@ const ProductModal = (() => {
   $("#pmMinus").addEventListener("click", () => { qty = Math.max(1, qty - 1); paint(); });
   $("#pmPlus").addEventListener("click", () => { qty = Math.min(9, qty + 1); paint(); });
   $("#pmAdd").addEventListener("click", e => {
-    Cart.add(cur.id, { size, color, qty, unitPrice: price() });
+    Cart.add(cur.id, { size, color, qty });
     confetti.burst(e.clientX, e.clientY, 30);
     UI.close();
   });
@@ -1018,29 +1022,53 @@ const Cart = (() => {
 
   /* Limpia lo guardado de catálogos anteriores: descarta productos que ya no
      existen, quita el color a los que dejaron de tener variantes (la lata) y
-     fusiona las líneas que queden repetidas al recalcular la clave. */
+     fusiona las líneas que queden repetidas al recalcular la clave.
+
+     Y sobre todo, **vuelve a sacar el precio del catálogo**. Lo que hay en
+     localStorage lo escribe el navegador del cliente y no caduca nunca, así que
+     confiar en el precio guardado tiene dos consecuencias: el día que suba una
+     tarifa, quien ya tuviera algo en el carrito —justo los más interesados—
+     seguiría comprando al precio viejo; y cualquiera que abra las herramientas
+     del navegador podría fijar el importe que quisiera. El precio, la cantidad
+     y la talla son datos del catálogo, no del cliente. */
   (() => {
-    const antes = items.length;
+    const antes = JSON.stringify(items);
     const salida = [];
     items.forEach(i => {
       const p = i && PRODUCTS.find(x => x.id === i.id);
       if (!p) return;
       if (!p.colorNames) i.color = null;
+
+      /* Con tallas, la talla tiene que existir: si no, el precio base daría un
+         pack de doce al precio de uno de cuatro. */
+      if (p.sizePrices && p.sizePrices[i.size] == null) return;
+      const precio = p.sizePrices?.[i.size] ?? p.price;
+      if (!Number.isFinite(precio)) return;
+      i.unitPrice = precio;
+
+      const q = Math.round(Number(i.qty));
+      i.qty = Number.isFinite(q) ? Math.min(9, Math.max(1, q)) : 1;
+
       i.key = clave(i.id, i.size, i.color);
       const ya = salida.find(f => f.key === i.key);
       if (ya) ya.qty = Math.min(9, ya.qty + i.qty);
       else salida.push(i);
     });
-    if (antes !== salida.length || salida.some((i, n) => i !== items[n])) { items = salida; save(); }
+    items = salida;
+    if (antes !== JSON.stringify(items)) save();
   })();
 
   const count = () => items.reduce((a, i) => a + i.qty, 0);
   const total = () => items.reduce((a, i) => a + i.qty * i.unitPrice, 0);
 
-  function add(id, { size, color, qty = 1, unitPrice }) {
+  /* El precio no se recibe: se busca. Antes se aceptaba un `unitPrice` del
+     llamante, y aunque los tres sitios que llaman lo sacaban del mismo catálogo
+     —era literalmente la misma expresión—, dejaba abierta una vía por la que el
+     importe podía entrar desde fuera. El catálogo es la única fuente. */
+  function add(id, { size, color, qty = 1 }) {
     const p = PRODUCTS.find(x => x.id === id);
-    const up = unitPrice != null ? unitPrice
-      : (p.sizePrices && p.sizePrices[size] != null ? p.sizePrices[size] : p.price);
+    if (!p) return;
+    const up = p.sizePrices?.[size] ?? p.price;
     const key = clave(id, size, color);
     const found = items.find(i => i.key === key);
     if (found) found.qty = Math.min(9, found.qty + qty);

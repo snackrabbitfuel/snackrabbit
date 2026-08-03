@@ -66,8 +66,9 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const clerk = createClerkClient({ secretKey });
     const user = await clerk.users.getUser(userId);
+    const pub = (user.publicMetadata || {}) as Record<string, any>;
 
-    if ((user.publicMetadata as any)?.fundadorAvisado) return responder("yaavisado");
+    if (pub.fundadorAvisado) return responder("yaavisado");
 
     /* Del token sale la cuenta, y de la cuenta el correo. En ningún momento se
        mira lo que venga en el cuerpo de la petición. */
@@ -78,6 +79,23 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const ficha = (user.unsafeMetadata as any)?.madriguera || {};
+
+    /* La hora exacta del alta, sellada por el servidor.
+     *
+     * Es el único dato con el que se podrá decidir quiénes son los cien
+     * primeros el día que se abra: lo que escribe el cliente
+     * (`unsafeMetadata.madriguera.desde`) es solo el día, sin hora, y además lo
+     * puede reescribir él mismo desde el navegador. Aquí, en publicMetadata, no
+     * lo toca nadie salvo el servidor.
+     *
+     * Se sella ANTES de intentar el envío a propósito: si Resend falla, el
+     * correo se puede reintentar mañana, pero el puesto en la cola no se
+     * reconstruye después. */
+    const fundador = pub.fundador || { ts: new Date().toISOString(), plan: ficha.plan || null };
+    if (!pub.fundador) {
+      await clerk.users.updateUser(userId, { publicMetadata: { ...pub, fundador } });
+    }
+
     const html = await render(
       React.createElement(WelcomeFounder, { plan: NOMBRE_PLAN[ficha.plan] || "DIGGER" }),
     );
@@ -96,7 +114,7 @@ export const POST: APIRoute = async ({ request }) => {
     /* Se marca después de enviar, nunca antes. Si esto fallara, el peor caso es
        que alguien reciba el correo dos veces; al revés, no lo recibiría nunca. */
     await clerk.users.updateUser(userId, {
-      publicMetadata: { ...(user.publicMetadata || {}), fundadorAvisado: true },
+      publicMetadata: { ...pub, fundador, fundadorAvisado: true },
     });
 
     return responder("ok");
