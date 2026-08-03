@@ -504,17 +504,14 @@ body::after {
 .hero .stamp-text { fill: var(--yellow); }
 .hero-badge { z-index: 4; }
 
-.hv-plush {
-  z-index: 2;
-  width: clamp(146px, 17.5vw, 242px);
-  right: 4%; top: 13%;
-  rotate: 4deg;
-  filter: drop-shadow(0 24px 26px rgba(0, 0, 0, .62));
-}
+/* Sin peluche en el hero: la lata se queda sola y pasa a ocupar el centro.
+   Se centra con left/right y margen automático, no con translate: ese lo usan
+   ya el paralaje del ratón y la animación de flotado, y pisarlo las rompe. */
 .hv-can {
   z-index: 3;
-  width: clamp(118px, 14.5vw, 202px);
-  left: 12%; bottom: 4%;
+  width: clamp(132px, 16.5vw, 214px);
+  left: 0; right: 0; margin: 0 auto;
+  bottom: 6%;
   rotate: -3deg;
   cursor: pointer;
   /* sombra proyectada + halo rosa: el producto héroe se despega del fondo */
