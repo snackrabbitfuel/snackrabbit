@@ -4,6 +4,12 @@
    ============================================================ */
 "use strict";
 
+/* La dirección de contacto sale del mismo archivo que las páginas legales, no
+   escrita a mano aquí: es un dato que tiene que decir lo mismo en los cuatro
+   sitios donde aparece. Lo empaqueta Vite, así que no viaja nada de más. */
+import { EMPRESA } from "../data/empresa";
+const CONTACTO = EMPRESA.email;
+
 /* ---------- Utils ---------- */
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -82,6 +88,8 @@ const I18N = {
     "pn.orders": "PEDIDOS",
     "pn.ordersEmpty": "TODAVÍA NO HAY PEDIDOS. APARECERÁN AQUÍ, CON SEGUIMIENTO, CUANDO ABRA LA TIENDA.",
     "pn.member": "MEMBRESÍA",
+    "pn.manageWait": "Cuando abra el club, tu suscripción se gestiona desde aquí: pausar, cambiar de nivel o cancelar. Todavía no hay ningún cobro activo.",
+    "pn.manageMail": "¿Necesitas cambiar o cancelar algo? Escribe a <a href=\"mailto:{email}\">{email}</a> y lo resolvemos el mismo día.",
     "pn.memberNone": "Todavía no estás en la lista de fundadores.",
     "pn.memberYes": "Lista de fundadores · plan <b>{plan}</b>",
     "pn.ship": "ENVÍO",
@@ -180,6 +188,10 @@ const I18N = {
     "auth.email": "EMAIL",
     "auth.emailPh": "tu@email.com",
     "auth.pass": "CONTRASEÑA",
+    "news.legal": "Te das de baja de un clic, cuando quieras. Mira nuestra <a href=\"/privacy\">política de privacidad</a>.",
+    "auth.legal": "Al crear la cuenta aceptas nuestros <a href=\"/terms\">términos</a> y la <a href=\"/privacy\">política de privacidad</a>.",
+    "bur.legal1": "29 $/mes. Se renueva hasta que canceles. Hoy no se cobra nada.",
+    "bur.legal2": "49 $/mes. Se renueva hasta que canceles. Hoy no se cobra nada.",
     "auth.forgot": "¿OLVIDASTE TU CONTRASEÑA?",
     "auth.backIn": "← VOLVER A ENTRAR",
     "auth.lostIntro": "Escribe tu correo y te mandamos un código para poner una contraseña nueva.",
@@ -216,6 +228,9 @@ const I18N = {
     "ck.submit": "CONFIRMAR PEDIDO ▸",
     "ck.note": "DEMO — NO SE COBRA NADA.",
     "ck.noteSaved": "GUARDAMOS TUS DATOS PARA LA PRÓXIMA COMPRA · DEMO, NO SE COBRA NADA.",
+    "ck.shipFree": "ENVÍO GRATIS · SUPERAS LOS {n} $",
+    "ck.shipAdd": "EL ENVÍO SE CALCULA EN EL PASO DEL PAGO, ANTES DE COBRARTE.",
+    "ck.legal": "Al confirmar el pedido aceptas nuestros <a href=\"/terms\">términos de venta</a> y la <a href=\"/returns\">política de devoluciones</a>.",
     "ck.errRequired": "COMPLETA LOS CAMPOS OBLIGATORIOS.",
     "ck.errEmail": "ESE CORREO NO PARECE VÁLIDO. AHÍ TE MANDAMOS EL SEGUIMIENTO.",
     "ck.errPhone": "ESE TELÉFONO NO PARECE VÁLIDO.",
@@ -318,6 +333,8 @@ const I18N = {
     "pn.orders": "ORDERS",
     "pn.ordersEmpty": "NO ORDERS YET. THEY SHOW UP HERE, WITH TRACKING, ONCE THE STORE OPENS.",
     "pn.member": "MEMBERSHIP",
+    "pn.manageWait": "When the club opens, your membership is managed right here: pause, change tier or cancel. There is no active charge yet.",
+    "pn.manageMail": "Need to change or cancel something? Write to <a href=\"mailto:{email}\">{email}</a> and we sort it out the same day.",
     "pn.memberNone": "You are not on the founder list yet.",
     "pn.memberYes": "Founder list · plan <b>{plan}</b>",
     "pn.ship": "SHIPPING",
@@ -410,6 +427,10 @@ const I18N = {
     "auth.email": "EMAIL",
     "auth.emailPh": "you@email.com",
     "auth.pass": "PASSWORD",
+    "news.legal": "One click to leave, any time. See our <a href=\"/privacy\">privacy policy</a>.",
+    "auth.legal": "Creating an account means you accept our <a href=\"/terms\">terms</a> and <a href=\"/privacy\">privacy policy</a>.",
+    "bur.legal1": "$29/month. Renews until you cancel. Nothing is charged today.",
+    "bur.legal2": "$49/month. Renews until you cancel. Nothing is charged today.",
     "auth.forgot": "FORGOT YOUR PASSWORD?",
     "auth.backIn": "← BACK TO SIGN IN",
     "auth.lostIntro": "Enter your email and we will send you a code to set a new password.",
@@ -446,6 +467,9 @@ const I18N = {
     "ck.submit": "PLACE ORDER ▸",
     "ck.note": "DEMO — NO PAYMENT IS TAKEN.",
     "ck.noteSaved": "WE SAVE YOUR DETAILS FOR NEXT TIME · DEMO, NO PAYMENT IS TAKEN.",
+    "ck.shipFree": "FREE SHIPPING · YOU'RE OVER ${n}",
+    "ck.shipAdd": "SHIPPING IS CALCULATED AT THE PAYMENT STEP, BEFORE YOU ARE CHARGED.",
+    "ck.legal": "By placing the order you accept our <a href=\"/terms\">terms of sale</a> and <a href=\"/returns\">returns policy</a>.",
     "ck.errRequired": "PLEASE FILL IN THE REQUIRED FIELDS.",
     "ck.errEmail": "THAT EMAIL DOESN'T LOOK VALID. IT IS WHERE YOUR TRACKING GOES.",
     "ck.errPhone": "THAT PHONE NUMBER DOESN'T LOOK VALID.",
@@ -1195,7 +1219,11 @@ const Checkout = (() => {
       form.name.value = form.name.value || [u.firstName, u.lastName].filter(Boolean).join(" ");
       form.email.value = form.email.value || u.primaryEmailAddress?.emailAddress || "";
     }
-    $("#ckTotal").textContent = money(Cart.total());
+    const suma = Cart.total();
+    $("#ckTotal").textContent = money(suma);
+    $("#ckEnvio").textContent = suma >= FREE_SHIP
+      ? t("ck.shipFree", { n: FREE_SHIP })
+      : t("ck.shipAdd");
     $("#ckNote").textContent = t(u ? "ck.noteSaved" : "ck.note");
     form.querySelector(".lm-err").textContent = "";
     UI.open(modal);
@@ -1836,6 +1864,14 @@ const Panel = (() => {
     $("#pnMembresia").innerHTML = m.madriguera?.lista
       ? t("pn.memberYes", { plan: t(m.madriguera.plan === "cavador" ? "bur.t2name" : "bur.t1name") })
       : t("pn.memberNone");
+
+    /* Los Términos y la política de devoluciones dicen que se cancela desde
+       aquí. Mientras no exista el portal de Stripe, "desde aquí" es una
+       dirección de correo que sí funciona — pero tiene que estar, porque una
+       promesa legal sin camino que la cumpla es la promesa la que falla. */
+    $("#pnGestion").innerHTML = m.madriguera?.lista
+      ? t("pn.manageWait") + " " + t("pn.manageMail", { email: CONTACTO })
+      : "";
 
     const e = m.envio;
     const env = $("#pnEnvio");

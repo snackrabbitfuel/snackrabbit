@@ -53,12 +53,19 @@ const H = (t: string) => `<span class="hueco">${t}</span>`;
 
   <h2>The Burrow: membership terms</h2>
   <p>
-    The Burrow is a <strong>monthly membership that renews automatically</strong> until you cancel it.
-    When you join, you agree to a recurring charge on the same date each month, at the price of the
-    plan you chose.
+    The Burrow is a <strong>monthly membership that renews automatically</strong> until you cancel it,
+    at the price of the plan you chose.
+  </p>
+  <p>
+    We bill on a <strong>single monthly cut-off, not on your own join date</strong>. Members are
+    charged at the start of each month and the boxes go out together in the first week, so that
+    everyone receives that month's card at roughly the same time. If you join mid-month, you are
+    charged once when you join — that payment covers your first box, which ships with the next
+    cut-off — and from then on you are charged at the start of each month. You are never charged
+    twice for the same box, and we tell you your first box date when you subscribe.
   </p>
   <ul>
-    <li>You can <strong>cancel at any time</strong>, and the cancellation takes effect at the end of the period you have already paid for. We do not charge a cancellation fee.</li>
+    <li>You can <strong>cancel at any time</strong> from <strong>MY BURROW</strong> in your account, or by writing to <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>. The cancellation takes effect at the end of the period you have already paid for. We do not charge a cancellation fee.</li>
     <li>A box that has already been prepared or shipped for the current period is not refunded by cancelling, but you may return it under our <a href="/returns">returns policy</a>.</li>
     <li>If we change the price of a plan, we will tell you by email before it affects you, with enough notice to cancel first.</li>
     <li>Collectible cards, stickers and limited items included with a membership are part of that month's box. Once a month has passed, that month's card is not reprinted and cannot be bought separately.</li>

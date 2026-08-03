@@ -2116,6 +2116,30 @@ body::after {
 .ub-nota { font-size: 14px; color: var(--gray-2); }
 .ub-nota a { color: var(--pink); }
 
+/* ---- Consentimiento: lo que se acepta al comprar, al registrarse y al
+   apuntarse. Discreto pero legible: si no se lee, no vale de nada. ---- */
+.ck-legal, .lm-legal, .news-legal, .tier-legal {
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 9.5px; letter-spacing: 1px; line-height: 1.85;
+  color: var(--gray-2);
+  margin: 0;
+}
+.ck-legal a, .lm-legal a, .news-legal a, .tier-legal a {
+  color: var(--gray-1); text-decoration: underline; text-underline-offset: 3px;
+}
+.ck-legal a:hover, .lm-legal a:hover, .news-legal a:hover, .tier-legal a:hover { color: var(--pink); }
+.ck-legal { margin: -4px 0 2px; }
+.lm-legal { margin-top: 4px; text-align: center; }
+.news-legal { margin-top: 14px; color: rgba(5, 5, 8, .62); }
+.news-legal a { color: var(--ink); }
+.news-legal a:hover { color: var(--bone); }
+.tier-legal { margin-top: 10px; text-align: center; }
+.ck-envio {
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 9.5px; letter-spacing: 1px; line-height: 1.7;
+  color: var(--gray-2); margin: -8px 0 4px;
+}
+
 .lg-pie {
   border-top: 4px solid var(--line-dark);
   padding: 26px clamp(18px, 5vw, 54px) 40px;

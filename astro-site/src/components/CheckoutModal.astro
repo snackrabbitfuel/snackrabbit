@@ -31,6 +31,17 @@
 
     <p class="lm-err ck-wide" role="alert"></p>
     <div class="ck-total ck-wide"><span data-i18n="cart.title">YOUR CART</span><span id="ckTotal">$0.00</span></div>
+    <!-- El envío se prometía en tres sitios y no aparecía en ninguno: el total
+         era el subtotal a secas. Hasta que Stripe lo calcule, al menos se dice
+         qué va a pasar con él en vez de dejar creer que ya está incluido. -->
+    <p class="ck-envio ck-wide" id="ckEnvio"></p>
+    <!-- Nadie aceptaba nada en todo el recorrido de compra: del nombre al botón
+         de pagar sin un solo enlace a los términos. Stripe lo comprueba para
+         aprobar una cuenta, y sin esto las condiciones no son oponibles. -->
+    <p class="ck-legal ck-wide" data-i18n-html="ck.legal">
+      By placing the order you accept our <a href="/terms">terms of sale</a> and
+      <a href="/returns">returns policy</a>.
+    </p>
     <button class="btn btn-pink lm-submit ck-wide" type="submit" data-i18n="ck.submit">PLACE ORDER ▸</button>
     <p class="lm-note ck-wide" id="ckNote" data-i18n="ck.note">DEMO — NO PAYMENT IS TAKEN.</p>
   </form>
