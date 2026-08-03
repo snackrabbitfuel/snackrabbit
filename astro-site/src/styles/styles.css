@@ -459,18 +459,39 @@ body::after {
   position: relative;
   min-height: clamp(380px, 46vw, 620px);
 }
-/* Panel negro con borde amarillo tras el collage */
+/* Panel tras el collage: la escena de humo de la sesión de producto.
+   Es hero-fondo.webp, reconstruida desde can-mood.webp quitándole la lata y el
+   texto pintado — la lata de verdad va encima, flotando y con su clic, y el
+   FOCUS · PLAY · REPEAT se pone en HTML para que salga nítido y no ampliado. */
 .hero-visual::before {
   content: "";
   position: absolute;
   inset: -5% -12% -3% -6%;
-  background:
-    radial-gradient(rgba(255, 212, 0, .22) 1.6px, transparent 1.6px) 0 0 / 26px 26px,
-    var(--ink);
+  background: url("/assets/hero-fondo.webp") center / cover no-repeat, var(--ink);
   border: 5px solid var(--yellow);
   box-shadow: 16px 16px 0 rgba(5, 5, 8, .3);
   rotate: 2deg;
   z-index: 0;
+}
+
+/* El lema de la foto, en texto real. Apilado a la izquierda como en la sesión:
+   tres líneas rosas y el guion amarillo debajo. */
+.hv-lema {
+  position: absolute;
+  left: 6%; top: 30%;
+  z-index: 1;
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: clamp(15px, 1.9vw, 26px);
+  letter-spacing: 4px; line-height: 2.05;
+  color: var(--pink);
+  text-shadow: 0 2px 14px rgba(5, 5, 8, .6);
+}
+.hv-lema::after {
+  content: "";
+  display: block;
+  width: 1.6em; height: 6px;
+  margin-top: .55em;
+  background: var(--yellow);
 }
 .hero-tape {
   position: absolute;
@@ -504,15 +525,15 @@ body::after {
 .hero .stamp-text { fill: var(--yellow); }
 .hero-badge { z-index: 4; }
 
-/* Sin peluche en el hero: la lata se queda sola y pasa a ocupar el centro.
-   Se centra con left/right y margen automático, no con translate: ese lo usan
-   ya el paralaje del ratón y la animación de flotado, y pisarlo las rompe. */
+/* La lata, de pie sobre la roca del fondo, a la derecha del lema como en la
+   sesión de fotos. Se coloca con right, no con translate: ese lo usan ya el
+   paralaje del ratón y la animación de flotado, y pisarlo las rompe. */
 .hv-can {
   z-index: 3;
   width: clamp(132px, 16.5vw, 214px);
-  left: 0; right: 0; margin: 0 auto;
-  bottom: 6%;
-  rotate: -3deg;
+  right: 17%;
+  bottom: 8%;
+  rotate: -2deg;
   cursor: pointer;
   /* sombra proyectada + halo rosa: el producto héroe se despega del fondo */
   filter: drop-shadow(0 26px 26px rgba(0, 0, 0, .7)) drop-shadow(0 0 34px rgba(255, 79, 216, .32));
@@ -1971,10 +1992,14 @@ body::after {
   .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 4px solid var(--line-dark); }
   /* sin override de tamaño: el clamp base ya da 58px aquí, que es lo máximo que
      admite "FOLLOW THE" en una línea. fitTitle() queda como red de seguridad. */
-  .hero-visual { min-height: 400px; }
-  /* en móvil el escenario es estrecho: la lata manda y el peluche se retira */
-  .hv-can { left: 8%; width: 34%; }
-  .hv-plush { right: 2%; top: 12%; width: 46%; }
+  .hero-visual { min-height: 430px; }
+  /* El escenario es estrecho: la lata se estrecha y se va al borde para dejarle
+     su columna al lema, que si no queda debajo de ella. */
+  .hv-can { right: 6%; left: auto; bottom: 6%; width: 40%; }
+  .hv-lema {
+    left: 5%; top: 22%;
+    font-size: 13px; letter-spacing: 2.5px; line-height: 1.95;
+  }
   .stamp-spin { bottom: 0; }
   .news-form { flex-direction: column; }
   .news-form input { border-right: 4px solid var(--ink); }
