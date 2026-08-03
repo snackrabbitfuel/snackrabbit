@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { resolverAudiencia, secreto } from "../../lib/audiencia";
 
 /* Alta en la lista de correo.
  *
@@ -14,35 +15,6 @@ import type { APIRoute } from "astro";
 export const prerender = false;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-/* Se recuerda entre peticiones: Vercel reutiliza la instancia y no tiene sentido
-   volver a preguntar por la lista de audiencias en cada alta. */
-let audienciaCacheada: string | null = null;
-
-async function resolverAudiencia(clave: string): Promise<string | null> {
-  const declarada = import.meta.env.RESEND_AUDIENCE_ID;
-  if (declarada) return declarada;
-  if (audienciaCacheada) return audienciaCacheada;
-
-  const r = await fetch("https://api.resend.com/audiences", {
-    headers: { authorization: `Bearer ${clave}` },
-  });
-  if (!r.ok) {
-    console.error("[subscribe] no se pudo listar audiencias:", r.status);
-    return null;
-  }
-  const lista = (await r.json())?.data ?? [];
-  if (!lista.length) {
-    console.error("[subscribe] la cuenta de Resend no tiene ninguna audiencia");
-    return null;
-  }
-  if (lista.length > 1) {
-    console.warn("[subscribe] hay varias audiencias y no se declaró RESEND_AUDIENCE_ID; " +
-                 "se usa la primera:", lista[0].id, lista[0].name);
-  }
-  audienciaCacheada = lista[0].id;
-  return audienciaCacheada;
-}
 
 const responder = (estado: string, code = 200) =>
   new Response(JSON.stringify({ estado }), {
@@ -63,7 +35,7 @@ export const POST: APIRoute = async ({ request }) => {
      usuario, no una defensa. */
   if (!EMAIL.test(email) || email.length > 254) return responder("invalido", 400);
 
-  const clave = import.meta.env.RESEND_API_KEY;
+  const clave = secreto("RESEND_API_KEY");
   if (!clave) {
     /* Sin configurar todavía. Se avisa en el log del servidor y se responde con
        un error claro, en vez de fingir que se guardó algo que se ha perdido. */

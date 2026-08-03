@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { secreto } from "../../lib/audiencia";
 import { render } from "@react-email/render";
 import * as React from "react";
 
@@ -73,7 +74,7 @@ export const GET: APIRoute = async ({ url }) => {
     return new Response("Plantilla desconocida. Usa p=1 a p=5.", { status: 400 });
   }
 
-  const clave = import.meta.env.RESEND_API_KEY;
+  const clave = secreto("RESEND_API_KEY");
   if (!clave) return new Response("Falta RESEND_API_KEY en Vercel.", { status: 503 });
 
   const html = await render(plantilla.el);

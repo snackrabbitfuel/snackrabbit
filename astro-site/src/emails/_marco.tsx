@@ -13,8 +13,23 @@ import * as React from "react";
 import {
   Body, Column, Container, Head, Heading, Hr, Html, Link, Preview, Row, Section, Text,
 } from "@react-email/components";
+import { EMPRESA } from "../data/empresa";
 
 export const SITIO = "https://www.snackrabbit.co";
+
+/* El pie sale de src/data/empresa.ts, el mismo archivo que rellenan las cuatro
+   páginas legales. Antes estaba escrito a mano como "[[EMPRESA]] · [[DIRECCION]]"
+   y no lo sustituía nadie: los correos salían con los corchetes a la vista, y
+   el día que se rellenaran los datos legales las páginas se habrían arreglado
+   solas mientras los correos seguían igual. Un solo sitio que rellenar.
+
+   Mientras un dato siga sin rellenar no se enseña el hueco: se cae al nombre de
+   la marca y al correo de contacto, que sí son ciertos. Pero ojo — CAN-SPAM
+   exige una dirección postal real en los correos de marketing. Hasta que exista
+   la entidad, solo se pueden mandar transaccionales. */
+const pendiente = (v: string) => !v || v.startsWith("[");
+const NOMBRE = pendiente(EMPRESA.nombre) ? "SnackRabbit" : EMPRESA.nombre;
+const DIRECCION = pendiente(EMPRESA.direccion) ? EMPRESA.email : EMPRESA.direccion;
 
 export const C = {
   tinta: "#050508",
@@ -138,10 +153,14 @@ interface MarcoProps {
   adelanto: string;      // lo que se lee en la bandeja después del asunto
   kicker: string;
   titular: string;
+  /* URL de baja. La pasa quien envía, porque cada envío sabe a quién escribe:
+     así el enlace llega con el correo ya puesto y basta un clic. Si no se pasa,
+     se cae a la página de baja genérica, donde hay que teclearlo. */
+  baja?: string;
   children: React.ReactNode;
 }
 
-export function Marco({ adelanto, kicker, titular, children }: MarcoProps) {
+export function Marco({ adelanto, kicker, titular, baja, children }: MarcoProps) {
   return (
     <Html lang="en">
       <Head />
@@ -183,9 +202,9 @@ export function Marco({ adelanto, kicker, titular, children }: MarcoProps) {
             <Hr style={{ borderColor: C.linea, margin: "0 0 10px" }} />
             {/* Dirección física y baja: en marketing no son opcionales, las exige la ley */}
             <Text style={{ margin: 0, fontFamily: F.pixel, fontSize: "9.5px", lineHeight: "1.9", letterSpacing: "1px", color: C.tenue }}>
-              [[EMPRESA]] · [[DIRECCION]]<br />
+              {NOMBRE} · {DIRECCION}<br />
               You are receiving this because you bought from us or joined our list.<br />
-              <Link href="{{unsubscribe}}" style={{ color: C.tenue }}>Unsubscribe</Link>
+              <Link href={baja || `${SITIO}/unsubscribe`} style={{ color: C.tenue }}>Unsubscribe</Link>
             </Text>
           </Section>
 

@@ -1,0 +1,78 @@
+---
+/* Página de baja.
+   El enlace del pie de los correos entra por /api/baja, que da de baja y
+   redirige aquí con el resultado. Quien llegue por su cuenta encuentra el
+   formulario. Es estática: lo poco que hace falta lo resuelve el guion de
+   abajo leyendo la URL. */
+import LegalLayout from "../layouts/LegalLayout.astro";
+import { EMPRESA } from "../data/empresa";
+---
+
+<LegalLayout title="Unsubscribe" kicker="THE LIST">
+
+  <p id="ubEstado" class="ub-estado" hidden></p>
+
+  <div id="ubForm">
+    <h2>Leaving the list</h2>
+    <p>
+      Enter the address you want removed and it stops receiving the monthly curiosity and anything
+      else we send. It takes effect immediately.
+    </p>
+    <form id="ubF" class="ub-form" novalidate>
+      <label class="ub-label" for="ubEmail">YOUR EMAIL</label>
+      <input class="ub-input" id="ubEmail" name="email" type="email" required
+             autocomplete="email" placeholder="you@example.com">
+      <button class="ub-btn" type="submit">UNSUBSCRIBE</button>
+    </form>
+    <p class="ub-nota">
+      This does not close your account or cancel a membership. To cancel a subscription, or if
+      something here does not work, write to <a href={`mailto:${EMPRESA.email}`}>{EMPRESA.email}</a>.
+    </p>
+  </div>
+
+</LegalLayout>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const est = p.get("estado"), correo = p.get("e") || "";
+  const cajaEstado = document.getElementById("ubEstado");
+  const caja = document.getElementById("ubForm");
+  const campo = document.getElementById("ubEmail") as HTMLInputElement | null;
+
+  const TEXTO: Record<string, string> = {
+    ok: "Done. That address will not receive anything else from us.",
+    invalido: "That does not look like an email address. Try again below.",
+    sinconfigurar: "Something is not set up on our side. Write to us and we will remove you by hand.",
+    error: "That did not go through. Try again, or write to us and we will remove you by hand.",
+  };
+
+  function mostrar(estado: string) {
+    if (!cajaEstado) return;
+    cajaEstado.textContent = TEXTO[estado] || TEXTO.error;
+    cajaEstado.className = "ub-estado " + (estado === "ok" ? "bien" : "mal");
+    cajaEstado.hidden = false;
+    if (estado === "ok" && caja) caja.hidden = true;
+  }
+
+  if (est) mostrar(est);
+  else if (correo && campo) campo.value = correo;
+
+  document.getElementById("ubF")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = campo?.value.trim().toLowerCase() || "";
+    const btn = (e.target as HTMLFormElement).querySelector("button");
+    if (btn) btn.disabled = true;
+    try {
+      const r = await fetch("/api/baja", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      mostrar((await r.json())?.estado || "error");
+    } catch {
+      mostrar("error");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+</script>

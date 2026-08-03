@@ -16,8 +16,12 @@ export const EMPRESA = {
   jurisdiccion: "[STATE / JURISDICTION]",
 
   /* Correo de contacto público. Tiene que ser un buzón que alguien lea:
-     Stripe lo comprueba y los clientes lo van a usar. */
-  email: "[CONTACT EMAIL]",
+     Stripe lo comprueba y los clientes lo van a usar.
+     Este es el único de los cinco que no dependía de la entidad: el buzón
+     existe, está verificado y recibe. Mientras estuvo con corchetes, la política
+     de devoluciones entera —que se ejecuta escribiendo a esta dirección— no se
+     podía cumplir. */
+  email: "hello@snackrabbit.co",
 
   /* Países a los que envías. Ej: "the United States and Canada" */
   envios: "[COUNTRIES YOU SHIP TO]",

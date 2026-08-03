@@ -28,12 +28,13 @@ import { Marco, P, Curiosidad, Datos, Boton, SITIO } from "./_marco";
 
 export const asunto = "Your spot is saved.";
 
-export default function WelcomeFounder({ plan = "DIGGER" }: { plan?: string }) {
+export default function WelcomeFounder({ plan = "DIGGER", baja }: { plan?: string; baja?: string }) {
   return (
     <Marco
       adelanto="Nothing charged. You hear first when the doors open."
       kicker="THE LIST"
       titular="You're on the list."
+      baja={baja}
     >
       <P>
         You have not been charged, and you will not be until the doors open. What you have is your

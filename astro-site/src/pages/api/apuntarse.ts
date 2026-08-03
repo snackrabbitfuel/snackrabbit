@@ -4,6 +4,8 @@ import { render } from "@react-email/render";
 import * as React from "react";
 
 import WelcomeFounder, { asunto } from "../../emails/welcome-founder";
+import { secreto } from "../../lib/audiencia";
+import { SITIO } from "../../emails/_marco";
 
 /* Avisa por correo a quien acaba de apuntarse a la lista de fundadores.
  *
@@ -36,8 +38,8 @@ const responder = (estado: string, code = 200) =>
   });
 
 export const POST: APIRoute = async ({ request }) => {
-  const secretKey = import.meta.env.CLERK_SECRET_KEY;
-  const claveResend = import.meta.env.RESEND_API_KEY;
+  const secretKey = secreto("CLERK_SECRET_KEY");
+  const claveResend = secreto("RESEND_API_KEY");
   if (!secretKey || !claveResend) {
     console.error("[apuntarse] faltan CLERK_SECRET_KEY o RESEND_API_KEY");
     return responder("sinconfigurar", 503);
@@ -96,14 +98,28 @@ export const POST: APIRoute = async ({ request }) => {
       await clerk.users.updateUser(userId, { publicMetadata: { ...pub, fundador } });
     }
 
+    /* El enlace de baja llega con el correo ya puesto: un clic y fuera, sin
+       teclear nada. */
+    const baja = `${SITIO}/api/baja?e=${encodeURIComponent(destino)}`;
     const html = await render(
-      React.createElement(WelcomeFounder, { plan: NOMBRE_PLAN[ficha.plan] || "DIGGER" }),
+      React.createElement(WelcomeFounder, { plan: NOMBRE_PLAN[ficha.plan] || "DIGGER", baja }),
     );
 
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${claveResend}`, "content-type": "application/json" },
-      body: JSON.stringify({ from: REMITENTE, to: [destino], subject: asunto, html }),
+      body: JSON.stringify({
+        from: REMITENTE, to: [destino], subject: asunto, html,
+        /* Gmail y Apple Mail enseñan su propio botón de baja cuando ven estas
+           cabeceras, y lo tienen más en cuenta que el enlace del pie a la hora
+           de decidir si un remitente es fiable. El -Post es la baja en un clic
+           (RFC 8058): el cliente de correo manda un POST por su cuenta, sin que
+           el lector tenga que abrir nada. */
+        headers: {
+          "List-Unsubscribe": `<${baja}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        },
+      }),
     });
 
     if (!r.ok) {

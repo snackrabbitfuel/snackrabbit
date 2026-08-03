@@ -61,8 +61,23 @@ button { font: inherit; cursor: pointer; }
 svg use { pointer-events: none; }
 [hidden] { display: none !important; }
 
-/* Focus */
-:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
+/* Focus
+ *
+ * El anillo era rosa, y el rosa de la marca es también el fondo del hero, del
+ * navbar sin scroll y de la newsletter: contraste 1,00:1, el mismo color exacto.
+ * Quien navega con teclado perdía por completo el rastro de dónde estaba justo
+ * en la parte más visible de la página.
+ *
+ * Ahora son dos anillos concéntricos, tinta por dentro y hueso por fuera. Sobre
+ * el rosa manda el interior (7,1:1) y sobre los fondos oscuros manda el
+ * exterior: se ve en los dos sin tener que saber sobre qué está cada elemento.
+ * --focus queda como variable para que nadie vuelva a escribir el color a mano. */
+:root { --focus: #050508; --focus-halo: #e6e6ff; }
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--focus-halo);
+}
 
 /* ============ GRAIN OVERLAY ============ */
 body::after {
@@ -302,11 +317,21 @@ body::after {
 .cart-count.pop { animation: pop .35s var(--ease-snap); }
 @keyframes pop { 40% { transform: scale(1.55) rotate(8deg); } }
 
+/* Las barras siguen al fondo del navbar: tinta arriba, donde la barra es rosa,
+   y hueso al bajar, cuando se vuelve oscura. Antes la X al abrir se forzaba a
+   rosa, y como el navbar (z-index 900) queda por encima del menú (850) y arriba
+   del todo es rosa, quedaba rosa sobre rosa: se abría el menú en el móvil y no
+   había ninguna forma visible de cerrarlo. El botón seguía ahí y funcionaba a
+   ciegas, pero visualmente no existía. */
 .btn-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 8px; }
-.btn-burger span { width: 26px; height: 4px; background: var(--bone); transition: transform .25s, opacity .25s; }
-.btn-burger.open span:nth-child(1) { transform: translateY(9px) rotate(45deg); background: var(--pink); }
+.btn-burger span {
+  width: 26px; height: 4px; background: var(--ink);
+  transition: transform .25s, opacity .25s, background .25s;
+}
+.nav.scrolled .btn-burger span { background: var(--bone); }
+.btn-burger.open span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
 .btn-burger.open span:nth-child(2) { opacity: 0; }
-.btn-burger.open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); background: var(--pink); }
+.btn-burger.open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
 
 /* Mobile menu */
 .mobile-menu {
@@ -2016,6 +2041,34 @@ body::after {
   font-size: 15px; color: var(--gray-2);
 }
 .lg-contacto a { color: var(--pink); }
+
+/* ---- Página de baja ---- */
+.ub-estado {
+  margin: 0 0 28px; padding: 16px 18px;
+  border: 3px solid var(--line-dark); background: var(--card-dark);
+  font-family: var(--f-pixel); font-size: 12px; line-height: 1.7; letter-spacing: .5px;
+}
+.ub-estado.bien { border-color: var(--yellow); color: var(--yellow); }
+.ub-estado.mal  { border-color: var(--pink);   color: var(--pink); }
+.ub-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin: 22px 0 18px; }
+.ub-label {
+  flex: 1 0 100%; font-family: var(--f-pixel); font-size: 10px;
+  letter-spacing: 2px; color: var(--gray-2);
+}
+.ub-input {
+  flex: 1 1 260px; min-width: 0;
+  padding: 14px 15px; font-size: 15px; font-family: inherit;
+  color: var(--bone); background: var(--card-dark); border: 3px solid var(--line-dark);
+}
+.ub-input:focus-visible { border-color: var(--pink); outline: 3px solid var(--focus); outline-offset: 2px; }
+.ub-btn {
+  padding: 14px 26px; border: 3px solid var(--ink); background: var(--pink); color: var(--ink);
+  font-family: var(--f-pixel); font-size: 12px; letter-spacing: 2px; cursor: pointer;
+}
+.ub-btn:hover { background: var(--yellow); }
+.ub-btn:disabled { opacity: .55; cursor: default; }
+.ub-nota { font-size: 14px; color: var(--gray-2); }
+.ub-nota a { color: var(--pink); }
 
 .lg-pie {
   border-top: 4px solid var(--line-dark);
