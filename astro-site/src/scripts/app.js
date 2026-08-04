@@ -224,6 +224,9 @@ const I18N = {
     "auth.errCode": "CÓDIGO INCORRECTO O CADUCADO.",
     "auth.errWeakPass": "CONTRASEÑA DEMASIADO DÉBIL O FILTRADA. PRUEBA OTRA.",
     "auth.errNet": "NO HAY CONEXIÓN CON EL SERVIDOR. INTÉNTALO DE NUEVO.",
+    "auth.errTooMany": "DEMASIADOS INTENTOS. ESPERA UN MINUTO Y VUELVE A PROBAR.",
+    "auth.errConfig": "ESTO ES COSA NUESTRA, NO TUYA. ESCRÍBENOS Y LO ARREGLAMOS.",
+    "auth.outErr": "NO SE PUDO CERRAR LA SESIÓN. SIGUES DENTRO.",
     "auth.errGeneric": "ALGO SALIÓ MAL. INTÉNTALO DE NUEVO.",
     "auth.loading": "CONECTANDO…",
     "ck.title": "ENVÍO",
@@ -478,6 +481,9 @@ const I18N = {
     "auth.errCode": "WRONG OR EXPIRED CODE.",
     "auth.errWeakPass": "PASSWORD TOO WEAK OR FOUND IN A BREACH. TRY ANOTHER.",
     "auth.errNet": "CAN'T REACH THE SERVER. PLEASE TRY AGAIN.",
+    "auth.errTooMany": "TOO MANY TRIES. WAIT A MINUTE AND TRY AGAIN.",
+    "auth.errConfig": "THIS ONE IS ON US, NOT YOU. WRITE TO US AND WE FIX IT.",
+    "auth.outErr": "COULD NOT SIGN OUT. YOU ARE STILL IN.",
     "auth.errGeneric": "SOMETHING WENT WRONG. PLEASE TRY AGAIN.",
     "auth.loading": "CONNECTING…",
     "ck.title": "SHIPPING",
@@ -1455,7 +1461,19 @@ const Auth = (() => {
     if (c === "form_code_incorrect" || c === "verification_expired"
         || c === "form_param_nil") return t("auth.errCode");
     if (c === "form_param_format_invalid") return t("auth.errEmail");
+    /* Demasiados intentos: Clerk lo dice, y antes se traducía a "algo salió
+       mal". Quien lo ve necesita saber que solo tiene que esperar. */
+    if (c === "too_many_requests" || c === "form_identifier_locked") return t("auth.errTooMany");
+    /* Errores de configuración de la instancia: no son culpa de quien entra, y
+       decirle "revisa tus datos" le hace perder el rato buscando su fallo.
+       Se le dice que es cosa nuestra y se deja el detalle en la consola. */
+    if (c.startsWith("form_param_unknown") || c === "strategy_for_user_invalid"
+        || c === "form_param_missing" || err?.errors?.[0]?.meta?.paramName) {
+      console.error("[auth] parece un problema de configuración de Clerk:", err?.errors);
+      return t("auth.errConfig");
+    }
     if (!err?.errors) return t("auth.errNet");
+    console.error("[auth] código sin traducir:", c, err?.errors);
     return t("auth.errGeneric");
   }
 
@@ -1693,7 +1711,16 @@ const Auth = (() => {
   }
 
   async function salir() {
-    await clerk.signOut();
+    /* Si signOut falla —red caída— antes se seguía adelante igual: se limpiaba
+       todo y se decía "hasta luego" con la sesión todavía abierta. En un
+       ordenador compartido eso es dejar a alguien dentro creyendo que salió. */
+    try {
+      await clerk.signOut();
+    } catch (e) {
+      console.error("[auth] no se pudo cerrar la sesión:", e);
+      toast(t("auth.outErr"));
+      return;
+    }
     /* La dirección guardada en el navegador se va con la sesión: si no, el
        siguiente que abra el checkout en este ordenador se encuentra el nombre,
        el teléfono y la dirección de casa del anterior. */

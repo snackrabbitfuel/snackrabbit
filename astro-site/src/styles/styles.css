@@ -11,6 +11,10 @@
   --bg-dark: #0a0a12;
   --card-dark: #0d0d14;
   --line-dark: #1c1c2a;
+  /* Gris para texto sobre fondo CLARO. --gray-2 da 3,38:1 sobre blanco, por
+     debajo del 4,5 de AA; este da 4,61. El otro sigue valiendo sobre oscuro,
+     donde da 5,72. */
+  --gray-claro: #73738b;
   --bone: #e6e6ff;
   --gray-1: #b9b9cf;
   --gray-2: #8a8a9e;
@@ -695,7 +699,10 @@ body::after {
 .drop { padding: clamp(70px, 9vw, 130px) clamp(18px, 5vw, 70px); }
 .drop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  /* 290 y no 340: con 340 hacen falta 704 px para dos columnas, así que en un
+     iPad en vertical (~700 disponibles) la tienda caía a una sola columna de
+     691 px — una tarjeta gigante por producto y tres pantallas de scroll. */
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
   gap: clamp(18px, 2.2vw, 30px);
   max-width: 1240px;
   margin: 0 auto;
@@ -1312,7 +1319,11 @@ body::after {
   user-select: none;
 }
 .faq-item summary::-webkit-details-marker { display: none; }
-.faq-x { font-size: 18px; color: var(--pink); transition: rotate .25s var(--ease-snap); font-weight: 700; }
+/* El "+" era rosa sobre la tarjeta blanca: 2,85:1, por debajo del 3:1 que
+   necesita un icono para distinguirse. En rosa oscuro da 5,35:1 y sigue
+   leyéndose como de la marca. Abierto, la tarjeta se vuelve rosa y el signo
+   pasa a tinta, que ahí da 7,14:1. */
+.faq-x { font-size: 18px; color: #c2189f; transition: rotate .25s var(--ease-snap); font-weight: 700; }
 .faq-item[open] { background: var(--pink); }
 .faq-item[open] .faq-x { rotate: 45deg; color: var(--ink); }
 .faq-item p {
@@ -1352,7 +1363,7 @@ body::after {
   border: 4px solid var(--ink); border-right: none;
   background: var(--paper); color: var(--ink);
 }
-.news-form input::placeholder { color: var(--gray-2); }
+.news-form input::placeholder { color: var(--gray-claro); }   /* 4,61:1 sobre blanco */
 /* Antes: outline:none y un fondo un poco más claro. Cambiar el fondo de gris
    a blanco no es un indicador de foco: quien navega con teclado no tenía forma
    de saber dónde estaba. Se recupera el anillo del sistema. */
@@ -1410,6 +1421,10 @@ body::after {
   width: fit-content;
   border-bottom: 2px solid transparent;
   transition: color .2s, border-color .2s;
+  /* 44 px de alto mínimo: en móvil estos enlaces medían 16 y estaban pegados
+     unos a otros, así que fallar el objetivo y pulsar el de al lado era lo
+     normal. El texto no cambia de tamaño; lo que crece es la zona que se toca. */
+  display: block; padding: 14px 0; line-height: 1.4;
 }
 .foot-col a:hover { color: var(--bone); border-bottom-color: var(--pink); }
 .foot-bar {
@@ -1536,7 +1551,7 @@ body::after {
   padding: 16px 10px !important;
   width: 100%;
 }
-.lm-code::placeholder { color: #cfc4cd; letter-spacing: 12px; }
+.lm-code::placeholder { color: #9a8f98; letter-spacing: 12px; }   /* antes #cfc4cd: 1,69:1 */
 .lm-resend {
   font-family: var(--f-pixel); font-style: normal;
   font-size: 10px; letter-spacing: 2px;
