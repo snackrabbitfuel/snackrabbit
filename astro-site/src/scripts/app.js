@@ -41,11 +41,11 @@ const I18N = {
     "hero.cta1": "VER EL DROP ▸",
     "a11y.skip": "Saltar al contenido",
     "hero.cta2": "VER RABBIT FUEL",
-    "hero.meta": "SIN AZÚCAR · SIN TAURINA · MATE + GUARANÁ · ENVÍO 48H",
+    "hero.meta": "SIN AZÚCAR · SIN TAURINA · MATE + GUARANÁ · SALE EN 24H",
     "hero.tape": "100% REAL ▸ SIN COSAS RARAS ▸ SIN AZÚCAR ▸ 100% REAL ▸ SIN COSAS RARAS ▸ SIN AZÚCAR ▸ ",
     "hero.stamp": "100% REAL · SIN COSAS RARAS · 100% REAL · ",
     "hero.badge": "CERO<br>AZÚCAR",
-    "marquee.text": "DROP 001 · YA DISPONIBLE ▸ FOCUS · PLAY · REPEAT ▸ ENVÍO 48H ▸ MATE + GUARANÁ ▸ CERO TAURINA ▸ SIN AZÚCAR ▸ 100% REAL ▸ SIN COSAS RARAS ▸ ",
+    "marquee.text": "DROP 001 · YA DISPONIBLE ▸ FOCUS · PLAY · REPEAT ▸ SALE EN 24H ▸ MATE + GUARANÁ ▸ CERO TAURINA ▸ SIN AZÚCAR ▸ 100% REAL ▸ SIN COSAS RARAS ▸ ",
     "stats.followers": "SEGUIDORES",
     "stats.views": "VIEWS TOTALES",
     "stats.products": "PRODUCTOS",
@@ -54,7 +54,7 @@ const I18N = {
     "drop.title": "COSAS QUE<br><em>NO NECESITAS.</em>",
     "drop.sub": "Pero vas a querer igual: si no lo usaríamos nosotros, no estaría aquí.",
     "card.add": "AÑADIR +",
-    "card.ship": "ENVÍO EN 48H",
+    "card.ship": "SALE EN 24H",
     "card.always": "SIEMPRE DISPONIBLE",
     "card.view": "Ver {name}",
     "card.colorGroup": "Color de {name}",
@@ -260,7 +260,7 @@ const I18N = {
     "auth.logoutConfirm": "¿Cerrar sesión de {name}?",
     "pm.qty": "CANTIDAD",
     "pm.add": "AÑADIR AL CARRITO ▸",
-    "pm.ship": "ENVÍO 48H · DEVOLUCIONES 30 DÍAS · PAGO SEGURO",
+    "pm.ship": "SALE EN 24H · DEVOLUCIONES 30 DÍAS · PAGO SEGURO",
     "cart.title": "TU CARRITO",
     "cart.shipFrom": "ENVÍO GRATIS DESDE $60",
     "cart.need": "TE FALTAN {amt} PARA ENVÍO GRATIS",
@@ -304,11 +304,11 @@ const I18N = {
     "hero.cta1": "SHOP THE DROP ▸",
     "a11y.skip": "Skip to content",
     "hero.cta2": "SEE RABBIT FUEL",
-    "hero.meta": "ZERO SUGAR · ZERO TAURINE · MATE + GUARANÁ · 48H SHIPPING",
+    "hero.meta": "ZERO SUGAR · ZERO TAURINE · MATE + GUARANÁ · SHIPS IN 24H",
     "hero.tape": "100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ ",
     "hero.stamp": "100% REAL · NO WEIRD STUFF · 100% REAL · ",
     "hero.badge": "ZERO<br>SUGAR",
-    "marquee.text": "DROP 001 · OUT NOW ▸ FOCUS · PLAY · REPEAT ▸ 48H SHIPPING ▸ MATE + GUARANÁ ▸ ZERO TAURINE ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ",
+    "marquee.text": "DROP 001 · OUT NOW ▸ FOCUS · PLAY · REPEAT ▸ SHIPS IN 24H ▸ MATE + GUARANÁ ▸ ZERO TAURINE ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ",
     "stats.followers": "FOLLOWERS",
     "stats.views": "TOTAL VIEWS",
     "stats.products": "PRODUCTS",
@@ -317,7 +317,7 @@ const I18N = {
     "drop.title": "STUFF YOU<br><em>DON'T NEED.</em>",
     "drop.sub": "You'll want it anyway: if we wouldn't use it ourselves, it wouldn't be here.",
     "card.add": "ADD +",
-    "card.ship": "SHIPS IN 48H",
+    "card.ship": "SHIPS IN 24H",
     "card.always": "ALWAYS IN STOCK",
     "card.view": "View {name}",
     "card.colorGroup": "{name} colour",
@@ -517,7 +517,7 @@ const I18N = {
     "auth.logoutConfirm": "Sign out {name}?",
     "pm.qty": "QUANTITY",
     "pm.add": "ADD TO CART ▸",
-    "pm.ship": "48H SHIPPING · 30-DAY RETURNS · SECURE PAYMENT",
+    "pm.ship": "SHIPS IN 24H · 30-DAY RETURNS · SECURE PAYMENT",
     "cart.title": "YOUR CART",
     "cart.shipFrom": "FREE SHIPPING FROM $60",
     "cart.need": "{amt} AWAY FROM FREE SHIPPING",
@@ -580,8 +580,8 @@ const PRODUCTS = [
       en: "Natural energy drink: yerba mate + guaraná. Zero taurine, zero weird stuff."
     },
     specs: {
-      es: "250 ML · MATE + GUARANÁ · SIN TAURINA · VEGANA · SIN AZÚCAR · 90 KCAL",
-      en: "250 ML · MATE + GUARANÁ · ZERO TAURINE · VEGAN · ZERO SUGAR · 90 KCAL"
+      es: "250 ML · 80 MG DE CAFEÍNA · MATE + GUARANÁ · SIN TAURINA · VEGANA · SIN AZÚCAR · 90 KCAL",
+      en: "250 ML · 80 MG CAFFEINE · MATE + GUARANÁ · ZERO TAURINE · VEGAN · ZERO SUGAR · 90 KCAL"
     },
     sizes: ["PACK ×4", "PACK ×12"],
     sizeLabel: { es: "PACK", en: "PACK" },
@@ -741,11 +741,18 @@ if (statProductsNum) statProductsNum.dataset.count = PRODUCTS.length;
     if (e.key === "Escape" && menu.classList.contains("open")) toggle(false);
   });
 
-  const secs = ["drop", "fuel", "historia", "faq"].map(id => document.getElementById(id));
+  /* Faltaba "madriguera", que sí está en el menú: al llegar al club el navbar
+     se quedaba marcando "faq" y ya no volvía a moverse. Y como el orden importa
+     —gana la última sección que hayas pasado— se recorre en el orden del
+     documento, no en el que estuvieran escritos aquí. */
+  const secs = ["drop", "fuel", "madriguera", "historia", "faq"]
+    .map(id => document.getElementById(id))
+    .filter(Boolean)
+    .sort((a, b) => a.offsetTop - b.offsetTop);
   const links = $$(".nav-links a");
   addEventListener("scroll", () => {
     let cur = "#top";
-    secs.forEach(s => { if (s && scrollY >= s.offsetTop - 200) cur = "#" + s.id; });
+    secs.forEach(s => { if (scrollY >= s.offsetTop - 200) cur = "#" + s.id; });
     links.forEach(l => l.classList.toggle("active", l.getAttribute("href") === cur));
   }, { passive: true });
 })();
@@ -1927,6 +1934,12 @@ const Panel = (() => {
     if (!u) return;
     const m = u.unsafeMetadata || {};
     $("#pnUser").textContent = u.primaryEmailAddress?.emailAddress || "";
+
+    /* Los meses también aquí: el módulo de La Madriguera los traduce, pero
+       scoped a su sección, así que la rejilla del panel se quedaba en inglés
+       con el sitio en español. */
+    const meses = t("bur.months").split(",");
+    $$("[data-mes]", el).forEach(n => { n.textContent = meses[+n.dataset.mes]; });
 
     /* ---- el año ---- */
     /* Las cartas se leen de publicMetadata, que solo se escribe desde el
