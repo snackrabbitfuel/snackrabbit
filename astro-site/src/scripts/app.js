@@ -870,12 +870,16 @@ const UI = (() => {
   const overlay = $("#overlay");
   let openEl = null, lastFocus = null;
 
+  const ENFOCABLES = 'a[href], button:not([disabled]), input:not([disabled]), ' +
+                     'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
   function open(el) {
     close(true);
     lastFocus = document.activeElement;
     openEl = el;
     overlay.hidden = false;
     requestAnimationFrame(() => overlay.classList.add("on"));
+    el.removeAttribute("inert");
     if (el.classList.contains("cart")) {
       el.classList.add("open");
       el.setAttribute("aria-hidden", "false");
@@ -892,6 +896,11 @@ const UI = (() => {
     if (!openEl) return;
     const el = openEl;
     openEl = null;
+    /* `inert` y no solo aria-hidden: aria-hidden lo esconde del lector de
+       pantalla pero deja sus botones en el orden de tabulación, así que con el
+       carrito cerrado el tabulador se metía dentro y el foco desaparecía de la
+       vista. `inert` lo saca de las dos cosas a la vez. */
+    el.setAttribute("inert", "");
     if (el.classList.contains("cart")) {
       el.classList.remove("open");
       el.setAttribute("aria-hidden", "true");
@@ -906,6 +915,20 @@ const UI = (() => {
       if (lastFocus) lastFocus.focus();
     }
   }
+
+  /* El foco no se escapa del modal abierto.
+     Sin esto, tabulando dentro de un diálogo se salía a la página de detrás:
+     el foco seguía moviéndose por enlaces que no se ven, sin forma de saber
+     dónde está. Es la avería que deja fuera a quien no usa ratón. */
+  addEventListener("keydown", e => {
+    if (e.key !== "Tab" || !openEl) return;
+    const items = $$(ENFOCABLES, openEl).filter(n => n.offsetParent !== null);
+    if (!items.length) return;
+    const primero = items[0], ultimo = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+    else if (!openEl.contains(document.activeElement)) { e.preventDefault(); primero.focus(); }
+  });
 
   overlay.addEventListener("click", () => close());
   addEventListener("keydown", e => { if (e.key === "Escape") close(); });

@@ -215,7 +215,11 @@ body::after {
   border-bottom: 4px solid transparent;
 }
 .nav.scrolled {
-  background: rgba(10, 10, 18, .88);
+  /* .96 y no .88: el desenfoque es un adorno que no siempre llega —basta un
+     ancestro con overflow o filter para que el navegador lo descarte— y cuando
+     no llega, el .88 dejaba ver el contenido pasando por debajo del texto del
+     menú. La legibilidad no puede depender de un efecto opcional. */
+  background: rgba(10, 10, 18, .96);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-bottom-color: var(--ink);
@@ -1338,7 +1342,14 @@ body::after {
   background: var(--paper); color: var(--ink);
 }
 .news-form input::placeholder { color: var(--gray-2); }
-.news-form input:focus { outline: none; background: #fff; }
+/* Antes: outline:none y un fondo un poco más claro. Cambiar el fondo de gris
+   a blanco no es un indicador de foco: quien navega con teclado no tenía forma
+   de saber dónde estaba. Se recupera el anillo del sistema. */
+.news-form input:focus-visible {
+  outline: 3px solid var(--focus); outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--focus-halo);
+  background: #fff;
+}
 .news .btn-ink:hover { background: var(--yellow); color: var(--ink); }
 .news-msg { font-family: var(--f-pixel); font-style: normal; font-size: 11px; letter-spacing: 2px; margin-top: 16px; min-height: 18px; }
 
@@ -1483,7 +1494,10 @@ body::after {
   border: 4px solid var(--ink);
   background: #fff; color: var(--ink);
 }
-.lm-form input:focus { outline: none; background: #ffe9f8; box-shadow: 4px 4px 0 var(--pink); }
+.lm-form input:focus-visible {
+  outline: 3px solid var(--focus); outline-offset: 2px;
+  background: #ffe9f8; box-shadow: 4px 4px 0 var(--pink);
+}
 .lm-err { font-family: var(--f-pixel); font-style: normal; font-size: 10px; letter-spacing: 1px; color: #c8003f; min-height: 14px; line-height: 1.6; }
 .lm-submit { width: 100%; }
 .lm-note {
