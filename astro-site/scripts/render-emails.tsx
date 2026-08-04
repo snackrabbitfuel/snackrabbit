@@ -29,7 +29,8 @@ const CORREOS = [
   { archivo: "03-shipped",         asunto: a3, el: <Shipped /> },
   { archivo: "04-welcome-burrow",  asunto: a4, el: <WelcomeBurrow plan="DIGGER" precio="$49" proximoCobro="1 FEB 2027" fechaCaja="5 JAN 2027" nombre="Diego" /> },
   { archivo: "05-monthly",         asunto: a5, el: <Monthly /> },
-  { archivo: "06-welcome-founder", asunto: a6, el: <WelcomeFounder plan="DIGGER" /> },
+  { archivo: "06-welcome-founder",    asunto: a6, el: <WelcomeFounder plan="DIGGER" /> },
+  { archivo: "06-welcome-founder-es", asunto: "Tu sitio está guardado.", el: <WelcomeFounder plan="CAVADOR" idioma="es" /> },
 ];
 
 mkdirSync(SALIDA, { recursive: true });

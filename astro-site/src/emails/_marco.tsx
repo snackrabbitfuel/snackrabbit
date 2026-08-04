@@ -101,11 +101,11 @@ export function Conejo({ lado = 5, cuerpo = C.tinta, hueco = C.rosa }) {
 
 /* ---------------------------------------------------------------- bloques */
 
-export function Curiosidad({ titulo, texto }: { titulo: string; texto: string }) {
+export function Curiosidad({ titulo, texto, idioma = "en" }: { titulo: string; texto: string; idioma?: "es" | "en" }) {
   return (
     <Section style={{ border: `3px solid ${C.amarillo}`, margin: "6px 0 30px", padding: "20px 22px" }}>
       <Text style={{ margin: "0 0 9px", fontFamily: F.pixel, fontSize: "11px", letterSpacing: "3px", color: C.amarillo }}>
-        THE CURIOSITY
+        {idioma === "es" ? "LA CURIOSIDAD" : "THE CURIOSITY"}
       </Text>
       <Text style={{ margin: "0 0 8px", fontFamily: F.display, fontSize: "21px", letterSpacing: ".5px", color: C.hueso, textTransform: "uppercase" }}>
         {titulo}
@@ -162,12 +162,14 @@ interface MarcoProps {
      así el enlace llega con el correo ya puesto y basta un clic. Si no se pasa,
      se cae a la página de baja genérica, donde hay que teclearlo. */
   baja?: string;
+  idioma?: "es" | "en";
   children: React.ReactNode;
 }
 
-export function Marco({ adelanto, kicker, titular, baja, children }: MarcoProps) {
+export function Marco({ adelanto, kicker, titular, baja, idioma = "en", children }: MarcoProps) {
+  const es = idioma === "es";
   return (
-    <Html lang="en">
+    <Html lang={idioma}>
       <Head>
         {/* Sin esto, Outlook y el modo oscuro de iOS invierten los colores de un
             correo que ya es oscuro: el fondo se vuelve claro, el texto hueso
@@ -214,8 +216,12 @@ export function Marco({ adelanto, kicker, titular, baja, children }: MarcoProps)
             {/* Dirección física y baja: en marketing no son opcionales, las exige la ley */}
             <Text style={{ margin: 0, fontFamily: F.pixel, fontSize: "9.5px", lineHeight: "1.9", letterSpacing: "1px", color: C.tenue }}>
               {NOMBRE} · {DIRECCION}<br />
-              You are receiving this because you bought from us or joined our list.<br />
-              <Link href={baja || `${SITIO}/unsubscribe`} style={{ color: C.tenue }}>Unsubscribe</Link>
+              {es
+                ? "Recibes esto porque nos compraste algo o te apuntaste a nuestra lista."
+                : "You are receiving this because you bought from us or joined our list."}<br />
+              <Link href={baja || `${SITIO}/unsubscribe`} style={{ color: C.tenue }}>
+                {es ? "Darse de baja" : "Unsubscribe"}
+              </Link>
             </Text>
           </Section>
 

@@ -3,7 +3,7 @@ import { createClerkClient, verifyToken } from "@clerk/backend";
 import { render } from "@react-email/render";
 import * as React from "react";
 
-import WelcomeFounder, { asunto } from "../../emails/welcome-founder";
+import WelcomeFounder, { asunto, asuntoEs } from "../../emails/welcome-founder";
 import { secreto } from "../../lib/audiencia";
 import { SITIO } from "../../emails/_marco";
 
@@ -107,15 +107,21 @@ export const POST: APIRoute = async ({ request }) => {
     /* El enlace de baja llega con el correo ya puesto: un clic y fuera, sin
        teclear nada. */
     const baja = `${SITIO}/api/baja?e=${encodeURIComponent(destino)}`;
+    /* El idioma viaja desde el alta: el servidor no puede saberlo de otra
+       forma —vive en el localStorage del navegador— y escribirle en inglés a
+       quien navega en español es empezar pidiéndole que se esfuerce. */
+    const idioma = ficha.idioma === "es" ? "es" : "en";
     const html = await render(
-      React.createElement(WelcomeFounder, { plan: NOMBRE_PLAN[ficha.plan] || "DIGGER", baja }),
+      React.createElement(WelcomeFounder, {
+        plan: NOMBRE_PLAN[ficha.plan] || "DIGGER", baja, idioma,
+      }),
     );
 
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${claveResend}`, "content-type": "application/json" },
       body: JSON.stringify({
-        from: REMITENTE, to: [destino], subject: asunto, html,
+        from: REMITENTE, to: [destino], subject: idioma === "es" ? asuntoEs : asunto, html,
         /* Gmail y Apple Mail enseñan su propio botón de baja cuando ven estas
            cabeceras, y lo tienen más en cuenta que el enlace del pie a la hora
            de decidir si un remitente es fiable. El -Post es la baja en un clic

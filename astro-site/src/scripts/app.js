@@ -193,7 +193,7 @@ const I18N = {
     "news.sending": "ENVIANDO…",
     "news.already": "★ YA ESTABAS EN LA LISTA. TRANQUILO.",
     "news.fail": "✕ NO PUDIMOS APUNTARTE. INTÉNTALO EN UN RATO.",
-    "foot.tag": "Curiosidades virales desde 2023.<br>Ahora también en objetos.",
+    "foot.tag": "Curiosidades virales desde 2026.<br>Ahora también en objetos.",
     "foot.shop": "TIENDA",
     "foot.help": "AYUDA",
     "foot.shipping": "ENVÍOS",
@@ -460,7 +460,7 @@ const I18N = {
     "news.sending": "SENDING…",
     "news.already": "★ YOU WERE ALREADY ON THE LIST. RELAX.",
     "news.fail": "✕ WE COULD NOT ADD YOU. TRY AGAIN IN A BIT.",
-    "foot.tag": "Viral curiosities since 2023.<br>Now also in objects.",
+    "foot.tag": "Viral curiosities since 2026.<br>Now also in objects.",
     "foot.shop": "SHOP",
     "foot.help": "HELP",
     "foot.shipping": "SHIPPING",
@@ -1899,6 +1899,10 @@ const Madriguera = (() => {
       await Auth.guardarMeta("madriguera", {
         lista: true,
         plan,
+        /* En qué idioma lee la web. El servidor no puede saberlo —el idioma
+           vive en localStorage— así que viaja con el alta: sin esto, a quien
+           navega en español se le escribe en inglés. */
+        idioma: LANG,
         /* Si el plan vino puesto por defecto o lo eligió de verdad. CAVADOR
            está preseleccionado, así que sin este dato la lista de fundadores
            parecería llena de gente que quiere el plan caro y la previsión de

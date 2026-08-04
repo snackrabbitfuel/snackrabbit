@@ -26,46 +26,85 @@
 import * as React from "react";
 import { Marco, P, Curiosidad, Datos, Boton, SITIO } from "./_marco";
 
+/* Los textos, en los dos idiomas. La web se sirve en inglés y el español es
+   opt-in, pero a quien navega en español escribirle en inglés es empezar la
+   relación pidiéndole que se esfuerce. El idioma viaja desde el alta. */
 export const asunto = "Your spot is saved.";
+export const asuntoEs = "Tu sitio está guardado.";
 
-export default function WelcomeFounder({ plan = "DIGGER", baja }: { plan?: string; baja?: string }) {
+const T = {
+  en: {
+    adelanto: "Nothing charged. You hear first when the doors open.",
+    kicker: "THE LIST",
+    titular: "You're on the list.",
+    plan: "PLAN PICKED", cobro: "CHARGED TODAY", aviso: "YOU HEAR", early: "48 HOURS EARLY",
+  },
+  es: {
+    adelanto: "No se te ha cobrado nada. Te avisamos antes que a nadie.",
+    kicker: "LA LISTA",
+    titular: "Estás en la lista.",
+    plan: "PLAN ELEGIDO", cobro: "COBRADO HOY", aviso: "TE AVISAMOS", early: "48 HORAS ANTES",
+  },
+} as const;
+
+export default function WelcomeFounder({
+  plan = "DIGGER", baja, idioma = "en",
+}: { plan?: string; baja?: string; idioma?: "es" | "en" }) {
+  const es = idioma === "es";
+  const x = T[es ? "es" : "en"];
   return (
     <Marco
-      adelanto="Nothing charged. You hear first when the doors open."
-      kicker="THE LIST"
-      titular="You're on the list."
+      adelanto={x.adelanto}
+      kicker={x.kicker}
+      titular={x.titular}
       baja={baja}
+      idioma={idioma}
     >
       <P>
-        You have not been charged, and you will not be until the doors open. What you have is your
-        place in the queue — and when we open, you hear about it{" "}
-        <strong>48 hours before anyone else</strong>.
+        {es
+          ? <>No se te ha cobrado nada, y no se te cobrará hasta que abramos. Lo que tienes es tu
+             sitio en la cola — y cuando abramos te enteras <strong>48 horas antes que nadie</strong>.</>
+          : <>You have not been charged, and you will not be until the doors open. What you have is
+             your place in the queue — and when we open, you hear about it{" "}
+             <strong>48 hours before anyone else</strong>.</>}
       </P>
 
       <Datos
         filas={[
-          ["PLAN PICKED", plan],
-          ["CHARGED TODAY", "$0.00"],
-          ["YOU HEAR", "48 HOURS EARLY"],
+          [x.plan, plan],
+          [x.cobro, "$0.00"],
+          [x.aviso, x.early],
         ]}
       />
 
       <P>
-        The first hundred members get card 000 — numbered by hand, and never issued again once the
-        hundredth is written. We are counting from the moment you joined, and we will tell you
-        exactly where you landed the day we open. No guessing, no small print.
+        {es
+          ? <>Los cien primeros socios reciben la carta 000 — numerada a mano, y que no se vuelve a
+             emitir una vez escrita la número cien. Estamos contando desde el momento en que te
+             apuntaste, y el día que abramos te diremos exactamente dónde caíste. Sin adivinar y sin
+             letra pequeña.</>
+          : <>The first hundred members get card 000 — numbered by hand, and never issued again once
+             the hundredth is written. We are counting from the moment you joined, and we will tell
+             you exactly where you landed the day we open. No guessing, no small print.</>}
       </P>
 
-      <P>Since you are here, one that is not on the channel:</P>
+      <P>{es ? "Ya que estás, una que no está en el canal:" : "Since you are here, one that is not on the channel:"}</P>
 
       <Curiosidad
-        titulo="Curiosity means care"
-        texto="The word comes from the Latin cura — care, concern, attention. To be curious about something is, literally and originally, to care about it. Every time you stop to find out why, you are doing the older thing the word was built for."
+        idioma={idioma}
+        titulo={es ? "Curiosidad viene de cuidado" : "Curiosity means care"}
+        texto={es
+          ? "La palabra viene del latín cura — cuidado, atención, preocupación por algo. Ser curioso es, literal y originalmente, que algo te importe. Cada vez que te paras a averiguar por qué, estás haciendo lo más antiguo para lo que se creó la palabra."
+          : "The word comes from the Latin cura — care, concern, attention. To be curious about something is, literally and originally, to care about it. Every time you stop to find out why, you are doing the older thing the word was built for."}
       />
 
-      <P>That is the whole idea behind this. Nothing else to do right now — we write to you first.</P>
+      <P>
+        {es
+          ? "Esa es toda la idea detrás de esto. No hay nada más que hacer ahora mismo — te escribimos a ti primero."
+          : "That is the whole idea behind this. Nothing else to do right now — we write to you first."}
+      </P>
 
-      <Boton texto="SEE WHAT WE MAKE ▸" url={SITIO} />
+      <Boton texto={es ? "MIRA LO QUE HACEMOS ▸" : "SEE WHAT WE MAKE ▸"} url={SITIO} />
     </Marco>
   );
 }
