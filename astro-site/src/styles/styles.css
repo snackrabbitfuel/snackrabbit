@@ -2224,3 +2224,16 @@ body::after {
 .pn-form-btns { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .pn-form-btns .btn { padding: 11px 20px; font-size: 11px; }
 @media (max-width: 620px) { .pn-form { grid-template-columns: 1fr; } }
+
+
+/* Aviso cuando no hay JavaScript. Las páginas legales sí son estáticas, así que
+   se enlazan: al menos eso sigue siendo accesible. */
+.sinjs {
+  background: var(--yellow); color: var(--ink);
+  padding: 18px clamp(18px, 5vw, 54px);
+  border-bottom: 4px solid var(--ink);
+  font-size: 15px; line-height: 1.6;
+}
+.sinjs p { margin: 0 0 8px; }
+.sinjs p:last-child { margin: 0; font-family: var(--f-pixel); font-style: normal; font-size: 10px; letter-spacing: 1.5px; }
+.sinjs a { color: var(--ink); }

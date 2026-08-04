@@ -7,7 +7,10 @@
 const CARTAS = Array.from({ length: 12 }, (_, i) => i);
 const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-const RANGOS = [1, 10, 30, 75, 150, 300];
+/* Único sitio donde viven los umbrales: app.js los importa de aquí. Estaban
+   escritos dos veces, y dos copias del mismo número siempre acaban separándose
+   sin que nadie se entere. */
+import { UMBRALES_RANGO as RANGOS } from "../data/rangos";
 const ROMANOS = ["I", "II", "III", "IV", "V", "VI"];
 ---
 
@@ -21,7 +24,7 @@ const ROMANOS = ["I", "II", "III", "IV", "V", "VI"];
     <div class="pn-quien">
       <svg class="pn-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
       <div>
-        <p class="pn-kicker" data-i18n="pn.title">MY BURROW</p>
+        <p class="pn-kicker" id="pnTitle" data-i18n="pn.title">MY BURROW</p>
         <p class="pn-user" id="pnUser"></p>
       </div>
     </div>

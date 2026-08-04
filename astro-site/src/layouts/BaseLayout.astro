@@ -54,6 +54,17 @@ const {
      que recorrerse el menú entero en cada pantalla para llegar al contenido.
      Solo se ve al recibir el foco. -->
 <a class="skip" href="#top" data-i18n="a11y.skip">Skip to content</a>
+<!-- Sin JavaScript la tienda no funciona: el carrito, el catálogo y las cuentas
+     viven en app.js. Antes no se decía nada y quedaba una página rosa sin
+     explicación; ahora al menos se sabe qué pasa y adónde escribir. -->
+<noscript>
+  <div class="sinjs">
+    <p><strong>This site needs JavaScript to shop.</strong></p>
+    <p>The catalogue, the cart and your account all run in the browser. Turn it on, or write to
+      <a href="mailto:hello@snackrabbit.co">hello@snackrabbit.co</a> and we take your order by email.</p>
+    <p><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/returns">Returns</a> · <a href="/shipping">Shipping</a></p>
+  </div>
+</noscript>
 <slot />
 <script>
   import "../scripts/app.js";

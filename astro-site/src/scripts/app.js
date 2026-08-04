@@ -8,6 +8,7 @@
    escrita a mano aquí: es un dato que tiene que decir lo mismo en los cuatro
    sitios donde aparece. Lo empaqueta Vite, así que no viaja nada de más. */
 import { EMPRESA } from "../data/empresa";
+import { UMBRALES_RANGO } from "../data/rangos";
 const CONTACTO = EMPRESA.email;
 
 /* ---------- Utils ---------- */
@@ -1475,7 +1476,7 @@ const Auth = (() => {
     modal.classList.toggle("step-code", cual !== "in" && cual !== "up");
     const up = cual === "up";
     tabIn.classList.toggle("active", cual === "in"); tabUp.classList.toggle("active", up);
-    tabIn.setAttribute("aria-selected", cual === "in"); tabUp.setAttribute("aria-selected", up);
+    tabIn.setAttribute("aria-pressed", String(cual === "in")); tabUp.setAttribute("aria-pressed", String(up));
     $$(".lm-err", modal).forEach(e => e.textContent = "");
   }
   tabIn.addEventListener("click", () => paso("in"));
@@ -1880,7 +1881,7 @@ const Madriguera = (() => {
    desbloquea; nunca con datos de mentira. */
 const Panel = (() => {
   const el = $("#panelModal");
-  const UMBRALES = [1, 10, 30, 75, 150, 300];
+  const UMBRALES = UMBRALES_RANGO;   // de src/data/rangos.ts, único sitio
 
   /* Cuenta arriba desde cero. El progreso es el motor del club entero, así que
      merece verse crecer en vez de aparecer ya hecho. */

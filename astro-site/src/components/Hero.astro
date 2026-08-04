@@ -7,8 +7,11 @@
       <p class="hero-kicker rv" data-i18n="hero.kicker">@SNACKRABBIT.TV PRESENTS</p>
       <h1 class="hero-title" id="heroTitle" aria-label="FOLLOW THE RABBIT.">
         <span class="hero-hopper" aria-hidden="true"><span class="hh-x"><span class="hh-y"><svg><use href="#bunny"></use></svg></span></span></span>
-        <span class="ht-line"><span class="ht-word" id="htWord1"></span></span>
-        <span class="ht-line ht-line-hl"><span class="ht-word" id="htWord2"></span></span>
+        <!-- Las palabras van en el HTML, no solo en el JS: sin JavaScript el
+             titular de la portada se quedaba vacío y la página era una pantalla
+             rosa sin un solo mensaje. El guion las reescribe para animarlas. -->
+        <span class="ht-line"><span class="ht-word" id="htWord1">FOLLOW THE</span></span>
+        <span class="ht-line ht-line-hl"><span class="ht-word" id="htWord2">RABBIT.</span></span>
       </h1>
       <p class="hero-sub rv" data-delay="500" data-i18n-html="hero.sub">Curiosity got you this far.<br>The burrow does the rest.</p>
       <div class="hero-ctas rv" data-delay="620">

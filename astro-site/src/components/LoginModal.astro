@@ -9,9 +9,13 @@
   <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
   <svg class="lm-bunny" aria-hidden="true"><use href="#bunny"></use></svg>
   <h2 id="loginTitle" class="lm-title" data-i18n="auth.title">THE BURROW</h2>
-  <div class="lm-tabs" role="tablist">
-    <button class="lm-tab active" id="tabIn" type="button" role="tab" aria-selected="true" data-i18n="auth.tabIn">SIGN IN</button>
-    <button class="lm-tab" id="tabUp" type="button" role="tab" aria-selected="false" data-i18n="auth.tabUp">SIGN UP</button>
+  <!-- Sin role="tablist": eran pestañas a medias —había role="tab" pero ningún
+       role="tabpanel" ni aria-controls— y un patrón ARIA incompleto confunde más
+       que no ponerlo. Son dos botones que cambian de formulario, y como tales se
+       anuncian. aria-pressed dice cuál está activo. -->
+  <div class="lm-tabs">
+    <button class="lm-tab active" id="tabIn" type="button" aria-pressed="true" data-i18n="auth.tabIn">SIGN IN</button>
+    <button class="lm-tab" id="tabUp" type="button" aria-pressed="false" data-i18n="auth.tabUp">SIGN UP</button>
   </div>
 
   <form class="lm-form" id="formIn" novalidate>
