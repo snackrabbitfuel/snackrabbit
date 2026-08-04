@@ -75,7 +75,11 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
     </article>
 
     <article class="tier tier-best rv" data-tier="cavador" data-delay="150" tabindex="0" role="button">
-      <span class="tier-flag" data-i18n="bur.best">MOST CHOSEN</span>
+      <!-- "MOST CHOSEN" afirmaba que era el plan más elegido con cero
+           suscriptores. El JS ya lo cambiaba a BEST VALUE, pero lo que sirve el
+           servidor —y lo que leen buscadores y vistas previas— era la versión
+           falsa. Mismo motivo por el que quitamos los "quedan 41". -->
+      <span class="tier-flag" data-i18n="bur.best">BEST VALUE</span>
       <p class="tier-name" data-i18n="bur.t2name">DIGGER</p>
       <p class="tier-price">$49<small data-i18n="bur.per">/MONTH</small></p>
       <ul class="tier-list">

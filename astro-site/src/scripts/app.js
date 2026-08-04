@@ -53,6 +53,7 @@ const I18N = {
     "card.ship": "ENVÍO EN 48H",
     "card.always": "SIEMPRE DISPONIBLE",
     "card.view": "Ver {name}",
+    "card.colorGroup": "Color de {name}",
     "card.addAria": "Añadir {name} al carrito",
     "fuel.kicker": "Nº 01 — EL PRODUCTO HÉROE",
     "fuel.title": "ENERGÍA<br><em>SIN CUENTOS.</em>",
@@ -298,6 +299,7 @@ const I18N = {
     "card.ship": "SHIPS IN 48H",
     "card.always": "ALWAYS IN STOCK",
     "card.view": "View {name}",
+    "card.colorGroup": "{name} colour",
     "card.addAria": "Add {name} to cart",
     "fuel.kicker": "No. 01 — THE HERO PRODUCT",
     "fuel.title": "ENERGY,<br><em>NO NONSENSE.</em>",
@@ -937,8 +939,8 @@ function renderGrid(instant) {
           <span class="ptag">${t("card.ship")}</span><span class="ptag">${t("card.always")}</span>
         </div>
         <div class="pcard-foot">
-          <div class="pcard-swatches">
-            ${(p.colors || []).map((c, ci) => `<span class="swatch" style="background:${c}" title="${colorName(p.colorNames[ci])}"></span>`).join("")}
+          <div class="pcard-swatches" role="group" aria-label="${t("card.colorGroup", { name: p.name })}">
+            ${(p.colors || []).map((c, ci) => `<button type="button" class="swatch${ci === 0 ? " sel" : ""}" style="background:${c}" data-color="${p.colorNames[ci]}" aria-pressed="${ci === 0}" aria-label="${colorName(p.colorNames[ci])}"></button>`).join("")}
           </div>
           <div class="pcard-buy">
             <span class="pcard-price">${money(p.price)}${p.priceNote ? `<small>${p.priceNote}</small>` : ""}</span>
@@ -946,10 +948,27 @@ function renderGrid(instant) {
           </div>
         </div>
       </div>`;
+    /* Las muestras eligen de verdad.
+       Eran <span> decorativos: se pulsara la que se pulsara, al carrito iba
+       siempre colorNames[0]. Elegías la toalla negra y te llegaba la blanca.
+       Como botones, además, se alcanzan con el tabulador — antes el color solo
+       se podía elegir con ratón, dentro del modal. */
+    const muestras = $$(".swatch", card);
+    let elegido = p.colorNames && p.colorNames[0];
+    muestras.forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();                       // no abrir el modal al elegir
+      elegido = b.dataset.color;
+      muestras.forEach(o => {
+        const yo = o === b;
+        o.classList.toggle("sel", yo);
+        o.setAttribute("aria-pressed", String(yo));
+      });
+    }));
+
     card.querySelector(".pcard-add").addEventListener("click", e => {
       e.stopPropagation();
       const size = p.sizes[Math.floor(p.sizes.length / 2 - .5)] || p.sizes[0];
-      Cart.add(p.id, { size, color: p.colorNames && p.colorNames[0], qty: 1 });
+      Cart.add(p.id, { size, color: p.colorNames && elegido, qty: 1 });
       confetti.burst(e.clientX, e.clientY, 26);
     });
     card.addEventListener("click", () => ProductModal.open(p.id));
@@ -1785,7 +1804,11 @@ const Panel = (() => {
       const img = new Image();
       img.src = `/assets/carta-${String(n).padStart(3, "0")}-${LANG}.webp`;
       img.alt = "";
-      img.onerror = () => { img.remove(); c.classList.remove("tiene"); };
+      /* Si esa cara aún no está publicada se quita la imagen y se queda la
+         placa con el número — pero la carta SIGUE siendo suya. Antes se le
+         quitaba la clase, así que quien tuviera la 3 la veía como no
+         conseguida y el contador mentía. */
+      img.onerror = () => img.remove();
       c.appendChild(img);
     });
     animar ? contar($("#pnCartasN"), mias.length) : ($("#pnCartasN").textContent = mias.length);

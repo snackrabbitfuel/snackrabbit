@@ -785,12 +785,19 @@ body::after {
 .pcard:hover .ptag:first-child { color: var(--yellow); border-color: rgba(255, 212, 0, .4); }
 .pcard-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .pcard-swatches { display: flex; gap: 8px; }
+/* Ahora son botones, no adornos. El estado elegido no puede depender solo del
+   color de un aro fino: se marca con el aro en amarillo y un poco de tamaño,
+   que se distingue también sin ver bien el color. */
 .swatch {
   width: 18px; height: 18px;
   border: 3px solid var(--ink);
   outline: 2px solid var(--gray-2);
   display: inline-block;
+  padding: 0; cursor: pointer;
+  transition: outline-color .15s, scale .15s var(--ease-snap);
 }
+.swatch:hover { outline-color: var(--bone); }
+.swatch.sel { outline: 3px solid var(--yellow); outline-offset: 1px; scale: 1.12; }
 .pcard-buy { display: flex; align-items: center; gap: 14px; }
 .pcard-price {
   font-family: var(--f-pixel); font-style: normal;

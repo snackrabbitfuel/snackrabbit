@@ -32,7 +32,18 @@ const {
 <meta name="description" content={description}>
 <meta property="og:title" content={ogTitle}>
 <meta property="og:description" content={ogDescription}>
-<meta property="og:image" content={ogImage}>
+{/* La imagen de las vistas previas tiene que ir con URL absoluta. WhatsApp,
+    X y Facebook no resuelven rutas relativas: leen el HTML desde su propio
+    servidor, sin saber de dónde salió. Con "/assets/..." el enlace se
+    compartía sin imagen — comprobado en producción. */}
+<meta property="og:image" content={new URL(ogImage, Astro.site).href}>
+<meta property="og:url" content={Astro.url.href}>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SNACKRABBIT">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content={ogTitle}>
+<meta name="twitter:description" content={ogDescription}>
+<meta name="twitter:image" content={new URL(ogImage, Astro.site).href}>
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ff4fd8"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g><rect x="4" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="7" y="5" width="1" height="1" fill="%23ff4fd8"/><rect x="5" y="6" width="2" height="1" fill="%23ff4fd8"/></svg>'>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
