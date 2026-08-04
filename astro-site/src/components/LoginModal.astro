@@ -39,7 +39,10 @@
   </form>
 
   <form class="lm-form" id="formCode" hidden novalidate>
-    <p class="lm-sent" id="lmSent" data-i18n="auth.codeSent">We sent a 6-digit code to your email.</p>
+    <!-- Sin data-i18n: el texto lleva el correo dentro y va con <strong>, así que
+         al cambiar de idioma applyLang lo habría escrito como texto plano y se
+         veía el "{email}" y las etiquetas en crudo. Lo escribe el JS. -->
+    <p class="lm-sent" id="lmSent">We sent a 6-digit code to your email.</p>
     <label class="lm-code-label">
       <span data-i18n="auth.code">VERIFICATION CODE</span>
       <input class="lm-code" type="text" name="code" inputmode="numeric" pattern="[0-9]*"
@@ -64,7 +67,7 @@
 
   <!-- ---- Recuperar contraseña: código + contraseña nueva ---- -->
   <form class="lm-form" id="formReset" hidden novalidate>
-    <p class="lm-sent" id="lmSentReset" data-i18n="auth.codeSent">We sent a 6-digit code to your email.</p>
+    <p class="lm-sent" id="lmSentReset">We sent a 6-digit code to your email.</p>
     <label class="lm-code-label">
       <span data-i18n="auth.code">VERIFICATION CODE</span>
       <input class="lm-code" type="text" name="code" inputmode="numeric" pattern="[0-9]*"

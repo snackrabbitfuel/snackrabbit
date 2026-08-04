@@ -115,6 +115,7 @@ const I18N = {
     "pn.ship": "ENVÍO",
     "pn.shipNone": "Aún no hay dirección guardada. Se guarda con tu primer pedido.",
     "pn.out": "CERRAR SESIÓN",
+    "pn.outSure": "PULSA OTRA VEZ PARA CONFIRMAR",
     "rank.1": "LA SEÑAL",
     "rank.2": "EL RASTRO",
     "rank.3": "LA CAÍDA",
@@ -387,6 +388,7 @@ const I18N = {
     "pn.ship": "SHIPPING",
     "pn.shipNone": "No address saved yet. It gets saved with your first order.",
     "pn.out": "LOG OUT",
+    "pn.outSure": "TAP AGAIN TO CONFIRM",
     "rank.1": "THE SIGNAL",
     "rank.2": "THE TRAIL",
     "rank.3": "THE FALL",
@@ -1441,6 +1443,7 @@ const Auth = (() => {
   const tuvoSesion = () => { try { return localStorage.getItem(SESION) === "1"; } catch { return false; } };
   const marcarSesion = si => { try { si ? localStorage.setItem(SESION, "1") : localStorage.removeItem(SESION); } catch {} };
   let pendiente = null;   // { email, nombre } mientras se verifica el correo
+  let correoCodigo = null;   // a quién se le mandó el código, para repintar al cambiar de idioma
   const oyentes = [];     // otros módulos que quieren enterarse de login/logout
 
   /* Clerk pesa ~1,4 MB, así que va en su propio chunk y no se descarga con la
@@ -1596,6 +1599,7 @@ const Auth = (() => {
       } else {                                              // hace falta el código
         await su.prepareEmailAddressVerification({ strategy: "email_code" });
         pendiente = { email, nombre };
+        correoCodigo = email;
         $("#lmSent").innerHTML = t("auth.codeSent", { email });
         paso("code");
         formCode.code.value = ""; formCode.code.focus();
@@ -1665,6 +1669,7 @@ const Auth = (() => {
     ocupado(formLost, true); err.textContent = "";
     try {
       await clerk.client.signIn.create({ strategy: "reset_password_email_code", identifier: email });
+      correoCodigo = email;
       $("#lmSentReset").innerHTML = t("auth.codeSent", { email });
       paso("reset");
       formReset.code.value = ""; formReset.pass.value = ""; formReset.code.focus();
@@ -1768,7 +1773,16 @@ const Auth = (() => {
     try { return (await clerk?.session?.getToken()) || null; } catch { return null; }
   }
 
-  return { paintNav, user: usuario, token, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir };
+  /* applyLang la llama al cambiar de idioma: los dos avisos del código llevan
+     el correo dentro, así que los reescribe el módulo y no el traductor. */
+  function refreshLang() {
+    if (!correoCodigo) return;
+    const txt = t("auth.codeSent", { email: correoCodigo });
+    $("#lmSent").innerHTML = txt;
+    $("#lmSentReset").innerHTML = txt;
+  }
+
+  return { paintNav, user: usuario, token, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir, refreshLang };
 })();
 
 /* ============================================================
@@ -2166,7 +2180,28 @@ const Panel = (() => {
     try { pintar(true); } catch (err) { console.error("[panel] no se pudo pintar:", err); }
   }
 
-  $("#pnSalir").addEventListener("click", async () => {
+  /* Cerrar sesión pide confirmación, en el propio botón.
+     Estaba a un toque, pegado al resto del panel: en el móvil, donde los dedos
+     no son precisos, se salía sin querer y había que volver a entrar. Dos
+     toques, y si te lo piensas vuelve solo a los 4 segundos. */
+  let salirArmado = false, tSalir = null;
+  const btnSalir = $("#pnSalir");
+  btnSalir.addEventListener("click", async () => {
+    if (!salirArmado) {
+      salirArmado = true;
+      btnSalir.classList.add("armado");
+      btnSalir.textContent = t("pn.outSure");
+      tSalir = setTimeout(() => {
+        salirArmado = false;
+        btnSalir.classList.remove("armado");
+        btnSalir.textContent = t("pn.out");
+      }, 4000);
+      return;
+    }
+    clearTimeout(tSalir);
+    salirArmado = false;
+    btnSalir.classList.remove("armado");
+    btnSalir.textContent = t("pn.out");
     UI.close();
     await Auth.salir();
   });
@@ -2354,6 +2389,7 @@ function applyLang() {
   renderGrid(langBooted);      // primera vez con reveal animado; después instantáneo
   Cart.render();
   Auth.paintNav();
+  Auth.refreshLang();
   Madriguera.refresh();
   Panel.refresh();
   ProductModal.refreshLang();

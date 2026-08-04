@@ -2264,3 +2264,5 @@ body::after {
   font-family: var(--f-pixel); font-style: normal;
   font-size: 10px; letter-spacing: 2px; color: var(--yellow);
 }
+
+.pn-salir.armado { color: var(--pink); border-color: var(--pink); }
