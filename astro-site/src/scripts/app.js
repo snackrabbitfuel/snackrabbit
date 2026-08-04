@@ -30,6 +30,7 @@ const I18N = {
     "nav.drop": "EL DROP",
     "nav.manifesto": "MANIFIESTO",
     "nav.burrow": "LA MADRIGUERA",
+    "nav.checking": "…",
     "nav.login": "LOGIN",
     "nav.hello": "HOLA, {name}",
     "hero.kicker": "@SNACKRABBIT.TV PRESENTA",
@@ -276,6 +277,7 @@ const I18N = {
     "nav.drop": "THE DROP",
     "nav.manifesto": "MANIFESTO",
     "nav.burrow": "THE BURROW",
+    "nav.checking": "…",
     "nav.login": "LOGIN",
     "nav.hello": "HI, {name}",
     "hero.kicker": "@SNACKRABBIT.TV PRESENTS",
@@ -1334,6 +1336,12 @@ const Auth = (() => {
   const formIn = $("#formIn"), formUp = $("#formUp"), formCode = $("#formCode");
   const formLost = $("#formLost"), formReset = $("#formReset");
   let clerk = null, listo = false, fallo = false;
+  /* Marca de que en este navegador ya se entró alguna vez. No guarda identidad
+     ni nada que valga para suplantar: solo sirve para no enseñar LOGIN a quien
+     probablemente siga dentro, y para arrancar Clerk sin esperar. */
+  const SESION = "sr_sesion_v1";
+  const tuvoSesion = () => { try { return localStorage.getItem(SESION) === "1"; } catch { return false; } };
+  const marcarSesion = si => { try { si ? localStorage.setItem(SESION, "1") : localStorage.removeItem(SESION); } catch {} };
   let pendiente = null;   // { email, nombre } mientras se verifica el correo
   const oyentes = [];     // otros módulos que quieren enterarse de login/logout
 
@@ -1348,18 +1356,33 @@ const Auth = (() => {
       try {
         const { Clerk } = await import("@clerk/clerk-js");
         clerk = new Clerk(PK);
-        await clerk.load();
+        /* Con tope de tiempo: si Clerk no contesta —red mala, su servicio
+           caído— antes se quedaba en CONECTANDO… para siempre y el botón no
+           hacía nada, sin decir nunca por qué. Mejor fallar a la vista. */
+        await Promise.race([
+          clerk.load(),
+          new Promise((_, no) => setTimeout(() => no(new Error("tiempo agotado")), 15000)),
+        ]);
         listo = true;
         clerk.addListener(cambio);     // sesión restaurada, login o logout
         cambio();
       } catch (e) {
         fallo = true;
         console.error("[auth] Clerk no pudo cargarse:", e);
+        paintNav();
       }
     })();
     return arranque;
   }
-  if ("requestIdleCallback" in window) requestIdleCallback(iniciar, { timeout: 3000 });
+
+  /* Quien ya entró alguna vez en este navegador arranca Clerk de inmediato; el
+     resto espera a que el navegador esté ocioso.
+     Antes esperaban todos, y durante esos hasta 3 segundos el navbar decía
+     LOGIN a alguien con la sesión abierta: parecía que se había caído. Así el
+     1,4 MB lo paga solo quien lo necesita, y el visitante nuevo sigue teniendo
+     la portada ligera. */
+  if (tuvoSesion()) iniciar();
+  else if ("requestIdleCallback" in window) requestIdleCallback(iniciar, { timeout: 3000 });
   else setTimeout(iniciar, 1500);
 
   /* Traduce los códigos de error de Clerk a NUESTROS mensajes de marca */
@@ -1413,8 +1436,19 @@ const Auth = (() => {
   function paintNav() {
     const u = usuario();
     const label = $("#loginLabel"), btn = $("#btnLogin");
-    if (u) { label.textContent = t("nav.hello", { name: nombreDe(u).split(" ")[0].toUpperCase() }); btn.classList.add("logged"); }
-    else { label.textContent = t("nav.login"); btn.classList.remove("logged"); }
+    if (u) {
+      label.textContent = t("nav.hello", { name: nombreDe(u).split(" ")[0].toUpperCase() });
+      btn.classList.add("logged");
+      marcarSesion(true);
+      return;
+    }
+    btn.classList.remove("logged");
+    /* Mientras Clerk resuelve y aquí ya hubo sesión, no se dice ni una cosa ni
+       la otra. Decir LOGIN sería afirmar que está fuera sin saberlo, y decir su
+       nombre sería afirmar que está dentro. */
+    if (!listo && !fallo && tuvoSesion()) { label.textContent = t("nav.checking"); return; }
+    label.textContent = t("nav.login");
+    if (listo) marcarSesion(false);
   }
 
   function cambio() {
