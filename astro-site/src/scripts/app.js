@@ -270,6 +270,8 @@ const I18N = {
     "cart.less": "Quitar una unidad de {name}",
     "cart.more": "Añadir una unidad de {name}",
     "cart.del": "Quitar {name} del carrito",
+    "cart.max": "MÁXIMO {n} POR LÍNEA.",
+    "ck.phonePh": "+34 600 000 000",
     "cart.note": "IMPUESTOS Y ENVÍO SE CALCULAN AL PAGAR",
     "cart.emptyToast": "TU CARRITO ESTÁ VACÍO",
     "cart.removed": "PRODUCTO ELIMINADO",
@@ -518,6 +520,8 @@ const I18N = {
     "cart.less": "Remove one {name}",
     "cart.more": "Add one {name}",
     "cart.del": "Remove {name} from the cart",
+    "cart.max": "MAXIMUM {n} PER LINE.",
+    "ck.phonePh": "+1 555 000 0000",
     "cart.note": "TAXES AND SHIPPING CALCULATED AT CHECKOUT",
     "cart.emptyToast": "YOUR CART IS EMPTY",
     "cart.removed": "ITEM REMOVED",
@@ -575,9 +579,9 @@ const PRODUCTS = [
     sizes: ["PACK ×4", "PACK ×12"],
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
-    img: "/assets/can-cutout.png",
+    img: "/assets/can-cutout.webp",
     /* Una sola galería: la lata no tiene variantes, solo ángulos */
-    views: ["/assets/can-cutout.png", "/assets/can-top.webp", "/assets/can-back.webp",
+    views: ["/assets/can-cutout.webp", "/assets/can-top.webp", "/assets/can-back.webp",
             "/assets/can-label.webp", "/assets/can-mood.webp"],
     imgScale: 1
   },
@@ -597,16 +601,16 @@ const PRODUCTS = [
     },
     colors: ["#f2f2f7", "#17171b"],
     colorNames: ["BLANCO", "NEGRO"],
-    imgByColor: { BLANCO: "/assets/plush-cutout.png", NEGRO: "/assets/plush-black-cutout.png" },
+    imgByColor: { BLANCO: "/assets/plush-cutout.webp", NEGRO: "/assets/plush-black-cutout.webp" },
     viewsByColor: {
-      BLANCO: ["/assets/plush-cutout.png", "/assets/plush-white-34.webp",
+      BLANCO: ["/assets/plush-cutout.webp", "/assets/plush-white-34.webp",
                "/assets/plush-white-side.webp", "/assets/plush-white-back.webp"],
-      NEGRO:  ["/assets/plush-black-cutout.png", "/assets/plush-black-34.webp",
+      NEGRO:  ["/assets/plush-black-cutout.webp", "/assets/plush-black-34.webp",
                "/assets/plush-black-side.webp", "/assets/plush-black-back.webp"]
     },
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/plush-cutout.png",
+    img: "/assets/plush-cutout.webp",
     imgScale: .74,  // es casi cuadrado: sin esto domina la tarjeta
     viewScale: 1    // las vistas de galería ya vienen encuadradas
   },
@@ -923,7 +927,10 @@ const UI = (() => {
       requestAnimationFrame(() => el.classList.add("on"));
     }
     document.body.style.overflow = "hidden";
-    const f = el.querySelector("input, button:not(.modal-x)");
+    /* Se salta también LOG OUT: al abrir MY BURROW el foco caía justo ahí, y
+       lo primero que ofrecía el panel a quien navega con teclado era cerrar la
+       sesión. El primer campo o botón útil, nunca el que destruye algo. */
+    const f = el.querySelector("input, button:not(.modal-x):not(.pn-salir)");
     if (f) setTimeout(() => f.focus(), 120);
   }
 
@@ -1131,7 +1138,12 @@ const ProductModal = (() => {
   }
 
   $("#pmMinus").addEventListener("click", () => { qty = Math.max(1, qty - 1); paint(); });
-  $("#pmPlus").addEventListener("click", () => { qty = Math.min(9, qty + 1); paint(); });
+  $("#pmPlus").addEventListener("click", () => {
+    /* Avisa al llegar al tope. Antes se pulsaba + y no pasaba nada: parecía
+       que el botón estaba roto. */
+    if (qty >= 9) return toast(t("cart.max", { n: 9 }));
+    qty = Math.min(9, qty + 1); paint();
+  });
   $("#pmAdd").addEventListener("click", e => {
     Cart.add(cur.id, { size, color, qty });
     confetti.burst(e.clientX, e.clientY, 30);
@@ -1831,9 +1843,11 @@ const Madriguera = (() => {
     const card = e.target.closest(".tier");
     if (card) elegir(card.dataset.tier);
   });
-  $$(".tier", sec).forEach(c => c.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); elegir(c.dataset.tier); }
-  }));
+  /* Ya no hay keydown en la tarjeta: era un role="button" envolviendo un
+     encabezado, una lista y otro botón —un botón no puede contener eso— y un
+     lector de pantalla lo leía como un solo control sin nombre claro. El
+     teclado llega igual por el botón de dentro, y el clic en la tarjeta se
+     queda como comodidad para el ratón. */
 
   btn.addEventListener("click", () => {
     if (!Auth.user()) {          // sin cuenta no hay dónde guardar la plaza
