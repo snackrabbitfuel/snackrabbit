@@ -1992,12 +1992,17 @@ body::after {
 .cart-note { font-family: var(--f-pixel); font-style: normal; font-size: 8px; letter-spacing: 1.5px; color: var(--gray-2); text-align: center; margin-top: 12px; }
 
 /* ============ TOASTS ============ */
+/* Abajo y centrado tapaba justo el SUBTOTAL y el botón de pagar del carrito,
+   que viven en esa esquina — y el aviso más frecuente es precisamente
+   "añadido al carrito", así que ocultaba lo que acababas de cambiar.
+   Arriba a la derecha no estorba a nada: el navbar es una franja fina y los
+   avisos caen por debajo. */
 .toasts {
   position: fixed; z-index: 1200;
-  bottom: 24px; left: 50%;
-  translate: -50% 0;
+  top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 14px);
+  right: 18px; left: auto;
   display: grid; gap: 10px;
-  justify-items: center;
+  justify-items: end;
   pointer-events: none;
   width: max-content;
   max-width: calc(100vw - 30px);
@@ -2013,8 +2018,8 @@ body::after {
   max-width: 100%;
   text-align: center;
 }
-@keyframes toastIn { from { opacity: 0; transform: translateY(26px) scale(.9); } }
-@keyframes toastOut { to { opacity: 0; transform: translateY(16px); } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(-22px) scale(.92); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(-14px); } }
 
 /* ============ CONFETTI ============ */
 .confetti { position: fixed; inset: 0; z-index: 1300; pointer-events: none; }

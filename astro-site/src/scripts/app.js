@@ -922,12 +922,19 @@ function toast(msg) {
 const UI = (() => {
   const overlay = $("#overlay");
   let openEl = null, lastFocus = null;
+  /* Los temporizadores de cierre, para poder cancelarlos.
+     close() programa `hidden = true` a 280 ms para dejar acabar la transición.
+     Si se reabría antes, ese temporizador disparaba DESPUÉS de open() y volvía
+     a esconder el modal recién abierto: quedaba el fondo negro, el scroll
+     bloqueado y nada en pantalla. Solo se salía recargando. */
+  let tOcultar = null, tFondo = null;
 
   const ENFOCABLES = 'a[href], button:not([disabled]), input:not([disabled]), ' +
                      'select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   function open(el) {
     close(true);
+    clearTimeout(tOcultar); clearTimeout(tFondo);
     lastFocus = document.activeElement;
     openEl = el;
     overlay.hidden = false;
@@ -962,11 +969,11 @@ const UI = (() => {
       el.setAttribute("aria-hidden", "true");
     } else {
       el.classList.remove("on");
-      setTimeout(() => { el.hidden = true; }, 280);
+      tOcultar = setTimeout(() => { el.hidden = true; }, 280);
     }
     if (!silent) {
       overlay.classList.remove("on");
-      setTimeout(() => { overlay.hidden = true; }, 260);
+      tFondo = setTimeout(() => { overlay.hidden = true; }, 260);
       document.body.style.overflow = "";
       if (lastFocus) lastFocus.focus();
     }
