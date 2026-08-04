@@ -47,7 +47,7 @@ export default function WelcomeBurrow({
         titulo="A burrow always has a second way out"
         texto="Rabbits never dig a tunnel with one entrance. Every warren has bolt holes: exits they may never use, dug for a day that may never come. They build the way out before they need it."
       />
-      <Boton texto="OPEN MY BURROW ▸" url={`${SITIO}/#madriguera`} />
+      <Boton texto="OPEN MY BURROW ▸" url={`${SITIO}/#micuenta`} />
     </Marco>
   );
 }

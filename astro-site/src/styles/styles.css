@@ -1084,7 +1084,7 @@ body::after {
 .by-gone {
   display: none;
   font-family: var(--f-pixel); font-style: normal;
-  font-size: 6.5px; letter-spacing: .3px; line-height: 1.15;
+  font-size: 7.5px; letter-spacing: .2px; line-height: 1.15;
   color: var(--pink); text-align: center; opacity: .85;
 }
 .by-card.ida .by-gone { display: block; }
@@ -1407,7 +1407,7 @@ body::after {
 .foot-social svg { width: 20px; height: 20px; fill: currentColor; display: block; }
 .foot-social a:hover { border-color: var(--pink); color: var(--ink); background: var(--pink); transform: translate(-2px,-2px); }
 .foot-social a:nth-child(even):hover { border-color: var(--yellow); background: var(--yellow); }
-.foot-col h4 {
+.foot-col h3 {
   font-family: var(--f-pixel); font-style: normal;
   font-size: 11px; letter-spacing: 3px;
   color: var(--pink);
@@ -1834,7 +1834,8 @@ body::after {
 .panel-modal.on .pn-carta { opacity: 1; transform: none; }
 .pn-carta:hover { border-color: var(--pink); }
 .pn-c-n { font-size: 7.5px; color: var(--gray-2); }
-.pn-c-mes { font-size: 6px; letter-spacing: .5px; color: #4d4d6b; }
+/* 6 px no se lee. Sube a 8 y el gris a uno con contraste real. */
+.pn-c-mes { font-size: 8px; letter-spacing: .5px; color: var(--gray-2); }
 .pn-carta img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .pn-carta.tiene { border-color: var(--yellow); }
 .pn-carta.tiene .pn-c-n, .pn-carta.tiene .pn-c-mes { display: none; }

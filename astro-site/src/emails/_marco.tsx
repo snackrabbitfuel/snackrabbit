@@ -163,7 +163,13 @@ interface MarcoProps {
 export function Marco({ adelanto, kicker, titular, baja, children }: MarcoProps) {
   return (
     <Html lang="en">
-      <Head />
+      <Head>
+        {/* Sin esto, Outlook y el modo oscuro de iOS invierten los colores de un
+            correo que ya es oscuro: el fondo se vuelve claro, el texto hueso
+            queda blanco sobre blanco y el correo desaparece. */}
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+      </Head>
       <Preview>{adelanto}</Preview>
       <Body style={{ margin: 0, padding: 0, background: C.fondo }}>
         <Container style={{ width: "600px", maxWidth: "100%", margin: "0 auto", padding: "26px 12px" }}>

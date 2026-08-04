@@ -26,7 +26,7 @@ export default function OrderConfirmed({
         titulo="Bubble wrap was wallpaper"
         texto="In 1957 two engineers sealed two shower curtains together and tried to sell it as textured wallpaper. Nobody wanted it. They tried greenhouse insulation next. That failed too. Only on the third attempt did somebody think of putting it around fragile things."
       />
-      <Boton texto="VIEW YOUR ORDER ▸" url={`${SITIO}/#top`} />
+      <Boton texto="VIEW YOUR ORDER ▸" url={`${SITIO}/#micuenta`} />
     </Marco>
   );
 }

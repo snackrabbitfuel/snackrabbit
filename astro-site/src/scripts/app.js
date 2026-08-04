@@ -2171,6 +2171,24 @@ const Panel = (() => {
     await Auth.salir();
   });
 
+  /* Enlace directo al panel: #micuenta.
+     Los correos llevaban botones que decían "ver tu pedido" y "abrir mi
+     madriguera" y aterrizaban en la portada y en la sección pública del club.
+     Con un ancla propia llevan de verdad donde dicen; si no hay sesión, se
+     abre el login y el panel espera a que entre. */
+  function porUrl() {
+    if (location.hash !== "#micuenta") return;
+    history.replaceState(null, "", location.pathname + location.search);
+    if (Auth.user()) abrir();
+    else {
+      Auth.alCambiar(function una() { if (Auth.user()) abrir(); });
+      Auth.abrirRegistro();
+    }
+  }
+  addEventListener("hashchange", porUrl);
+  Auth.alCambiar(() => { if (location.hash === "#micuenta") porUrl(); });
+  addEventListener("load", () => setTimeout(porUrl, 400));
+
   return { abrir, refresh: () => { if (!el.hidden) pintar(false); } };
 })();
 
