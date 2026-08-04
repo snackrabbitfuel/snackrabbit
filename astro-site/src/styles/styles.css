@@ -2257,3 +2257,9 @@ body::after {
 .sinjs p { margin: 0 0 8px; }
 .sinjs p:last-child { margin: 0; font-family: var(--f-pixel); font-style: normal; font-size: 10px; letter-spacing: 1.5px; }
 .sinjs a { color: var(--ink); }
+
+.pn-c000 {
+  margin-top: 10px;
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 10px; letter-spacing: 2px; color: var(--yellow);
+}

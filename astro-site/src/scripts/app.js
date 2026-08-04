@@ -28,6 +28,14 @@ const I18N = {
     "aria.openCart": "Abrir carrito",
     "aria.openMenu": "Abrir menú",
     "aria.close": "Cerrar",
+    "aria.cart": "Carrito",
+    "aria.email": "Correo",
+    "aria.help": "Ayuda",
+    "aria.legal": "Legal",
+    "aria.nav": "Navegación principal",
+    "aria.menu": "Menú",
+    "aria.scroll": "Bajar",
+    "aria.shop": "Tienda",
     "nav.drop": "EL DROP",
     "nav.manifesto": "MANIFIESTO",
     "nav.burrow": "LA MADRIGUERA",
@@ -82,6 +90,7 @@ const I18N = {
     "fuel.cta": "PROBAR PACK ×4 — $16",
     "pn.title": "MI MADRIGUERA",
     "pn.cards": "TU AÑO",
+    "pn.card000": "+ CARTA 000 · FUNDADOR",
     "pn.cardsEmpty": "TUS CARTAS APARECEN AQUÍ SEGÚN SE ENVÍAN, UNA AL MES. AÑO UNO EMPIEZA EN ENERO.",
     "pn.cardsSome": "CADA CARTA SE IMPRIME UNA VEZ. COMPLETA LAS DOCE Y EL PLUSH DEL CLUB ES TUYO.",
     "pn.rank": "TU RANGO",
@@ -291,6 +300,14 @@ const I18N = {
     "aria.openCart": "Open cart",
     "aria.openMenu": "Open menu",
     "aria.close": "Close",
+    "aria.cart": "Cart",
+    "aria.email": "Email",
+    "aria.help": "Help",
+    "aria.legal": "Legal",
+    "aria.nav": "Main navigation",
+    "aria.menu": "Menu",
+    "aria.scroll": "Scroll down",
+    "aria.shop": "Shop",
     "nav.drop": "THE DROP",
     "nav.manifesto": "MANIFESTO",
     "nav.burrow": "THE BURROW",
@@ -345,6 +362,7 @@ const I18N = {
     "fuel.cta": "TRY THE 4-PACK — $16",
     "pn.title": "MY BURROW",
     "pn.cards": "YOUR YEAR",
+    "pn.card000": "+ CARD 000 · FOUNDER",
     "pn.cardsEmpty": "YOUR CARDS SHOW UP HERE AS THEY SHIP, ONE A MONTH. YEAR ONE STARTS IN JANUARY.",
     "pn.cardsSome": "EACH CARD IS PRINTED ONCE. COMPLETE THE TWELVE AND THE CLUB PLUSH IS YOURS.",
     "pn.rank": "YOUR RANK",
@@ -1801,16 +1819,20 @@ const Madriguera = (() => {
     /* La casilla del mes en curso; antes de que arranque la serie, la primera,
        que es la que se está enseñando. */
     const hoy = new Date();
-    const activa = hoy.getFullYear() === ANIO_SERIE ? hoy.getMonth()
-                 : hoy.getFullYear() < ANIO_SERIE ? 0 : 11;
+    /* Antes del año de la serie se enseña la primera; durante, la del mes; y
+       pasado el año, ninguna: las doce quedan enterradas, que es la verdad.
+       Fingir que diciembre sigue en curso en 2029 sería inventarse un mes. */
+    const anio = hoy.getFullYear();
+    const activa = anio === ANIO_SERIE ? hoy.getMonth() : anio < ANIO_SERIE ? 0 : -1;
 
     /* Tres estados, no dos. Marcar solo la del mes deja las pasadas idénticas a
        las futuras: en junio se verían cinco "?" que parecen estar por llegar
        cuando en realidad ya no existen. Se perdería justo lo que esta rejilla
        tiene que contar, que es que llegar tarde cuesta. */
+    const acabado = activa < 0;
     $$(".by-card", sec).forEach((c, i) => {
       c.classList.toggle("on",  i === activa);
-      c.classList.toggle("ida", i <  activa);
+      c.classList.toggle("ida", acabado || i < activa);
     });
 
     /* La carta destacada sigue al mes en curso. Las caras se publican de una en
@@ -1824,7 +1846,7 @@ const Madriguera = (() => {
       pie.textContent = t("bur.cardCap", { mes: largos[+n - 1], n });
     };
 
-    const num = String(activa + 1).padStart(3, "0");
+    const num = String((acabado ? 11 : activa) + 1).padStart(3, "0");
     const src = `/assets/carta-${num}-${LANG}.webp`;
     const respaldo = () => { carta.src = `/assets/carta-001-${LANG}.webp`; rotular("001"); };
 
@@ -1858,6 +1880,11 @@ const Madriguera = (() => {
       await Auth.guardarMeta("madriguera", {
         lista: true,
         plan,
+        /* Si el plan vino puesto por defecto o lo eligió de verdad. CAVADOR
+           está preseleccionado, así que sin este dato la lista de fundadores
+           parecería llena de gente que quiere el plan caro y la previsión de
+           ingresos saldría inflada. */
+        elegido: tocado,
         desde: ficha()?.desde || new Date().toISOString().slice(0, 10)
       });
       pintar();
@@ -1977,7 +2004,11 @@ const Panel = (() => {
       img.onerror = () => img.remove();
       c.appendChild(img);
     });
-    animar ? contar($("#pnCartasN"), mias.length) : ($("#pnCartasN").textContent = mias.length);
+    /* La 000 es de fundador, no del año: contarla daba 13/12 a quien tuviera
+       las doce y además la de fundador, y en la rejilla no tiene casilla. */
+    const delAnio = mias.filter(n => n >= 1 && n <= 12).length;
+    animar ? contar($("#pnCartasN"), delAnio) : ($("#pnCartasN").textContent = delAnio);
+    $("#pnCarta000").hidden = !mias.includes(0);
     $("#pnCartasNota").textContent = t(mias.length ? "pn.cardsSome" : "pn.cardsEmpty");
 
     /* ---- el descenso ----

@@ -6,7 +6,7 @@
 <!-- Arranca inerte: cerrado sigue en el DOM y, sin esto, sus botones seguían en
      el orden de tabulación. aria-hidden solo lo esconde del lector de pantalla.
      UI.open/close lo quita y lo vuelve a poner. -->
-<aside class="cart" id="cartDrawer" aria-label="Cart" aria-hidden="true" inert>
+<aside class="cart" id="cartDrawer" data-i18n-aria="aria.cart" aria-label="Cart" aria-hidden="true" inert>
   <header class="cart-head">
     <h2><span data-i18n="cart.title">YOUR CART</span> <span id="cartHeadCount">(0)</span></h2>
     <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
