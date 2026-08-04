@@ -2034,7 +2034,11 @@ body::after {
   .btn-burger { display: flex; }
 }
 
-@media (max-width: 1024px) {
+/* El hero se apila a 900, no a 1024: a 1024 la columna de texto ocupaba la
+   mitad izquierda y la derecha se quedaba en rosa vacío, con el escenario
+   empujado fuera de la primera pantalla. Con dos columnas hasta 900 sigue
+   cabiendo, y por debajo apilar sí es lo correcto. */
+@media (max-width: 900px) {
   .hero-inner { grid-template-columns: 1fr; }
   .hero-visual { min-height: 440px; margin-top: 10px; }
   .fuel-inner { grid-template-columns: 1fr; }

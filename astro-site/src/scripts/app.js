@@ -1226,6 +1226,11 @@ const Cart = (() => {
       /* Con tallas, la talla tiene que existir: si no, el precio base daría un
          pack de doce al precio de uno de cuatro. */
       if (p.sizePrices && p.sizePrices[i.size] == null) return;
+      /* Y el color tiene que seguir existiendo. Si un día se retira un color
+         —como pasó con los de la lata— la línea guardada en el navegador
+         sobrevivía apuntando a una variante que ya no se fabrica, y ese pedido
+         no se puede cumplir. */
+      if (p.colorNames && i.color && !p.colorNames.includes(i.color)) return;
       const precio = p.sizePrices?.[i.size] ?? p.price;
       if (!Number.isFinite(precio)) return;
       i.unitPrice = precio;

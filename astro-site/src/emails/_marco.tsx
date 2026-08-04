@@ -73,8 +73,13 @@ const REJILLA = [
 
 export function Conejo({ lado = 5, cuerpo = C.tinta, hueco = C.rosa }) {
   return (
+    /* width y tableLayout fijos: Outlook de Windows reparte el ancho sobrante
+       entre las celdas si puede, y el conejo salía estirado y deforme. Con la
+       tabla clavada a su tamaño exacto no tiene sobrante que repartir. */
     <table role="presentation" cellPadding={0} cellSpacing={0} border={0}
-           style={{ borderCollapse: "collapse", borderSpacing: 0 }}>
+           width={REJILLA[0].length * lado}
+           style={{ borderCollapse: "collapse", borderSpacing: 0,
+                    tableLayout: "fixed", width: `${REJILLA[0].length * lado}px` }}>
       <tbody>
         {REJILLA.map((fila, y) => (
           <tr key={y} style={{ height: `${lado}px` }}>
