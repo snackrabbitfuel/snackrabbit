@@ -83,6 +83,23 @@ const ROMANOS = ["I", "II", "III", "IV", "V", "VI"];
       <section class="pn-bloque">
         <div class="pn-h3"><span data-i18n="pn.ship">SHIPPING</span></div>
         <p class="pn-dato" id="pnEnvio"></p>
+        <!-- Sin esto, la dirección solo se podía cambiar haciendo otro pedido:
+             quien se muda a mitad de suscripción no tenía forma de corregirla,
+             y las cajas salen todos los meses. -->
+        <button class="pn-editar" id="pnEditar" type="button" data-i18n="pn.editShip">CHANGE ADDRESS</button>
+        <form class="pn-form" id="pnFormEnvio" hidden novalidate>
+          <label><span data-i18n="ck.name">FULL NAME</span><input name="name" autocomplete="name" required></label>
+          <label><span data-i18n="ck.phone">PHONE</span><input name="phone" autocomplete="tel" required></label>
+          <label class="pn-ancho"><span data-i18n="ck.address">ADDRESS</span><input name="address" autocomplete="street-address" required></label>
+          <label><span data-i18n="ck.city">CITY</span><input name="city" autocomplete="address-level2" required></label>
+          <label><span data-i18n="ck.zip">POSTAL CODE</span><input name="zip" autocomplete="postal-code" required></label>
+          <label class="pn-ancho"><span data-i18n="ck.country">COUNTRY</span><input name="country" autocomplete="country-name" required></label>
+          <p class="lm-err pn-ancho" role="alert"></p>
+          <div class="pn-form-btns pn-ancho">
+            <button class="btn btn-pink lm-submit" type="submit" data-i18n="pn.saveShip">SAVE ADDRESS</button>
+            <button class="pn-editar" type="button" id="pnCancelar" data-i18n="pn.cancelShip">CANCEL</button>
+          </div>
+        </form>
       </section>
     </div>
   </div>

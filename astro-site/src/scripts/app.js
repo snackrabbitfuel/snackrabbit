@@ -93,7 +93,13 @@ const I18N = {
     "pn.manageWait": "Cuando abra el club, tu suscripción se gestiona desde aquí: pausar, cambiar de nivel o cancelar. Todavía no hay ningún cobro activo.",
     "pn.manageMail": "¿Necesitas cambiar o cancelar algo? Escribe a <a href=\"mailto:{email}\">{email}</a> y lo resolvemos el mismo día.",
     "pn.memberNone": "Todavía no estás en la lista de fundadores.",
+    "pn.memberPaid": "Socio · plan <b>{plan}</b>",
     "pn.memberYes": "Lista de fundadores · plan <b>{plan}</b>",
+    "pn.editShip": "CAMBIAR DIRECCIÓN",
+    "pn.saveShip": "GUARDAR DIRECCIÓN",
+    "pn.cancelShip": "CANCELAR",
+    "pn.shipSaved": "DIRECCIÓN ACTUALIZADA.",
+    "pn.shipErr": "NO SE PUDO GUARDAR. INTÉNTALO OTRA VEZ.",
     "pn.ship": "ENVÍO",
     "pn.shipNone": "Aún no hay dirección guardada. Se guarda con tu primer pedido.",
     "pn.out": "CERRAR SESIÓN",
@@ -340,7 +346,13 @@ const I18N = {
     "pn.manageWait": "When the club opens, your membership is managed right here: pause, change tier or cancel. There is no active charge yet.",
     "pn.manageMail": "Need to change or cancel something? Write to <a href=\"mailto:{email}\">{email}</a> and we sort it out the same day.",
     "pn.memberNone": "You are not on the founder list yet.",
+    "pn.memberPaid": "Member · plan <b>{plan}</b>",
     "pn.memberYes": "Founder list · plan <b>{plan}</b>",
+    "pn.editShip": "CHANGE ADDRESS",
+    "pn.saveShip": "SAVE ADDRESS",
+    "pn.cancelShip": "CANCEL",
+    "pn.shipSaved": "ADDRESS UPDATED.",
+    "pn.shipErr": "COULD NOT SAVE. TRY AGAIN.",
     "pn.ship": "SHIPPING",
     "pn.shipNone": "No address saved yet. It gets saved with your first order.",
     "pn.out": "LOG OUT",
@@ -1941,15 +1953,24 @@ const Panel = (() => {
     /* ---- lo administrativo ---- */
     /* Aquí sí va innerHTML: el texto sale entero del diccionario de la casa
        —lleva un <b>— y lo único que decide el dato es qué clave se usa. */
-    $("#pnMembresia").innerHTML = m.madriguera?.lista
-      ? t("pn.memberYes", { plan: t(m.madriguera.plan === "cavador" ? "bur.t2name" : "bur.t1name") })
+    /* La membresía de pago la escribirá el servidor en publicMetadata cuando
+       exista Stripe; unsafeMetadata solo vale para la lista de fundadores, que
+       no cuesta dinero. Sin esta distinción, cualquiera se ponía plan:cavador
+       desde la consola y el panel le daba el nivel caro por bueno — y ese nivel
+       lleva carta foil, acceso 48 h antes y 10% de descuento. */
+    const socio = pub.madriguera || null;              // lo pone el servidor
+    const enLista = m.madriguera?.lista;               // lo pone el cliente
+    const plan = socio?.plan || (enLista ? m.madriguera.plan : null);
+    $("#pnMembresia").innerHTML = (socio || enLista)
+      ? t(socio ? "pn.memberPaid" : "pn.memberYes",
+          { plan: t(plan === "cavador" ? "bur.t2name" : "bur.t1name") })
       : t("pn.memberNone");
 
     /* Los Términos y la política de devoluciones dicen que se cancela desde
        aquí. Mientras no exista el portal de Stripe, "desde aquí" es una
        dirección de correo que sí funciona — pero tiene que estar, porque una
        promesa legal sin camino que la cumpla es la promesa la que falla. */
-    $("#pnGestion").innerHTML = m.madriguera?.lista
+    $("#pnGestion").innerHTML = (pub.madriguera || m.madriguera?.lista)
       ? t("pn.manageWait") + " " + t("pn.manageMail", { email: CONTACTO })
       : "";
 
@@ -1965,12 +1986,54 @@ const Panel = (() => {
     }
   }
 
+  /* ---- cambiar la dirección de envío ----
+     Antes solo se podía tocar haciendo otro pedido, y las cajas del club salen
+     todos los meses: quien se mudaba no tenía forma de corregirla. */
+  const CAMPOS_ENVIO = ["name", "phone", "address", "city", "zip", "country"];
+  const formEnvio = $("#pnFormEnvio"), btnEditar = $("#pnEditar");
+
+  function editarEnvio(si) {
+    formEnvio.hidden = !si;
+    btnEditar.hidden = si;
+    if (!si) return;
+    const e = Auth.user()?.unsafeMetadata?.envio || {};
+    CAMPOS_ENVIO.forEach(c => { formEnvio[c].value = e[c] || ""; });
+    formEnvio.querySelector(".lm-err").textContent = "";
+    formEnvio.name.focus();
+  }
+  btnEditar.addEventListener("click", () => editarEnvio(true));
+  $("#pnCancelar").addEventListener("click", () => editarEnvio(false));
+
+  formEnvio.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const err = formEnvio.querySelector(".lm-err");
+    const datos = Object.fromEntries(CAMPOS_ENVIO.map(c => [c, formEnvio[c].value.trim()]));
+    if (CAMPOS_ENVIO.some(c => !datos[c])) return err.textContent = t("ck.errRequired");
+    if (datos.phone.replace(/[^0-9]/g, "").length < 7) return err.textContent = t("ck.errPhone");
+
+    const b = formEnvio.querySelector(".lm-submit");
+    b.disabled = true; err.textContent = "";
+    try {
+      /* Se conserva lo que ya hubiera guardado el checkout —el correo, las
+         notas de entrega— en vez de reemplazar la ficha entera. */
+      const previo = Auth.user()?.unsafeMetadata?.envio || {};
+      await Auth.guardarEnvio({ ...previo, ...datos });
+      editarEnvio(false);
+      pintar(false);
+      toast(t("pn.shipSaved"));
+    } catch (e) {
+      console.error("[panel] no se pudo guardar la dirección:", e);
+      err.textContent = t("pn.shipErr");
+    } finally { b.disabled = false; }
+  });
+
   /* Se abre primero y se pinta después, dentro de un try.
      Antes era `pintar(true); UI.open(el);`, así que cualquier excepción al
      pintar dejaba el panel sin abrirse: el botón del navbar no hacía nada —ni
      panel, ni error, ni aviso— y solo para el cliente que tuviera el dato roto,
      que es la avería más difícil de que te reporten. */
   function abrir() {
+    editarEnvio(false);
     UI.open(el);
     try { pintar(true); } catch (err) { console.error("[panel] no se pudo pintar:", err); }
   }
