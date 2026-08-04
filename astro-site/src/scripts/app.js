@@ -175,7 +175,7 @@ const I18N = {
     "faq.q1": "¿CUÁNDO LLEGA MI PEDIDO?",
     "faq.a1": "Preparamos en 24 h y entregamos en 48–72 h laborables. Recibirás seguimiento por email en cuanto salga de la madriguera.",
     "faq.q2": "¿QUÉ TAMAÑO TIENEN LA TOALLA Y EL PLUSH?",
-    "faq.a2": "La Gym Towel mide 100×50 cm, tamaño gimnasio clásico, y viene en blanco, rosa y negro. El plush es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
+    "faq.a2": "THE ZOOMIES mide 100×50 cm, tamaño gimnasio clásico, y viene en blanco, rosa y negro. THE LOOKOUT es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
     "faq.q3": "¿PUEDO DEVOLVER ALGO?",
     "faq.a3": "Sí: 30 días para textil y plush sin usar con etiqueta. Rabbit Fuel no admite devolución una vez abierto el pack (por razones obvias).",
     "faq.q4": "¿QUÉ LLEVA EXACTAMENTE RABBIT FUEL?",
@@ -442,7 +442,7 @@ const I18N = {
     "faq.q1": "WHEN DOES MY ORDER ARRIVE?",
     "faq.a1": "We prepare within 24 h and deliver in 48–72 working hours. You'll get tracking by email as soon as it leaves the burrow.",
     "faq.q2": "HOW BIG ARE THE TOWEL AND THE PLUSH?",
-    "faq.a2": "The Gym Towel is 100×50 cm, classic gym size, and comes in white, pink and black. The plush is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
+    "faq.a2": "THE ZOOMIES towel is 100×50 cm, classic gym size, and comes in white, pink and black. THE LOOKOUT is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
     "faq.q3": "CAN I RETURN SOMETHING?",
     "faq.a3": "Yes: 30 days for unused apparel and plush with tags on. Rabbit Fuel can't be returned once the pack is opened (for obvious reasons).",
     "faq.q4": "WHAT EXACTLY IS IN RABBIT FUEL?",
@@ -615,12 +615,15 @@ const PRODUCTS = [
   {
     id: "plush",
     num: "DROP 001 · Nº 02",
-    name: "RABBIT FUEL PLUSH",
+    /* El nombre sale de una conducta real: mientras la madriguera come, un
+       conejo se queda erguido vigilando. No come, no juega — mira. Que es
+       exactamente lo que hace un peluche en tu escritorio. */
+    name: "THE LOOKOUT",
     price: 35,
-    priceNote: "",
+    priceNote: "PLUSH",
     desc: {
-      es: "El logo hecho peluche: diseño pixel, ultra suave y con detalles bordados premium.",
-      en: "The logo turned plush: pixel design, ultra soft, premium embroidered details."
+      es: "Mientras la madriguera come, un conejo se queda erguido y vigila. No come, no juega: mira. Este es ese. Pixel, ultrasuave y bordado, en tu escritorio.",
+      en: "While the warren feeds, one rabbit sits up and keeps watch. It does not eat, it does not play: it watches. This is that one. Pixel, ultra soft, embroidered, on your desk."
     },
     specs: {
       es: "DISEÑO PIXEL · MATERIAL ULTRA SUAVE · DETALLES BORDADOS · ETIQUETA OFICIAL",
@@ -644,12 +647,16 @@ const PRODUCTS = [
   {
     id: "gym-towel",
     num: "DROP 001 · Nº 03",
-    name: "GYM TOWEL",
+    /* "Zoomies" tiene nombre científico: frenetic random activity period. Le
+       pasa a cualquier animal que de pronto no puede con su propia energía —y
+       a ti en el gimnasio—. Es una curiosidad de verdad, que es justo lo que
+       vende esta marca, y encima da gracia en una toalla. */
+    name: "THE ZOOMIES",
     price: 29,
-    priceNote: "",
+    priceNote: "TOWEL",
     desc: {
-      es: "Microfibra ultraabsorbente con el conejo bordado. Seca rápido y no pesa nada. Sweat, scroll, repeat.",
-      en: "Ultra-absorbent microfiber with the embroidered bunny. Dries fast, weighs nothing. Sweat, scroll, repeat."
+      es: "Tiene nombre científico: frenetic random activity period. Le pasa a cualquier animal que de pronto no puede con su propia energía. A ti te pasa en el gimnasio. Microfibra, seca rápido, no pesa nada.",
+      en: "It has a scientific name: frenetic random activity period. It happens to any animal that suddenly cannot contain its own energy. Yours happens at the gym. Microfibre, dries fast, weighs nothing."
     },
     specs: {
       es: "100×50 CM · 250 G · 80% POLIÉSTER / 20% POLIAMIDA · BORDADO PREMIUM · LAVADO EN FRÍO",

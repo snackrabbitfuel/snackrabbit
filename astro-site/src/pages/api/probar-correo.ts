@@ -46,7 +46,7 @@ const permitidos = () =>
 const PLANTILLAS: Record<string, { asunto: string; el: React.ReactElement }> = {
   "1": { asunto: a1, el: React.createElement(WelcomeList) },
   "2": { asunto: a2, el: React.createElement(OrderConfirmed, {
-           nombre: "Diego", pedido: "#SR-4927", articulos: "Rabbit Fuel ×4, Gym Towel",
+           nombre: "Diego", pedido: "#SR-4927", articulos: "Rabbit Fuel ×4, The Zoomies",
            total: "$45.00", direccion: "Calle Madriguera 12, Bogotá" }) },
   "3": { asunto: a3, el: React.createElement(Shipped, {
            pedido: "#SR-4927", transportista: "DHL", seguimiento: "JD0123456789",
