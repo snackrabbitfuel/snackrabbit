@@ -61,6 +61,17 @@ button { font: inherit; cursor: pointer; }
 svg use { pointer-events: none; }
 [hidden] { display: none !important; }
 
+/* Saltar al contenido: fuera de la vista hasta que recibe el foco. */
+.skip {
+  position: absolute; left: 8px; top: -60px; z-index: 1000;
+  background: var(--yellow); color: var(--ink);
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 11px; letter-spacing: 2px;
+  padding: 12px 18px; border: 3px solid var(--ink); text-decoration: none;
+  transition: top .18s var(--ease-snap);
+}
+.skip:focus-visible { top: 8px; }
+
 /* Focus
  *
  * El anillo era rosa, y el rosa de la marca es también el fondo del hero, del
@@ -1663,8 +1674,17 @@ body::after {
 .pm-row { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
 .pm-label { font-family: var(--f-pixel); font-style: normal; font-size: 10px; letter-spacing: 2px; width: 76px; flex: none; }
 .pm-swatches { display: flex; gap: 10px; }
-.pm-swatches .swatch { width: 26px; height: 26px; cursor: pointer; outline-color: transparent; transition: transform .15s var(--ease-snap), outline-color .15s; }
-.pm-swatches .swatch.sel { outline: 3px solid var(--pink); transform: scale(1.12); }
+/* El aro de la elegida era rosa sobre el panel claro del modal: 2,4:1, por
+   debajo del 3:1 que hace falta para que una marca no textual se distinga.
+   Tinta por dentro y amarillo por fuera se ve sobre cualquier color, y el
+   tamaño ayuda a quien no distingue bien los tonos. */
+.pm-swatches .swatch { width: 26px; height: 26px; cursor: pointer; padding: 0; outline-color: transparent; transition: transform .15s var(--ease-snap), outline-color .15s, box-shadow .15s; }
+.pm-swatches .swatch.sel {
+  outline: 3px solid var(--ink);
+  outline-offset: 0;
+  box-shadow: 0 0 0 6px var(--yellow);
+  transform: scale(1.12);
+}
 .pm-sizes { display: flex; gap: 8px; flex-wrap: wrap; }
 .pm-size {
   font-family: var(--f-pixel); font-style: normal;

@@ -37,6 +37,8 @@ const I18N = {
     "hero.title1": "SIGUE AL",
     "hero.title2": "CONEJO.",
     "hero.sub": "La curiosidad te trajo hasta aquí.<br>La madriguera hace el resto.",
+    "hero.cta1": "VER EL DROP ▸",
+    "a11y.skip": "Saltar al contenido",
     "hero.cta2": "VER RABBIT FUEL",
     "hero.meta": "SIN AZÚCAR · SIN TAURINA · MATE + GUARANÁ · ENVÍO 48H",
     "hero.tape": "100% REAL ▸ SIN COSAS RARAS ▸ SIN AZÚCAR ▸ 100% REAL ▸ SIN COSAS RARAS ▸ SIN AZÚCAR ▸ ",
@@ -265,6 +267,9 @@ const I18N = {
        impuesto se SUMA en la pantalla de pago. Prometer lo contrario aquí deja
        al cliente viendo un total mayor del anunciado justo al pagar, y además
        contradice los Términos, que dicen que se calculan al pagar. */
+    "cart.less": "Quitar una unidad de {name}",
+    "cart.more": "Añadir una unidad de {name}",
+    "cart.del": "Quitar {name} del carrito",
     "cart.note": "IMPUESTOS Y ENVÍO SE CALCULAN AL PAGAR",
     "cart.emptyToast": "TU CARRITO ESTÁ VACÍO",
     "cart.removed": "PRODUCTO ELIMINADO",
@@ -290,6 +295,8 @@ const I18N = {
     "hero.title1": "FOLLOW THE",
     "hero.title2": "RABBIT.",
     "hero.sub": "Curiosity got you this far.<br>The burrow does the rest.",
+    "hero.cta1": "SHOP THE DROP ▸",
+    "a11y.skip": "Skip to content",
     "hero.cta2": "SEE RABBIT FUEL",
     "hero.meta": "ZERO SUGAR · ZERO TAURINE · MATE + GUARANÁ · 48H SHIPPING",
     "hero.tape": "100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ ",
@@ -508,6 +515,9 @@ const I18N = {
     "cart.free": "★ FREE SHIPPING UNLOCKED",
     "cart.empty": "YOUR CART IS EMPTY.<br>THE BUNNY IS WAITING.",
     "cart.checkout": "CHECKOUT ▸",
+    "cart.less": "Remove one {name}",
+    "cart.more": "Add one {name}",
+    "cart.del": "Remove {name} from the cart",
     "cart.note": "TAXES AND SHIPPING CALCULATED AT CHECKOUT",
     "cart.emptyToast": "YOUR CART IS EMPTY",
     "cart.removed": "ITEM REMOVED",
@@ -704,10 +714,21 @@ if (statProductsNum) statProductsNum.dataset.count = PRODUCTS.length;
     burger.setAttribute("aria-expanded", open);
     menu.classList.toggle("open", open);
     menu.setAttribute("aria-hidden", !open);
+    /* inert además de aria-hidden: cerrado seguía siendo tabulable, así que el
+       foco se metía en un menú invisible a pantalla completa. */
+    if (open) menu.removeAttribute("inert"); else menu.setAttribute("inert", "");
     document.body.style.overflow = open ? "hidden" : "";
+    /* Al abrir, el foco entra en el menú; al cerrar, vuelve al botón. Sin esto
+       se abría un panel a pantalla completa y el teclado seguía en la página
+       de detrás. */
+    if (open) setTimeout(() => $("#mobileMenu nav a")?.focus(), 120);
+    else burger.focus();
   };
   burger.addEventListener("click", () => toggle(!menu.classList.contains("open")));
   $$("#mobileMenu nav a").forEach(a => a.addEventListener("click", () => toggle(false)));
+  addEventListener("keydown", e => {
+    if (e.key === "Escape" && menu.classList.contains("open")) toggle(false);
+  });
 
   const secs = ["drop", "fuel", "historia", "faq"].map(id => document.getElementById(id));
   const links = $$(".nav-links a");
@@ -1048,8 +1069,18 @@ const ProductModal = (() => {
     if (vista >= galeria(color).length) vista = 0;
     $("#pmPrice").textContent = money(price() * qty);
     $("#pmQty").textContent = qty;
-    $$(".pm-size", el).forEach(b => b.classList.toggle("sel", b.dataset.size === size));
-    $$(".pm-swatches .swatch", el).forEach(s => s.classList.toggle("sel", s.dataset.color === color));
+    /* aria-pressed además de la clase: sin él, quien usa lector de pantalla
+       oía la lista de tallas pero no cuál estaba elegida. */
+    $$(".pm-size", el).forEach(b => {
+      const yo = b.dataset.size === size;
+      b.classList.toggle("sel", yo);
+      b.setAttribute("aria-pressed", String(yo));
+    });
+    $$(".pm-swatches .swatch", el).forEach(s => {
+      const yo = s.dataset.color === color;
+      s.classList.toggle("sel", yo);
+      s.setAttribute("aria-pressed", String(yo));
+    });
     $$(".pm-thumb", el).forEach(b => b.classList.toggle("sel", +b.dataset.i === vista));
     const img = $("#pmImg"), src = srcNow();
     /* imgScale está calibrado para el recorte del producto; las demás vistas de
@@ -1075,9 +1106,13 @@ const ProductModal = (() => {
     pintarVistas();
     /* La lata no tiene variantes: sin colorNames la fila de color desaparece */
     $("#pmColorsRow").hidden = !cur.colorNames;
+    /* <button> y no <span role="button">: el span se podía tabular pero Enter no
+       hacía nada, porque un span no dispara clic con el teclado. El color solo
+       se podía elegir con ratón. */
     $("#pmSwatches").innerHTML = (cur.colorNames || []).map((cn, i) =>
-      `<span class="swatch" style="background:${cur.colors[i]}" data-color="${cn}" title="${colorName(cn)}" role="button" tabindex="0" aria-label="${colorName(cn)}"></span>`).join("");
-    $("#pmSizes").innerHTML = cur.sizes.map(s => `<button class="pm-size" type="button" data-size="${s}">${sizeName(s)}</button>`).join("");
+      `<button type="button" class="swatch" style="background:${cur.colors[i]}" data-color="${cn}" aria-label="${colorName(cn)}" aria-pressed="false"></button>`).join("");
+    $("#pmSizes").innerHTML = cur.sizes.map(s =>
+      `<button class="pm-size" type="button" data-size="${s}" aria-pressed="false">${sizeName(s)}</button>`).join("");
     /* al cambiar de color hay que repintar la tira de vistas: cada color tiene la suya */
     $$(".pm-swatches .swatch", el).forEach(s => s.addEventListener("click", () => {
       color = s.dataset.color; pintarVistas(); paint();
@@ -1216,14 +1251,14 @@ const Cart = (() => {
           <p class="citem-name">${p.name}</p>
           <p class="citem-var">${sizeName(it.size)}${p.colorNames && it.color ? " · " + colorName(it.color) : ""}</p>
           <div class="citem-qty">
-            <button type="button" aria-label="−">−</button>
+            <button type="button" aria-label="${t("cart.less", { name: p.name })}">−</button>
             <span>${it.qty}</span>
-            <button type="button" aria-label="+">+</button>
+            <button type="button" aria-label="${t("cart.more", { name: p.name })}">+</button>
           </div>
         </div>
         <div class="citem-right">
           <span class="citem-price">${money(it.unitPrice * it.qty)}</span>
-          <button class="citem-del" type="button" aria-label="✕">✕</button>
+          <button class="citem-del" type="button" aria-label="${t("cart.del", { name: p.name })}">✕</button>
         </div>`;
       const [minus, plus] = row.querySelectorAll(".citem-qty button");
       minus.addEventListener("click", () => setQty(it.key, it.qty - 1));

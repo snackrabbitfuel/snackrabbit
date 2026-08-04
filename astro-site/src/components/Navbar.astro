@@ -32,7 +32,9 @@
 </header>
 
 <!-- Mobile menu -->
-<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+<!-- Arranca inerte: cerrado ocupa la pantalla entera y, sin esto, sus enlaces
+     seguían en el orden de tabulación. app.js lo quita al abrirlo. -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true" inert>
   <nav aria-label="Mobile menu">
     <a href="#top" data-i="01">HOME</a>
     <a href="#drop" data-i18n="nav.drop" data-i="02">THE DROP</a>

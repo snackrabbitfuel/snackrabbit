@@ -50,6 +50,10 @@ const {
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Serif+Display:ital@1&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<!-- Primer elemento tabulable de la página: quien navega con teclado no tiene
+     que recorrerse el menú entero en cada pantalla para llegar al contenido.
+     Solo se ve al recibir el foco. -->
+<a class="skip" href="#top" data-i18n="a11y.skip">Skip to content</a>
 <slot />
 <script>
   import "../scripts/app.js";
