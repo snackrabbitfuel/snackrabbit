@@ -22,15 +22,15 @@
  * Interfaz en español: es la herramienta interna del equipo.
  */
 const SECCIONES = [
-  { id: "resumen",     icono: "px-panel",   nombre: "Resumen" },
-  { id: "pedidos",     icono: "px-caja",    nombre: "Pedidos" },
+  { id: "overview",    icono: "px-panel",   nombre: "Overview" },
+  { id: "orders",      icono: "px-caja",    nombre: "Orders" },
   { id: "fulfillment", icono: "px-pila",    nombre: "Fulfillment" },
-  { id: "envios",      icono: "px-flecha",  nombre: "Envíos" },
-  { id: "clientes",    icono: "px-cara",    nombre: "Clientes" },
-  { id: "productos",   icono: "px-lata",    nombre: "Productos" },
+  { id: "shipping",    icono: "px-flecha",  nombre: "Shipping" },
+  { id: "customers",   icono: "px-cara",    nombre: "Customers" },
+  { id: "products",    icono: "px-lata",    nombre: "Products" },
   { id: "analytics",   icono: "px-barras",  nombre: "Analytics" },
-  { id: "soporte",     icono: "px-globo",   nombre: "Soporte" },
-  { id: "ajustes",     icono: "px-tuerca",  nombre: "Ajustes" },
+  { id: "support",     icono: "px-globo",   nombre: "Support" },
+  { id: "settings",    icono: "px-tuerca",  nombre: "Settings" },
 ];
 ---
 
@@ -41,7 +41,7 @@ const SECCIONES = [
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0a0a12">
-<title>EL CUARTEL — SnackRabbit</title>
+<title>THE WAR ROOM — SnackRabbit</title>
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ff4fd8"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g></svg>'>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,7 +99,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ══════════ LA PUERTA ══════════ */
 .puerta { position: relative; z-index: 1; min-height: 100svh; display: grid; place-content: center; gap: 18px; text-align: center; padding: 24px; }
-.puerta-bunny { width: 74px; height: 66px; margin: 0 auto; color: var(--pink); --bunny-eye: var(--ink); animation: salto 2.4s var(--ease-snap) infinite; }
+.puerta-marca { display: inline-flex; align-items: center; gap: 16px; text-decoration: none; margin: 0 auto; }
+.puerta-bunny { width: 64px; height: 57px; flex: none; color: #fff; --bunny-eye: var(--ink); animation: salto 2.4s var(--ease-snap) infinite; }
+.puerta-word { font-family: var(--f-display); font-size: 38px; letter-spacing: 2px; color: #fff; }
 @keyframes salto { 0%, 100% { transform: translateY(0); } 12% { transform: translateY(-16px) rotate(-6deg); } 24% { transform: translateY(0); } }
 .puerta h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 5vw, 44px); letter-spacing: 1px; }
 .puerta p { color: var(--gray-1); max-width: 430px; margin: 0 auto; }
@@ -144,7 +146,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .lado-pie { margin-top: auto; display: grid; gap: 10px; padding: 14px 8px 0; border-top: 2px solid var(--line-dark); }
 .quien { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.quien-avatar { width: 30px; height: 27px; flex: none; color: var(--yellow); --bunny-eye: var(--ink); }
+.quien-avatar { width: 30px; height: 27px; flex: none; color: var(--yellow); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); }
 .quien-mail { font-size: 11px; color: var(--gray-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .lado-pie a, .lado-pie .salir { font-size: 10px; letter-spacing: 2px; font-weight: 700; color: var(--gray-2); text-decoration: none; text-align: left; transition: color .2s, transform .2s var(--ease-snap); }
 .lado-pie a:hover, .lado-pie .salir:hover { color: var(--pink); transform: translateX(3px); }
@@ -333,7 +335,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .muro { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .fundador { display: flex; align-items: center; gap: 10px; background: var(--bg-dark); border: 2px solid var(--line-dark); padding: 10px 12px; transition: transform .2s var(--ease-snap), border-color .2s, box-shadow .2s; }
 .fundador:hover { transform: translate(-2px,-2px); border-color: var(--yellow); box-shadow: 5px 5px 0 rgba(0,0,0,.5); }
-.fundador svg { width: 24px; height: 21px; flex: none; --bunny-eye: var(--ink); }
+.fundador svg { width: 24px; height: 21px; flex: none; --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); }
 .fundador div { min-width: 0; }
 .fundador b { display: block; font-size: 11.5px; color: var(--bone); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .fundador small { font-size: 9.5px; letter-spacing: 1px; color: var(--gray-2); }
@@ -433,7 +435,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   animation: toast-in .4s var(--ease-snap);
 }
 .toast.fuera { animation: toast-out .35s var(--ease-snap) forwards; }
-.toast svg { width: 20px; height: 18px; flex: none; color: var(--pink); --bunny-eye: var(--ink); }
+.toast svg { width: 20px; height: 18px; flex: none; color: var(--pink); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); }
 @keyframes toast-in { from { opacity: 0; transform: translateX(40px); } }
 @keyframes toast-out { to { opacity: 0; transform: translateX(40px); } }
 
@@ -503,21 +505,24 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 <!-- ══ LA PUERTA ══ -->
 <div class="puerta" id="puerta">
-  <svg class="puerta-bunny"><use href="#bunny"/></svg>
-  <span class="sello-cuartel">EL CUARTEL</span>
-  <h1 id="puertaTitulo">COMPROBANDO ACCESO…</h1>
-  <p id="puertaTexto">Un momento.</p>
+  <a class="puerta-marca" href="/" aria-label="SnackRabbit">
+    <svg class="puerta-bunny"><use href="#bunny"/></svg>
+    <span class="puerta-word">SNACKRABBIT</span>
+  </a>
+  <span class="sello-cuartel">THE WAR ROOM</span>
+  <h1 id="puertaTitulo">CHECKING ACCESS…</h1>
+  <p id="puertaTexto">One moment.</p>
   <p id="puertaAccion"></p>
 </div>
 
 <!-- ══ LA APLICACIÓN ══ -->
 <div class="app" id="app">
   <aside class="lado" id="lado">
-    <a class="marca" href="/admin" aria-label="EL CUARTEL — inicio">
+    <a class="marca" href="/admin" aria-label="THE WAR ROOM — home">
       <svg class="marca-bunny"><use href="#bunny"/></svg>
-      <span class="marca-word">SNACKRABBIT<small>EL CUARTEL</small></span>
+      <span class="marca-word">SNACKRABBIT<small>THE WAR ROOM</small></span>
     </a>
-    <nav aria-label="Módulos">
+    <nav aria-label="Modules">
       <svg class="hopper" id="hopper" aria-hidden="true"><use href="#bunny"/></svg>
       {SECCIONES.map((s, i) => (
         <button type="button" data-mod={s.id} aria-current={i === 0 ? "true" : "false"}>
@@ -530,30 +535,30 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
         <svg class="quien-avatar"><use href="#bunny"/></svg>
         <span class="quien-mail" id="quien"></span>
       </div>
-      <a href="/">← <span>VOLVER A LA TIENDA</span></a>
-      <button type="button" class="salir" id="salir">✕ <span>CERRAR SESIÓN</span></button>
+      <a href="/">← <span>BACK TO STORE</span></a>
+      <button type="button" class="salir" id="salir">✕ <span>SIGN OUT</span></button>
     </div>
   </aside>
 
   <div class="zona">
     <header class="arriba">
-      <button type="button" class="btn-pliega" id="pliega" aria-label="Plegar menú"><span></span><span></span><span></span></button>
-      <h1><i>▸</i> <span id="tituloMod">Resumen</span></h1>
+      <button type="button" class="btn-pliega" id="pliega" aria-label="Collapse menu"><span></span><span></span><span></span></button>
+      <h1><i>▸</i> <span id="tituloMod">Overview</span></h1>
       <div class="busca">
-        <input type="search" id="buscaGlobal" placeholder="BUSCAR PEDIDO, CLIENTE…" aria-label="Buscar">
+        <input type="search" id="buscaGlobal" placeholder="SEARCH ORDER, CUSTOMER…" aria-label="Search">
         <kbd>/</kbd>
       </div>
-      <span class="sello-demo" data-tip="Se sustituyen por datos reales al conectar Stripe">DATOS DE EJEMPLO</span>
+      <span class="sello-demo" data-tip="Replaced with live data once Stripe is connected">SAMPLE DATA</span>
       <div style="position:relative">
-        <button type="button" class="campana" id="campana" aria-label="Notificaciones" aria-expanded="false">
+        <button type="button" class="campana" id="campana" aria-label="Notifications" aria-expanded="false">
           <svg><use href="#px-campana"/></svg><b id="campanaN">3</b>
         </button>
         <div class="avisos" id="avisos">
-          <header>AVISOS</header>
+          <header>ALERTS</header>
           <ul>
-            <li><i>📦</i><div>Stock bajo: RABBIT FUEL ×4 — quedan 18<time>hace 12 min</time></div></li>
-            <li><i>🚚</i><div>SR-1043 sin movimiento hace 6 días<time>hace 1 h</time></div></li>
-            <li><i>⭐</i><div>Fundador nuevo: @mochi.dev (67/100)<time>hace 3 h</time></div></li>
+            <li><i>📦</i><div>Low stock: RABBIT FUEL ×4 — 18 left<time>12 min ago</time></div></li>
+            <li><i>🚚</i><div>SR-1043 has not moved in 6 days<time>1 h ago</time></div></li>
+            <li><i>⭐</i><div>New founder: @mochi.dev (67/100)<time>3 h ago</time></div></li>
           </ul>
         </div>
       </div>
@@ -566,71 +571,71 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     <main class="mods" id="mods">
 
       <!-- ════ RESUMEN ════ -->
-      <section class="mod activa" data-mod="resumen">
+      <section class="mod activa" data-mod="overview">
         <div class="bento">
           <article class="tarj hero-rev c8 rv" style="--i:0">
             <div class="dientes" aria-hidden="true"></div>
             <div class="tarj-cab" style="margin-top:8px">
-              <h2>INGRESOS</h2>
-              <div class="tabs" role="tablist" aria-label="Periodo">
+              <h2>REVENUE</h2>
+              <div class="tabs" role="tablist" aria-label="Period">
                 <button role="tab" aria-selected="true"  data-per="7">7D</button>
                 <button role="tab" aria-selected="false" data-per="30">30D</button>
                 <button role="tab" aria-selected="false" data-per="90">90D</button>
               </div>
             </div>
             <p class="rev-cifra"><i>$</i><span id="revTotal" data-n="14382">0</span></p>
-            <p class="rev-nota">el mes va un 23% por encima del anterior — las latas tiran del carro.</p>
+            <p class="rev-nota">the month is running 23% above the last one — the cans are pulling the cart.</p>
             <div style="position:relative">
-              <svg class="grafica" id="grafRev" preserveAspectRatio="none" role="img" aria-label="Ingresos por día"></svg>
+              <svg class="grafica" id="grafRev" preserveAspectRatio="none" role="img" aria-label="Revenue per day"></svg>
               <div class="tip-graf" id="tipGraf"></div>
             </div>
           </article>
 
           <div class="c4" style="display:grid; gap:14px">
             <article class="tarj rv" style="--i:1">
-              <div class="tarj-cab"><h2>PEDIDOS HOY</h2></div>
+              <div class="tarj-cab"><h2>ORDERS TODAY</h2></div>
               <p class="kpi-n" data-cuenta="12">0</p>
-              <span class="delta sube">▲ +3 VS AYER</span>
+              <span class="delta sube">▲ +3 VS YESTERDAY</span>
               <svg class="chispa" data-serie="4,6,3,7,5,9,12" data-color="var(--cyan)"></svg>
             </article>
             <article class="tarj rv" style="--i:2">
-              <div class="tarj-cab"><h2>CLIENTES NUEVOS · MES</h2></div>
+              <div class="tarj-cab"><h2>NEW CUSTOMERS · MONTH</h2></div>
               <p class="kpi-n" data-cuenta="38">0</p>
-              <span class="delta sube">▲ +12% VS JULIO</span>
+              <span class="delta sube">▲ +12% VS JULY</span>
               <svg class="chispa" data-serie="2,3,5,4,6,8,10" data-color="var(--yellow)"></svg>
             </article>
             <article class="tarj rv" style="--i:3">
-              <div class="tarj-cab"><h2>VALOR MEDIO</h2></div>
+              <div class="tarj-cab"><h2>AVERAGE ORDER</h2></div>
               <p class="kpi-n"><small>$</small><span data-cuenta="40">0</span>.20</p>
-              <span class="delta baja">▼ −2% VS JULIO</span>
+              <span class="delta baja">▼ −2% VS JULY</span>
               <svg class="chispa" data-serie="9,8,9,7,8,7,7" data-color="var(--pink)"></svg>
             </article>
           </div>
 
           <article class="tarj c7 rv" style="--i:4">
-            <div class="tarj-cab"><h2>ÚLTIMOS PEDIDOS</h2><span class="ver-todo" data-ir="pedidos" role="button" tabindex="0">VER TODOS →</span></div>
+            <div class="tarj-cab"><h2>LATEST ORDERS</h2><span class="ver-todo" data-ir="orders" role="button" tabindex="0">VIEW ALL →</span></div>
             <div class="tabla-scroll"><table class="tabla" id="tablaResumen"><thead><tr>
-              <th>PEDIDO</th><th>CLIENTE</th><th>TOTAL</th><th>ESTADO</th>
+              <th>ORDER</th><th>CUSTOMER</th><th>TOTAL</th><th>STATUS</th>
             </tr></thead><tbody></tbody></table></div>
           </article>
 
           <article class="tarj c5 rv" style="--i:5">
-            <div class="tarj-cab"><h2>ACTIVIDAD</h2></div>
+            <div class="tarj-cab"><h2>ACTIVITY</h2></div>
             <ol class="linea-t" id="actividad"></ol>
           </article>
 
           <article class="tarj c5 rv" style="--i:6">
-            <div class="tarj-cab"><h2>STOCK BAJO</h2><span class="ver-todo" data-ir="productos" role="button" tabindex="0">INVENTARIO →</span></div>
+            <div class="tarj-cab"><h2>LOW STOCK</h2><span class="ver-todo" data-ir="products" role="button" tabindex="0">INVENTORY →</span></div>
             <div class="top-prod" id="stockBajo"></div>
           </article>
 
           <article class="tarj c4 rv" style="--i:7">
-            <div class="tarj-cab"><h2>MÁS VENDIDOS · MES</h2></div>
+            <div class="tarj-cab"><h2>BEST SELLERS · MONTH</h2></div>
             <div class="top-prod" id="topProd"></div>
           </article>
 
           <article class="tarj c3 rv" style="--i:8">
-            <div class="tarj-cab"><h2>CONVERSIÓN</h2></div>
+            <div class="tarj-cab"><h2>CONVERSION</h2></div>
             <div class="donut">
               <svg viewBox="0 0 120 120" width="130" height="130">
                 <circle class="fondo" cx="60" cy="60" r="54"/>
@@ -638,32 +643,32 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
               </svg>
               <b>2.8%</b>
             </div>
-            <p style="text-align:center; font-size:10px; letter-spacing:1.5px; color:var(--gray-2)">DE VISITA A COMPRA</p>
+            <p style="text-align:center; font-size:10px; letter-spacing:1.5px; color:var(--gray-2)">VISIT TO PURCHASE</p>
           </article>
 
           <article class="tarj c12 rv" style="--i:9">
-            <div class="tarj-cab"><h2>FULFILLMENT AHORA</h2><span class="ver-todo" data-ir="fulfillment" role="button" tabindex="0">AL TABLERO →</span></div>
+            <div class="tarj-cab"><h2>FULFILLMENT RIGHT NOW</h2><span class="ver-todo" data-ir="fulfillment" role="button" tabindex="0">TO THE BOARD →</span></div>
             <div id="fulMini" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px"></div>
           </article>
         </div>
       </section>
 
       <!-- ════ PEDIDOS ════ -->
-      <section class="mod" data-mod="pedidos">
+      <section class="mod" data-mod="orders">
         <div class="bento">
           <article class="tarj c12 rv" style="--i:0">
             <div class="tarj-cab">
-              <h2>TODOS LOS PEDIDOS</h2>
-              <div class="tabs" role="tablist" aria-label="Filtrar por estado" id="filtroEstado">
-                <button role="tab" aria-selected="true" data-f="">TODOS</button>
-                <button role="tab" aria-selected="false" data-f="pagado">PAGADOS</button>
-                <button role="tab" aria-selected="false" data-f="prepara">PREPARANDO</button>
-                <button role="tab" aria-selected="false" data-f="enviado">ENVIADOS</button>
-                <button role="tab" aria-selected="false" data-f="entregado">ENTREGADOS</button>
+              <h2>ALL ORDERS</h2>
+              <div class="tabs" role="tablist" aria-label="Filter by status" id="filtroEstado">
+                <button role="tab" aria-selected="true" data-f="">ALL</button>
+                <button role="tab" aria-selected="false" data-f="pagado">PAID</button>
+                <button role="tab" aria-selected="false" data-f="prepara">PACKING</button>
+                <button role="tab" aria-selected="false" data-f="enviado">SHIPPED</button>
+                <button role="tab" aria-selected="false" data-f="entregado">DELIVERED</button>
               </div>
             </div>
             <div class="tabla-scroll"><table class="tabla" id="tablaPedidos"><thead><tr>
-              <th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTOS</th><th>TOTAL</th><th>ESTADO</th><th>FECHA</th>
+              <th>ORDER</th><th>CUSTOMER</th><th>ITEMS</th><th>TOTAL</th><th>STATUS</th><th>DATE</th>
             </tr></thead><tbody></tbody></table></div>
           </article>
         </div>
@@ -673,63 +678,63 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       <section class="mod" data-mod="fulfillment">
         <div class="bento">
           <article class="tarj c12 rv" style="--i:0">
-            <div class="tarj-cab"><h2>TABLERO — ARRASTRA LAS CAJAS ENTRE COLUMNAS</h2></div>
+            <div class="tarj-cab"><h2>BOARD — DRAG BOXES BETWEEN COLUMNS</h2></div>
             <div class="tablero" id="tablero"></div>
           </article>
         </div>
       </section>
 
       <!-- ════ ENVÍOS ════ -->
-      <section class="mod" data-mod="envios">
+      <section class="mod" data-mod="shipping">
         <div class="bento">
           <article class="tarj c8 rv" style="--i:0">
-            <div class="tarj-cab"><h2>EN TRÁNSITO</h2></div>
+            <div class="tarj-cab"><h2>IN TRANSIT</h2></div>
             <div class="tabla-scroll"><table class="tabla" id="tablaEnvios"><thead><tr>
-              <th>PEDIDO</th><th>TRANSPORTISTA</th><th>SEGUIMIENTO</th><th>ESTADO</th><th>ENTREGA EST.</th>
+              <th>ORDER</th><th>CARRIER</th><th>TRACKING</th><th>STATUS</th><th>EST. DELIVERY</th>
             </tr></thead><tbody></tbody></table></div>
           </article>
           <article class="tarj c4 rv" style="--i:1">
-            <div class="tarj-cab"><h2>ALERTA DE RETRASO</h2></div>
-            <p style="font-size:12.5px; color:var(--gray-1); margin-bottom:12px">Un envío sin movimiento
-              <b style="color:var(--bone)">más de 6 días laborables</b> sube aquí solo.</p>
+            <div class="tarj-cab"><h2>DELAY ALERT</h2></div>
+            <p style="font-size:12.5px; color:var(--gray-1); margin-bottom:12px">A shipment with no movement for
+              <b style="color:var(--bone)">more than 6 business days</b> shows up here on its own.</p>
             <div class="ficha-ped">
               <b>SR-1043 · Jordan M.</b>
-              <small>USPS · sin escaneo desde el 29 JUL</small>
-              <span class="est retraso" style="margin-top:8px">RETRASADO</span>
+              <small>USPS · no scan since 29 JUL</small>
+              <span class="est retraso" style="margin-top:8px">DELAYED</span>
             </div>
-            <button class="btn btn-pink" style="margin-top:14px" data-toast="Reclamo abierto con USPS para SR-1043. (Demo)">ABRIR RECLAMO ▸</button>
+            <button class="btn btn-pink" style="margin-top:14px" data-toast="Claim opened with USPS for SR-1043. (Demo)">OPEN A CLAIM ▸</button>
           </article>
         </div>
       </section>
 
       <!-- ════ CLIENTES ════ -->
-      <section class="mod" data-mod="clientes">
+      <section class="mod" data-mod="customers">
         <div class="bento">
           <article class="tarj c4 rv" style="--i:0">
-            <div class="tarj-cab"><h2>LA CUENTA FUNDADORA</h2></div>
+            <div class="tarj-cab"><h2>THE FOUNDER COUNT</h2></div>
             <p class="kpi-n"><span data-cuenta="67">0</span><small> / 100</small></p>
             <div class="barra ok" style="margin-top:10px"><i data-w="67%"></i></div>
             <p style="font-size:11px; color:var(--gray-2); margin-top:8px; letter-spacing:.5px">
-              33 cartas 000 restantes. Al llegar a 100, el corte es para siempre.</p>
+              33 card 000s left. At 100, the cut is permanent.</p>
           </article>
           <article class="tarj c8 rv" style="--i:1">
-            <div class="tarj-cab"><h2>EL MURO DE LA MADRIGUERA — ÚLTIMOS FUNDADORES</h2></div>
+            <div class="tarj-cab"><h2>THE BURROW WALL — LATEST FOUNDERS</h2></div>
             <div class="muro" id="muro"></div>
           </article>
           <article class="tarj c12 rv" style="--i:2">
-            <div class="tarj-cab"><h2>CLIENTES CON MÁS VALOR</h2></div>
+            <div class="tarj-cab"><h2>HIGHEST-VALUE CUSTOMERS</h2></div>
             <div class="tabla-scroll"><table class="tabla" id="tablaClientes"><thead><tr>
-              <th>CLIENTE</th><th>PEDIDOS</th><th>GASTO TOTAL</th><th>ÚLTIMA COMPRA</th><th>RANGO</th>
+              <th>CUSTOMER</th><th>ORDERS</th><th>TOTAL SPEND</th><th>LAST ORDER</th><th>RANK</th>
             </tr></thead><tbody></tbody></table></div>
           </article>
         </div>
       </section>
 
       <!-- ════ PRODUCTOS ════ -->
-      <section class="mod" data-mod="productos">
+      <section class="mod" data-mod="products">
         <div class="bento">
           <article class="tarj c12 rv" style="--i:0">
-            <div class="tarj-cab"><h2>CATÁLOGO E INVENTARIO</h2></div>
+            <div class="tarj-cab"><h2>CATALOGUE & INVENTORY</h2></div>
             <div class="prod-adm" id="prodAdm"></div>
           </article>
         </div>
@@ -739,11 +744,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       <section class="mod" data-mod="analytics">
         <div class="bento">
           <article class="tarj c6 rv" style="--i:0">
-            <div class="tarj-cab"><h2>VENTAS POR SEMANA</h2></div>
+            <div class="tarj-cab"><h2>SALES BY WEEK</h2></div>
             <div id="barrasSem" style="display:flex; align-items:flex-end; gap:10px; height:180px; padding-top:10px"></div>
           </article>
           <article class="tarj c3 rv" style="--i:1">
-            <div class="tarj-cab"><h2>RECURRENTES</h2></div>
+            <div class="tarj-cab"><h2>REPEAT BUYERS</h2></div>
             <div class="donut">
               <svg viewBox="0 0 120 120" width="130" height="130">
                 <circle class="fondo" cx="60" cy="60" r="54"/>
@@ -751,31 +756,31 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
               </svg>
               <b>31%</b>
             </div>
-            <p style="text-align:center; font-size:10px; letter-spacing:1.5px; color:var(--gray-2)">VUELVEN A COMPRAR</p>
+            <p style="text-align:center; font-size:10px; letter-spacing:1.5px; color:var(--gray-2)">COME BACK TO BUY</p>
           </article>
           <article class="tarj c3 rv" style="--i:2">
-            <div class="tarj-cab"><h2>CARRITOS SALVADOS</h2></div>
+            <div class="tarj-cab"><h2>CARTS RECOVERED</h2></div>
             <p class="kpi-n"><span data-cuenta="17">0</span><small> / 41</small></p>
             <div class="barra" style="margin-top:10px"><i data-w="41%"></i></div>
             <p style="font-size:11px; color:var(--gray-2); margin-top:8px; letter-spacing:.5px">
-              El correo de carrito abandonado recupera un 41%.</p>
+              The abandoned-cart email recovers 41%.</p>
           </article>
           <article class="tarj c7 rv" style="--i:3">
-            <div class="tarj-cab"><h2>VENTAS POR ESTADO (EE.UU.)</h2></div>
+            <div class="tarj-cab"><h2>SALES BY STATE (US)</h2></div>
             <div class="top-prod" id="porEstado"></div>
           </article>
           <article class="tarj c5 rv" style="--i:4">
-            <div class="tarj-cab"><h2>DE DÓNDE LLEGAN</h2></div>
+            <div class="tarj-cab"><h2>WHERE THEY COME FROM</h2></div>
             <div class="top-prod" id="fuentes"></div>
           </article>
         </div>
       </section>
 
       <!-- ════ SOPORTE ════ -->
-      <section class="mod" data-mod="soporte">
+      <section class="mod" data-mod="support">
         <div class="bento">
           <article class="tarj c12 rv" style="--i:0">
-            <div class="tarj-cab"><h2>BANDEJA — hello@snackrabbit.co</h2></div>
+            <div class="tarj-cab"><h2>INBOX — hello@snackrabbit.co</h2></div>
             <div class="inbox">
               <div style="display:grid; gap:8px; align-content:start" id="hilos"></div>
               <div style="border:2px solid var(--line-dark); padding:16px; min-height:280px" id="conversa"></div>
@@ -785,34 +790,34 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       </section>
 
       <!-- ════ AJUSTES ════ -->
-      <section class="mod" data-mod="ajustes">
+      <section class="mod" data-mod="settings">
         <div class="bento">
           <article class="tarj c6 rv" style="--i:0">
-            <div class="tarj-cab"><h2>LA TIENDA</h2></div>
+            <div class="tarj-cab"><h2>THE STORE</h2></div>
             <div class="form-adm">
-              <label>NOMBRE PÚBLICO<input value="SNACKRABBIT" /></label>
-              <label>CORREO DE SOPORTE<input value="hello@snackrabbit.co" /></label>
-              <label>UMBRAL DE ENVÍO GRATIS<input value="$60" /></label>
-              <label>TARIFA PLANA (EE.UU. CONTIGUO)<input value="$6.95" /></label>
-              <button class="btn btn-pink" data-toast="Ajustes guardados. (Demo: sin efecto real todavía)">GUARDAR ▸</button>
+              <label>PUBLIC NAME<input value="SNACKRABBIT" /></label>
+              <label>SUPPORT EMAIL<input value="hello@snackrabbit.co" /></label>
+              <label>FREE SHIPPING THRESHOLD<input value="$60" /></label>
+              <label>FLAT RATE (CONTIGUOUS US)<input value="$6.95" /></label>
+              <button class="btn btn-pink" data-toast="Settings saved. (Demo: no real effect yet)">SAVE ▸</button>
             </div>
           </article>
           <article class="tarj c6 rv" style="--i:1">
-            <div class="tarj-cab"><h2>OPERACIÓN</h2></div>
+            <div class="tarj-cab"><h2>OPERATIONS</h2></div>
             <div style="display:grid; gap:10px">
-              <div class="palanca"><p><b>ALERTA DE STOCK BAJO</b>Avisar al caer de 20 unidades</p><button class="inter" aria-pressed="true" aria-label="Alerta de stock bajo"></button></div>
-              <div class="palanca"><p><b>ALERTA DE ENVÍO PARADO</b>Sin escaneo 6 días laborables</p><button class="inter" aria-pressed="true" aria-label="Alerta de envío parado"></button></div>
-              <div class="palanca"><p><b>RESUMEN DIARIO POR CORREO</b>Cada mañana a las 8:00</p><button class="inter" aria-pressed="false" aria-label="Resumen diario"></button></div>
-              <div class="palanca"><p><b>MODO MANTENIMIENTO</b>Cierra la tienda al público</p><button class="inter" aria-pressed="false" aria-label="Modo mantenimiento"></button></div>
+              <div class="palanca"><p><b>LOW STOCK ALERT</b>Warn when it drops below 20 units</p><button class="inter" aria-pressed="true" aria-label="Low stock alert"></button></div>
+              <div class="palanca"><p><b>STALLED SHIPMENT ALERT</b>No scan for 6 business days</p><button class="inter" aria-pressed="true" aria-label="Stalled shipment alert"></button></div>
+              <div class="palanca"><p><b>DAILY EMAIL DIGEST</b>Every morning at 8:00</p><button class="inter" aria-pressed="false" aria-label="Daily digest"></button></div>
+              <div class="palanca"><p><b>MAINTENANCE MODE</b>Closes the store to the public</p><button class="inter" aria-pressed="false" aria-label="Maintenance mode"></button></div>
             </div>
           </article>
           <article class="tarj c12 rv" style="--i:2">
-            <div class="tarj-cab"><h2>CONEXIONES</h2></div>
-            <div class="tabla-scroll"><table class="tabla"><thead><tr><th>SERVICIO</th><th>PARA QUÉ</th><th>ESTADO</th></tr></thead><tbody>
-              <tr><td><b>Resend</b></td><td>Correo transaccional y lista</td><td><span class="est entregado">ACTIVO</span></td></tr>
-              <tr><td><b>Clerk</b></td><td>Cuentas y acceso</td><td><span class="est entregado">ACTIVO</span></td></tr>
-              <tr><td><b>Stripe</b></td><td>Pagos y suscripciones</td><td><span class="est prepara">PENDIENTE DE ENTIDAD</span></td></tr>
-              <tr><td><b>3PL / fulfillment</b></td><td>Almacén y envíos desde ~300 cajas</td><td><span class="est pagado">EVALUANDO</span></td></tr>
+            <div class="tarj-cab"><h2>CONNECTIONS</h2></div>
+            <div class="tabla-scroll"><table class="tabla"><thead><tr><th>SERVICE</th><th>WHAT FOR</th><th>STATUS</th></tr></thead><tbody>
+              <tr><td><b>Resend</b></td><td>Transactional email and the list</td><td><span class="est entregado">ACTIVE</span></td></tr>
+              <tr><td><b>Clerk</b></td><td>Accounts and access</td><td><span class="est entregado">ACTIVE</span></td></tr>
+              <tr><td><b>Stripe</b></td><td>Payments and subscriptions</td><td><span class="est prepara">WAITING ON ENTITY</span></td></tr>
+              <tr><td><b>3PL / fulfillment</b></td><td>Warehouse and shipping from ~300 boxes</td><td><span class="est pagado">EVALUATING</span></td></tr>
             </tbody></table></div>
           </article>
         </div>
@@ -824,16 +829,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 <div class="velo" id="velo"></div>
 <aside class="modal-ped" id="modalPed" role="dialog" aria-modal="true" aria-labelledby="mpTitulo">
   <div class="dientes" aria-hidden="true"></div>
-  <button type="button" class="modal-x" id="mpCerrar" aria-label="Cerrar">✕</button>
+  <button type="button" class="modal-x" id="mpCerrar" aria-label="Close">✕</button>
   <h2 id="mpTitulo">SR-0000</h2>
   <p id="mpQuien" style="color:var(--gray-1); font-size:13px; margin-bottom:14px"></p>
-  <div class="tabla-scroll"><table class="tabla" id="mpLineas"><thead><tr><th>PRODUCTO</th><th>CANT.</th><th>PRECIO</th></tr></thead><tbody></tbody></table></div>
+  <div class="tabla-scroll"><table class="tabla" id="mpLineas"><thead><tr><th>ITEM</th><th>QTY</th><th>PRICE</th></tr></thead><tbody></tbody></table></div>
   <p style="text-align:right; font-family:var(--f-display); font-size:22px; margin:12px 0 18px">TOTAL <i style="font-style:normal;color:var(--pink)" id="mpTotal"></i></p>
-  <div class="tarj-cab"><h2>HISTORIAL</h2></div>
+  <div class="tarj-cab"><h2>TIMELINE</h2></div>
   <ol class="linea-t" id="mpTimeline"></ol>
   <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap">
-    <button class="btn btn-pink" data-toast="Etiqueta generada. (Demo)">ETIQUETA ▸</button>
-    <button class="btn btn-pink" data-toast="Marcado como enviado. (Demo)">MARCAR ENVIADO ▸</button>
+    <button class="btn btn-pink" data-toast="Label generated. (Demo)">PRINT LABEL ▸</button>
+    <button class="btn btn-pink" data-toast="Marked as shipped. (Demo)">MARK SHIPPED ▸</button>
   </div>
 </aside>
 
@@ -852,13 +857,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   const DEMO = {
     pedidos: [
       { id: "SR-1049", quien: "Ava R. · Austin, TX",      items: [["RABBIT FUEL ×12", 1, 42], ["THE ZOOMIES", 1, 29]], estado: "pagado",    fecha: "5 AGO 09:41" },
-      { id: "SR-1048", quien: "Mateo G. · Miami, FL",     items: [["THE LOOKOUT · NEGRO", 1, 35]],                     estado: "pagado",    fecha: "5 AGO 08:12" },
+      { id: "SR-1048", quien: "Mateo G. · Miami, FL",     items: [["THE LOOKOUT · BLACK", 1, 35]],                     estado: "pagado",    fecha: "5 AGO 08:12" },
       { id: "SR-1047", quien: "Jordan K. · Portland, OR", items: [["RABBIT FUEL ×4", 2, 16]],                          estado: "prepara",   fecha: "4 AGO 19:03" },
-      { id: "SR-1046", quien: "Sofía L. · Queens, NY",    items: [["RABBIT FUEL ×12", 1, 42], ["THE LOOKOUT · BLANCO", 1, 35]], estado: "prepara", fecha: "4 AGO 16:40" },
+      { id: "SR-1046", quien: "Sofía L. · Queens, NY",    items: [["RABBIT FUEL ×12", 1, 42], ["THE LOOKOUT · WHITE", 1, 35]], estado: "prepara", fecha: "4 AGO 16:40" },
       { id: "SR-1045", quien: "Noah P. · Denver, CO",     items: [["THE ZOOMIES", 2, 29]],                             estado: "enviado",   fecha: "4 AGO 11:22" },
       { id: "SR-1044", quien: "Emma T. · Chicago, IL",    items: [["RABBIT FUEL ×12", 2, 42]],                         estado: "enviado",   fecha: "3 AGO 15:08" },
       { id: "SR-1043", quien: "Jordan M. · Boise, ID",    items: [["RABBIT FUEL ×4", 1, 16], ["THE ZOOMIES", 1, 29]],  estado: "retraso",   fecha: "29 JUL 10:15" },
-      { id: "SR-1042", quien: "Liam S. · Nashville, TN",  items: [["THE LOOKOUT · NEGRO", 1, 35]],                     estado: "entregado", fecha: "2 AGO 09:54" },
+      { id: "SR-1042", quien: "Liam S. · Nashville, TN",  items: [["THE LOOKOUT · BLACK", 1, 35]],                     estado: "entregado", fecha: "2 AGO 09:54" },
       { id: "SR-1041", quien: "Mía C. · Phoenix, AZ",     items: [["RABBIT FUEL ×12", 1, 42]],                         estado: "entregado", fecha: "1 AGO 17:31" },
       { id: "SR-1040", quien: "Lucas B. · Seattle, WA",   items: [["RABBIT FUEL ×4", 3, 16]],                          estado: "entregado", fecha: "1 AGO 12:19" },
     ],
@@ -868,11 +873,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       90: Array.from({ length: 90 }, (_, i) => 260 + Math.round(180 * Math.sin(i / 8) + i * 3.2 + (i * 37 % 90))),
     },
     actividad: [
-      { t: "09:41", que: "<b>SR-1049</b> pagado — $71.00", hito: true },
-      { t: "09:12", que: "Fundador nuevo: <b>@mochi.dev</b> (67/100)", hito: true },
-      { t: "08:12", que: "<b>SR-1048</b> pagado — $35.00" },
-      { t: "07:55", que: "Reseña 5★ en <b>THE ZOOMIES</b>" },
-      { t: "AYER",  que: "<b>SR-1045</b> y <b>SR-1044</b> recogidos por USPS" },
+      { t: "09:41", que: "<b>SR-1049</b> paid — $71.00", hito: true },
+      { t: "09:12", que: "New founder: <b>@mochi.dev</b> (67/100)", hito: true },
+      { t: "08:12", que: "<b>SR-1048</b> paid — $35.00" },
+      { t: "07:55", que: "5★ review on <b>THE ZOOMIES</b>" },
+      { t: "YESTERDAY", que: "<b>SR-1045</b> and <b>SR-1044</b> picked up by USPS" },
     ],
     envios: [
       ["SR-1045", "USPS Ground Advantage", "9400 1112 0345", "enviado", "7 AGO"],
@@ -882,26 +887,26 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     ],
     fundadores: ["@mochi.dev", "@la.vecina.astral", "@pixelhops", "@caro_zzz", "@bunnywatcher", "@el.tomas", "@dailyfuel", "@renata.gif"],
     clientes: [
-      ["Emma T. · Chicago, IL", 6, "$318.40", "3 AGO", "IV · THE DIGGER"],
-      ["Lucas B. · Seattle, WA", 5, "$241.00", "1 AGO", "III · THE SCOUT"],
-      ["Ava R. · Austin, TX", 4, "$226.50", "HOY", "III · THE SCOUT"],
-      ["Sofía L. · Queens, NY", 3, "$188.20", "4 AGO", "II · THE HOPPER"],
+      ["Emma T. · Chicago, IL", 6, "$318.40", "3 AUG", "IV · THE DIGGER"],
+      ["Lucas B. · Seattle, WA", 5, "$241.00", "1 AUG", "III · THE SCOUT"],
+      ["Ava R. · Austin, TX", 4, "$226.50", "TODAY", "III · THE SCOUT"],
+      ["Sofía L. · Queens, NY", 3, "$188.20", "4 AUG", "II · THE HOPPER"],
     ],
     productos: [
       { n: "RABBIT FUEL", v: "PACK ×4 · $16 — PACK ×12 · $42", stock: 18,  max: 200, ventas: 82 },
-      { n: "THE LOOKOUT", v: "BLANCO · NEGRO — $35",           stock: 64,  max: 120, ventas: 34 },
-      { n: "THE ZOOMIES", v: "NEGRO — $29",                    stock: 91,  max: 150, ventas: 27 },
+      { n: "THE LOOKOUT", v: "WHITE · BLACK — $35",            stock: 64,  max: 120, ventas: 34 },
+      { n: "THE ZOOMIES", v: "BLACK — $29",                    stock: 91,  max: 150, ventas: 27 },
     ],
-    porEstado: [["TEXAS", 21], ["CALIFORNIA", 18], ["NUEVA YORK", 14], ["FLORIDA", 11], ["ILLINOIS", 8]],
-    fuentes: [["TIKTOK / IG ORGÁNICO", 64], ["DIRECTO", 22], ["BÚSQUEDA", 9], ["LISTA DE CORREO", 5]],
+    porEstado: [["TEXAS", 21], ["CALIFORNIA", 18], ["NEW YORK", 14], ["FLORIDA", 11], ["ILLINOIS", 8]],
+    fuentes: [["TIKTOK / IG ORGANIC", 64], ["DIRECT", 22], ["SEARCH", 9], ["EMAIL LIST", 5]],
     hilos: [
-      { de: "ava@…com", tema: "¿Cuándo llega la carta de agosto?", msgs: [["ellos", "¡Hola! Pedí la ×12 y quería saber cuándo sale la carta del mes."], ["yo", "¡Hola Ava! Las cajas del club salen juntas la primera semana del mes — la tuya sale el lunes con la carta dentro. 🐰"]] },
-      { de: "jordan@…com", tema: "Mi pedido no se mueve", msgs: [["ellos", "SR-1043 lleva días sin actualizar el tracking…"], ["yo", "Tienes razón y ya está en la cola de reclamo con USPS. Si el sábado no se mueve, te reenviamos sin coste."]] },
-      { de: "sam@…com", tema: "¿Talla de THE LOOKOUT?", msgs: [["ellos", "¿La M queda oversize?"]] },
+      { de: "ava@…com", tema: "When does the August card ship?", msgs: [["ellos", "Hi! I ordered the ×12 and wanted to know when the card of the month goes out."], ["yo", "Hi Ava! Club boxes go out together in the first week of the month — yours leaves Monday with the card inside. 🐰"]] },
+      { de: "jordan@…com", tema: "My order is not moving", msgs: [["ellos", "SR-1043 has not updated tracking in days…"], ["yo", "You are right, and it is already in the claim queue with USPS. If it has not moved by Saturday we reship at no cost."]] },
+      { de: "sam@…com", tema: "THE LOOKOUT sizing?", msgs: [["ellos", "Does the M run oversized?"]] },
     ],
   };
-  const COLS = [["pagado", "PENDIENTE"], ["prepara", "PREPARANDO"], ["empacado", "EMPACADO"], ["enviado", "TRANSPORTISTA"], ["retraso", "RETRASADO"]];
-  const TXT = { pagado: "PAGADO", prepara: "PREPARANDO", empacado: "EMPACADO", enviado: "ENVIADO", entregado: "ENTREGADO", retraso: "RETRASADO" };
+  const COLS = [["pagado", "TO PACK"], ["prepara", "PACKING"], ["empacado", "PACKED"], ["enviado", "WITH CARRIER"], ["retraso", "DELAYED"]];
+  const TXT = { pagado: "PAID", prepara: "PACKING", empacado: "PACKED", enviado: "SHIPPED", entregado: "DELIVERED", retraso: "DELAYED" };
   const money = n => "$" + n.toFixed(2);
   const total = p => p.items.reduce((s, [, c, pr]) => s + c * pr, 0);
 
@@ -968,7 +973,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     $("#stockBajo").innerHTML = DEMO.productos.map(p => {
       const pct = Math.round(p.stock / p.max * 100);
       const clase = pct < 15 ? "baja" : pct < 45 ? "" : "ok";
-      return `<div><div class="tp-lab"><span>${p.n}</span><b>${p.stock} uds</b></div><div class="barra ${clase}"><i data-w="${pct}%"></i></div></div>`;
+      return `<div><div class="tp-lab"><span>${p.n}</span><b>${p.stock} left</b></div><div class="barra ${clase}"><i data-w="${pct}%"></i></div></div>`;
     }).join("");
     $("#topProd").innerHTML = DEMO.productos.map(p => {
       const pct = Math.round(p.ventas / DEMO.productos[0].ventas * 100);
@@ -1017,7 +1022,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   }
   function pintarClientes() {
     $("#muro").innerHTML = DEMO.fundadores.map((f, i) =>
-      `<div class="fundador"><svg style="color:${["var(--pink)", "var(--yellow)", "var(--cyan)"][i % 3]}"><use href="#bunny"/></svg><div><b>${f}</b><small>FUNDADOR ${String(67 - i).padStart(3, "0")}</small></div></div>`).join("");
+      `<div class="fundador"><svg style="color:${["var(--pink)", "var(--yellow)", "var(--cyan)"][i % 3]}"><use href="#bunny"/></svg><div><b>${f}</b><small>FOUNDER ${String(67 - i).padStart(3, "0")}</small></div></div>`).join("");
     $("#tablaClientes tbody").innerHTML = DEMO.clientes.map(c =>
       `<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td><b>${c[2]}</b></td><td>${c[3]}</td><td>${c[4]}</td></tr>`).join("");
   }
@@ -1026,8 +1031,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       const pct = Math.round(p.stock / p.max * 100);
       const clase = pct < 15 ? "baja" : pct < 45 ? "" : "ok";
       return `<div class="prod-fila">
-        <h3>${p.n}<small>${p.v}</small></h3><span class="precio">${p.ventas} VENTAS/MES</span>
-        <div class="prod-stock"><div class="barra ${clase}"><i data-w="${pct}%"></i></div><span>${p.stock} / ${p.max} UDS</span></div>
+        <h3>${p.n}<small>${p.v}</small></h3><span class="precio">${p.ventas} SALES/MO</span>
+        <div class="prod-stock"><div class="barra ${clase}"><i data-w="${pct}%"></i></div><span>${p.stock} / ${p.max} UNITS</span></div>
       </div>`;
     }).join("");
   }
@@ -1037,7 +1042,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     $("#barrasSem").innerHTML = semanas.map((v, i) =>
       `<div style="flex:1; display:grid; grid-template-rows:1fr auto; gap:6px; height:100%">
         <div class="barraV" data-tip="${money(v)}" style="--d:${i * 120}ms; height:${Math.round(v / max * 100)}%; background:${i === semanas.length - 1 ? "var(--pink)" : "rgba(230,230,255,.14)"}"></div>
-        <p style="text-align:center; font-size:9px; letter-spacing:1.5px; color:var(--gray-2)">SEM ${i + 1}</p>
+        <p style="text-align:center; font-size:9px; letter-spacing:1.5px; color:var(--gray-2)">WEEK ${i + 1}</p>
       </div>`).join("");
     $("#porEstado").innerHTML = DEMO.porEstado.map(([n, v]) =>
       `<div><div class="tp-lab"><span>${n}</span><b>${v}%</b></div><div class="barra"><i data-w="${v * 4}%"></i></div></div>`).join("");
@@ -1059,8 +1064,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     $("#conversa").innerHTML = h.msgs.map(([quien, txt]) =>
       `<div class="burbuja ${quien === "yo" ? "mia" : ""}">${txt}</div>`).join("") +
       `<div style="display:flex; gap:8px; margin-top:14px">
-        <input placeholder="RESPONDER…" style="flex:1; font-family:var(--f-ui); font-size:12px; color:var(--bone); background:var(--bg-dark); border:2px solid var(--line-dark); padding:10px 12px" aria-label="Responder">
-        <button class="btn btn-pink" data-toast="Respuesta enviada. (Demo)">ENVIAR ▸</button>
+        <input placeholder="REPLY…" style="flex:1; font-family:var(--f-ui); font-size:12px; color:var(--bone); background:var(--bg-dark); border:2px solid var(--line-dark); padding:10px 12px" aria-label="Reply">
+        <button class="btn btn-pink" data-toast="Reply sent. (Demo)">SEND ▸</button>
       </div>`;
   }
 
@@ -1079,8 +1084,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       <path class="area" fill="url(#gradRosa)" d="${d} L${X(serie.length - 1).toFixed(1)},${H - 20} L${X(0).toFixed(1)},${H - 20} Z"/>
       <path class="linea" d="${d}"/>
       <circle class="punto" r="4"/>
-      <text class="eje" x="${m}" y="${H - 6}">HACE ${dias} DÍAS</text>
-      <text class="eje" x="${W - m}" y="${H - 6}" text-anchor="end">HOY</text>`;
+      <text class="eje" x="${m}" y="${H - 6}">${dias} DAYS AGO</text>
+      <text class="eje" x="${W - m}" y="${H - 6}" text-anchor="end">TODAY</text>`;
     const linea = $(".linea", svg);
     const largo = linea.getTotalLength();
     if (!reducido) {
@@ -1099,7 +1104,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       if (i < 0 || i >= serie.length) return;
       punto.setAttribute("cx", X(i)); punto.setAttribute("cy", Y(serie[i]));
       punto.classList.add("viva");
-      tip.innerHTML = `<b>${money(serie[i])}</b> · día ${i + 1}`;
+      tip.innerHTML = `<b>${money(serie[i])}</b> · day ${i + 1}`;
       tip.style.left = (X(i) / W * 100) + "%";
       tip.style.top = (Y(serie[i]) / H * 100 - 14) + "%";
       tip.classList.add("viva");
@@ -1137,8 +1142,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   /* la cinta de operaciones */
   function cinta() {
     const trozos = [
-      "PEDIDOS HOY <b>12</b>", "INGRESOS HOY <b>$487</b>", "FUNDADORES <b>67/100</b>",
-      "STOCK RABBIT FUEL ×4 <b>18 UDS</b>", "EN TRÁNSITO <b>2</b>", "MES <b>$14,382</b>",
+      "ORDERS TODAY <b>12</b>", "REVENUE TODAY <b>$487</b>", "FOUNDERS <b>67/100</b>",
+      "RABBIT FUEL ×4 STOCK <b>18 UNITS</b>", "IN TRANSIT <b>2</b>", "MONTH <b>$14,382</b>",
     ];
     $("#cinta").innerHTML = [...trozos, ...trozos].map(t => `<span>${t} ·</span>`).join("");
   }
@@ -1152,12 +1157,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     $("#mpLineas tbody").innerHTML = p.items.map(([n, c, pr]) =>
       `<tr><td><b>${n}</b></td><td>${c}</td><td>${money(pr * c)}</td></tr>`).join("");
     $("#mpTotal").textContent = money(total(p));
-    const pasos = [["Pedido creado", true], ["Pago confirmado", true],
-      ["En preparación", ["prepara", "empacado", "enviado", "entregado", "retraso"].includes(p.estado)],
-      ["Con el transportista", ["enviado", "entregado", "retraso"].includes(p.estado)],
-      ["Entregado", p.estado === "entregado"]];
+    const pasos = [["Order created", true], ["Payment confirmed", true],
+      ["Packing", ["prepara", "empacado", "enviado", "entregado", "retraso"].includes(p.estado)],
+      ["With the carrier", ["enviado", "entregado", "retraso"].includes(p.estado)],
+      ["Delivered", p.estado === "entregado"]];
     $("#mpTimeline").innerHTML = pasos.map(([n, hecho], i) =>
-      `<li style="--i:${i}" class="${hecho ? "hito" : ""}"><span class="lt-punto"></span><div><p>${hecho ? "<b>" + n + "</b>" : n}</p><time>${hecho ? p.fecha : "PENDIENTE"}</time></div></li>`).join("");
+      `<li style="--i:${i}" class="${hecho ? "hito" : ""}"><span class="lt-punto"></span><div><p>${hecho ? "<b>" + n + "</b>" : n}</p><time>${hecho ? p.fecha : "PENDING"}</time></div></li>`).join("");
     $("#velo").classList.add("abierto");
     $("#modalPed").classList.add("abierto");
     $("#mpCerrar").focus();
@@ -1178,7 +1183,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     if (activo) $("#hopper").style.top = (activo.offsetTop + activo.offsetHeight / 2 - 7) + "px";
   }
   function abrir(id, primera = false) {
-    if (!NOMBRES[id]) id = "resumen";
+    if (!NOMBRES[id]) id = "overview";
     $$(".mod").forEach(m => m.classList.toggle("activa", m.dataset.mod === id));
     $$(".lado nav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.mod === id)));
     $("#tituloMod").textContent = NOMBRES[id].charAt(0) + NOMBRES[id].slice(1).toLowerCase();
@@ -1187,7 +1192,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     const sec = $(`.mod[data-mod="${id}"]`);
     const arrancar = () => {
       revelar(sec);
-      if (id === "resumen") { dibujarRev(+$('[data-per][aria-selected="true"]').dataset.per); donuts(); }
+      if (id === "overview") { dibujarRev(+$('[data-per][aria-selected="true"]').dataset.per); donuts(); }
       if (id === "analytics") {
         donuts();
         $$("#barrasSem .barraV").forEach(b => b.classList.remove("crecida"));
@@ -1214,7 +1219,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   $("#buscaGlobal").addEventListener("input", e => {
     const q = e.target.value.trim().toLowerCase();
     pintarTablas($('#filtroEstado [aria-selected="true"]')?.dataset.f || "", q);
-    if (q && $(".mod.activa").dataset.mod !== "pedidos") abrir("pedidos");
+    if (q && $(".mod.activa").dataset.mod !== "orders") abrir("orders");
   });
   document.addEventListener("keydown", e => {
     if (e.key === "/" && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); $("#buscaGlobal").focus(); }
@@ -1250,21 +1255,21 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     $("#puertaAccion").innerHTML = enlace || "";
   };
   (async () => {
-    if (!PK) return negar("SIN CONFIGURAR", "Falta la clave publicable de Clerk.");
+    if (!PK) return negar("NOT CONFIGURED", "The Clerk publishable key is missing.");
     let clerk;
     try {
       const { Clerk } = await import("@clerk/clerk-js");
       clerk = new Clerk(PK);
       await Promise.race([clerk.load(), new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), 15000))]);
     } catch {
-      return negar("SIN CONEXIÓN", "No se pudo comprobar la sesión. Recarga para intentarlo otra vez.");
+      return negar("NO CONNECTION", "Could not check the session. Reload to try again.");
     }
     const u = clerk.user;
-    if (!u) return negar("HACE FALTA SESIÓN", "Este panel es solo del equipo. Entra con tu cuenta en la tienda y vuelve.", '<a href="/#micuenta">Ir a entrar →</a>');
+    if (!u) return negar("SIGN IN FIRST", "This panel is team only. Sign in on the store and come back.", '<a href="/#micuenta">Go sign in →</a>');
     /* publicMetadata solo lo escribe el servidor. Y aun así: esta capa decide
        qué se PINTA; las acciones reales del futuro se verificarán por petición. */
     if (u.publicMetadata?.admin !== true)
-      return negar("SOLO EQUIPO", "Tu cuenta no tiene acceso al panel interno. Si deberías tenerlo, pide el alta.", '<a href="/">Volver a la tienda →</a>');
+      return negar("TEAM ONLY", "Your account does not have access to the internal panel. If it should, ask to be added.", '<a href="/">Back to the store →</a>');
 
     $("#quien").textContent = u.primaryEmailAddress?.emailAddress || "";
     $("#puerta").style.display = "none";
@@ -1276,7 +1281,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     pintarFulMini(); pintarTablero(); pintarEnvios(); pintarClientes();
     pintarProductos(); pintarAnalytics(); pintarSoporte();
     contar($("#revTotal"), +$("#revTotal").dataset.n, 1200);
-    abrir(location.hash.slice(1) || "resumen", true);
+    abrir(location.hash.slice(1) || "overview", true);
   })();
 </script>
 </body>
