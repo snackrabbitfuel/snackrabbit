@@ -198,7 +198,7 @@ const I18N = {
     "faq.q1": "¿CUÁNDO LLEGA MI PEDIDO?",
     "faq.a1": "Preparamos en 24 h y entregamos en 48–72 h laborables. Recibirás seguimiento por email en cuanto salga de la madriguera.",
     "faq.q2": "¿QUÉ TAMAÑO TIENEN LA TOALLA Y EL PLUSH?",
-    "faq.a2": "THE ZOOMIES mide 100×50 cm, tamaño gimnasio clásico, y viene en blanco, rosa y negro. THE LOOKOUT es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
+    "faq.a2": "THE ZOOMIES mide 100×50 cm, tamaño gimnasio clásico, y va en negro con el conejo bordado. THE LOOKOUT es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
     "faq.q3": "¿PUEDO DEVOLVER ALGO?",
     "faq.a3": "Sí: 30 días para textil y plush sin usar con etiqueta. Rabbit Fuel no admite devolución una vez abierto el pack (por razones obvias).",
     "faq.q4": "¿QUÉ LLEVA EXACTAMENTE RABBIT FUEL?",
@@ -472,7 +472,7 @@ const I18N = {
     "faq.q1": "WHEN DOES MY ORDER ARRIVE?",
     "faq.a1": "We prepare within 24 h and deliver in 48–72 working hours. You'll get tracking by email as soon as it leaves the burrow.",
     "faq.q2": "HOW BIG ARE THE TOWEL AND THE PLUSH?",
-    "faq.a2": "THE ZOOMIES towel is 100×50 cm, classic gym size, and comes in white, pink and black. THE LOOKOUT is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
+    "faq.a2": "THE ZOOMIES towel is 100×50 cm, classic gym size, and comes in black with the embroidered bunny. THE LOOKOUT is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
     "faq.q3": "CAN I RETURN SOMETHING?",
     "faq.a3": "Yes: 30 days for unused apparel and plush with tags on. Rabbit Fuel can't be returned once the pack is opened (for obvious reasons).",
     "faq.q4": "WHAT EXACTLY IS IN RABBIT FUEL?",
@@ -703,25 +703,16 @@ const PRODUCTS = [
       { es: ["TAMAÑO JUSTO", "Gimnasio, deporte y viaje."],
         en: ["PERFECT SIZE", "Gym, sports and travel."] }
     ],
-    colors: ["#f2f2f7", "#d9558a", "#17171b"],
-    colorNames: ["BLANCO", "ROSA", "NEGRO"],
-    imgByColor: {
-      BLANCO: "/assets/towel-white-cutout.webp",
-      ROSA:   "/assets/towel-pink-cutout.webp",
-      NEGRO:  "/assets/towel-black-cutout.webp"
-    },
-    /* Galería por color: producto, plegada, bordado de cerca y acabado del canto */
-    viewsByColor: {
-      BLANCO: ["/assets/towel-white-cutout.webp", "/assets/towel-white-fold.webp",
-               "/assets/towel-white-stitch.webp", "/assets/towel-white-edge.webp"],
-      ROSA:   ["/assets/towel-pink-cutout.webp", "/assets/towel-pink-fold.webp",
-               "/assets/towel-pink-stitch.webp", "/assets/towel-pink-edge.webp"],
-      NEGRO:  ["/assets/towel-black-cutout.webp", "/assets/towel-black-fold.webp",
-               "/assets/towel-black-stitch.webp", "/assets/towel-black-edge.webp"]
-    },
+    /* Solo en negro, por decisión de catálogo (ago 2026). Sin colorNames el
+       producto deja de tener variantes: las muestras de la tarjeta y la fila de
+       color del modal desaparecen solas, y la limpieza del carrito ya sabe
+       quitar el color a las líneas guardadas — el mismo camino que recorrió la
+       lata. Galería única: producto, plegada, bordado y canto. */
+    views: ["/assets/towel-black-cutout.webp", "/assets/towel-black-fold.webp",
+            "/assets/towel-black-stitch.webp", "/assets/towel-black-edge.webp"],
     sizes: ["ÚNICA"],
     sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/towel-white-cutout.webp",
+    img: "/assets/towel-black-cutout.webp",
     imgScale: 1.12,   // el lienzo nativo lleva más margen que el anterior
     viewScale: 1.06
   }
