@@ -47,6 +47,10 @@
           <p class="fn-sub" data-i18n="fuel.nutriSub">(per 250 ml serving)</p>
           <dl>
             <div><dt data-i18n="fuel.nEnergy">Energy</dt><dd>90 kcal</dd></div>
+            <!-- El ingrediente activo, primero tras la energía: una tabla que se
+                 titula NUTRITION FACTS y omite la cafeína no es una tabla, es un
+                 adorno. -->
+            <div><dt data-i18n="fuel.nCaffeine">Caffeine</dt><dd>80 mg</dd></div>
             <div><dt data-i18n="fuel.nCarbs">Carbohydrates</dt><dd>22 g</dd></div>
             <div><dt data-i18n="fuel.nSugar">Sugars</dt><dd>0 g</dd></div>
             <div><dt data-i18n="fuel.nSodium">Sodium</dt><dd>40 mg</dd></div>
@@ -66,6 +70,9 @@
       <div class="hero-ctas rv" data-delay="520">
         <button class="btn btn-pink" id="btnFuelAdd" type="button" data-i18n="fuel.cta">TRY THE 4-PACK — $16</button>
       </div>
+      <!-- La advertencia vivía enterrada en los términos. Tiene que estar donde
+           se compra: es cafeína, no un sabor. -->
+      <p class="fuel-aviso rv" data-delay="560" data-i18n="fuel.aviso">80 MG CAFFEINE PER CAN · NOT RECOMMENDED FOR CHILDREN OR DURING PREGNANCY</p>
     </div>
   </div>
 </section>

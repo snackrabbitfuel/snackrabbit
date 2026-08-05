@@ -2270,3 +2270,20 @@ body::after {
 }
 
 .pn-salir.armado { color: var(--pink); border-color: var(--pink); }
+
+
+/* Aviso de arranque de la serie: visible solo hasta enero de 2027. */
+.by-empieza {
+  margin: 10px 0 0;
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 10px; letter-spacing: 1.5px; line-height: 1.8;
+  color: var(--yellow);
+}
+
+/* Advertencia de cafeína, junto al botón de compra. */
+.fuel-aviso {
+  margin: 10px 0 0;
+  font-family: var(--f-pixel); font-style: normal;
+  font-size: 9px; letter-spacing: 1.2px; line-height: 1.8;
+  color: var(--gray-2);
+}

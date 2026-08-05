@@ -40,10 +40,14 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
       <span class="by-head-t" data-i18n="bur.yearHead">YEAR ONE · JANUARY TO DECEMBER</span>
       <span class="by-head-n" data-i18n="bur.yearNote">EACH CARD IS PRINTED ONCE. NEVER REPRINTED.</span>
     </div>
+    <!-- Antes de que arranque la serie no hay "carta del mes": encender enero en
+         agosto de 2026 era afirmar que ya se podía conseguir. El aviso pone la
+         fecha real; el JS lo esconde cuando la serie ya está en marcha. -->
+    <p class="by-empieza" id="burEmpieza" data-i18n="bur.empieza">YEAR ONE BEGINS JANUARY 2027 — JOIN THE LIST AND YOU'RE IN FROM CARD 001</p>
 
     <ol class="by-grid">
       {CARTAS.map((i) => (
-        <li class={i === 0 ? "by-card on" : "by-card"}>
+        <li class="by-card">
           <span class="by-n">{String(i + 1).padStart(3, "0")}</span>
           <span class="by-face" aria-hidden="true">
             <svg class="by-bunny"><use href="#bunny" /></svg>
@@ -88,6 +92,7 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
         <li data-i18n="bur.t2f3">EXCLUSIVE STICKER</li>
         <li data-i18n="bur.t2f4">NEW DROPS 48H EARLY</li>
         <li data-i18n="bur.t2f5">10% OFF THE WHOLE STORE</li>
+        <li data-i18n="bur.t2f6">SHIPPING INCLUDED</li>
       </ul>
       <button class="tier-pick" type="button" data-tier-pick="cavador" data-i18n="bur.pick2">CHOOSE DIGGER</button>
       <p class="tier-legal" data-i18n="bur.legal2">$49/month. Renews until you cancel. Nothing is charged today.</p>

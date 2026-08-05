@@ -125,6 +125,10 @@ const I18N = {
     "bur.kicker": "MEMBRESÍA · LA MADRIGUERA",
     "bur.title": "LA CURIOSIDAD<br><em>QUE NO SUBIMOS.</em>",
     "bur.sub": "Cada mes: tus latas y una curiosidad que nunca sale en el canal. Impresa, numerada y solo para socios.",
+    "bur.empieza": "EL AÑO UNO EMPIEZA EN ENERO DE 2027 — APÚNTATE Y ENTRAS DESDE LA CARTA 001",
+    "bur.t2f6": "ENVÍO INCLUIDO",
+    "fuel.nCaffeine": "Cafeína",
+    "fuel.aviso": "80 MG DE CAFEÍNA POR LATA · NO RECOMENDADA PARA MENORES NI DURANTE EL EMBARAZO",
     "bur.yearHead": "AÑO UNO · DE ENERO A DICIEMBRE",
     "bur.yearNote": "CADA CARTA SE IMPRIME UNA VEZ. NO SE REIMPRIME.",
     "bur.prize": "COMPLETA LAS 12 CARTAS DEL AÑO Y EL PLUSH DE LA SERIE ES <b>TUYO. GRATIS.</b> HAY QUE ESTAR SUSCRITO LOS DOCE MESES: CADA CARTA LLEGA EN SU CAJA Y NO SE REIMPRIME.",
@@ -263,6 +267,7 @@ const I18N = {
     "auth.errEmail": "ESE EMAIL NO PARECE UN EMAIL.",
     "auth.errPass": "CONTRASEÑA: MÍNIMO 8 CARACTERES.",
     "auth.errExists": "YA EXISTE UNA CUENTA CON ESE EMAIL.",
+    "auth.errYaDentro": "YA ESTÁS DENTRO. CIERRA ESTO Y LISTO.",
     "auth.errBad": "EMAIL O CONTRASEÑA INCORRECTOS.",
     "auth.welcome": "BIENVENIDO A LA MADRIGUERA, {name} ▸",
     "auth.back": "HOLA DE NUEVO, {name} ▸",
@@ -398,6 +403,10 @@ const I18N = {
     "bur.kicker": "MEMBERSHIP · THE BURROW",
     "bur.title": "THE CURIOSITY<br><em>WE DON'T POST.</em>",
     "bur.sub": "Every month: your cans and one curiosity that never makes it to the channel. Printed, numbered, members only.",
+    "bur.empieza": "YEAR ONE BEGINS JANUARY 2027 — JOIN THE LIST AND YOU'RE IN FROM CARD 001",
+    "bur.t2f6": "SHIPPING INCLUDED",
+    "fuel.nCaffeine": "Caffeine",
+    "fuel.aviso": "80 MG CAFFEINE PER CAN · NOT RECOMMENDED FOR CHILDREN OR DURING PREGNANCY",
     "bur.yearHead": "YEAR ONE · JANUARY TO DECEMBER",
     "bur.yearNote": "EACH CARD IS PRINTED ONCE. NEVER REPRINTED.",
     "bur.prize": "COLLECT ALL 12 CARDS OF THE YEAR AND THE SERIES PLUSH IS <b>YOURS. FREE.</b> IT TAKES ALL TWELVE MONTHS: EACH CARD ARRIVES IN ITS BOX AND IS NEVER REPRINTED.",
@@ -530,6 +539,7 @@ const I18N = {
     "auth.errEmail": "THAT EMAIL DOESN'T LOOK LIKE AN EMAIL.",
     "auth.errPass": "PASSWORD: AT LEAST 8 CHARACTERS.",
     "auth.errExists": "AN ACCOUNT WITH THAT EMAIL ALREADY EXISTS.",
+    "auth.errYaDentro": "YOU ARE ALREADY SIGNED IN. CLOSE THIS AND YOU'RE SET.",
     "auth.errBad": "WRONG EMAIL OR PASSWORD.",
     "auth.welcome": "WELCOME TO THE BURROW, {name} ▸",
     "auth.back": "WELCOME BACK, {name} ▸",
@@ -1366,8 +1376,12 @@ const Checkout = (() => {
     return { ...(suyo ? local : {}), ...(u?.unsafeMetadata?.envio || {}) };
   }
 
-  function abrir() {
+  async function abrir() {
     if (!Cart.count()) { toast(t("cart.emptyToast")); return; }
+    /* Se espera a Clerk: sin esto, un cliente con sesión que abría el checkout
+       nada más cargar pasaba por anónimo — sin su dirección guardada y sin que
+       el pedido quedara ligado a su cuenta. */
+    await Auth.listo();
     const u = Auth.user();
     const previo = previoSeguro(u);
     CAMPOS.forEach(c => { form[c].value = previo[c] || ""; });
@@ -1502,6 +1516,7 @@ const Auth = (() => {
   function traducirError(err) {
     const c = err?.errors?.[0]?.code || "";
     if (c === "form_identifier_exists") return t("auth.errExists");
+    if (c === "session_exists") return t("auth.errYaDentro");
     if (c === "form_password_pwned" || c === "form_password_length_too_short"
         || c === "form_password_not_strong_enough") return t("auth.errWeakPass");
     if (c === "form_password_incorrect" || c === "form_identifier_not_found") return t("auth.errBad");
@@ -1578,6 +1593,10 @@ const Auth = (() => {
 
   function cambio() {
     paintNav();
+    /* Si la sesión se restaura con el modal de entrada abierto —Clerk terminó
+       de arrancar mientras el cliente miraba el formulario—, se cierra: pedirle
+       que entre teniendo sesión es un callejón que acaba en error. */
+    if (usuario() && !modal.hidden && formCode.hidden) UI.close();
     oyentes.forEach(f => { try { f(); } catch (e) { console.error("[auth] oyente:", e); } });
   }
   const alCambiar = fn => { oyentes.push(fn); };
@@ -1633,8 +1652,12 @@ const Auth = (() => {
         // Suele significar que el panel de Clerk exige campos que este
         // formulario no pide (p. ej. teléfono o nombre de usuario).
         console.warn("[auth] registro incompleto:", su.status, "faltan:", su.missingFields, su.unverifiedFields);
+        /* Los campos que faltan son un problema de configuración NUESTRO
+           (el panel de Clerk pide algo que este formulario no envía). Al
+           cliente se le dice que es cosa nuestra; la lista, a la consola. */
+        console.warn("[auth] la instancia pide campos que no enviamos:", su.missingFields);
         return err.textContent = su.missingFields?.length
-          ? t("auth.errMissing", { fields: su.missingFields.join(", ") })
+          ? t("auth.errConfig")
           : t("auth.errGeneric");
       }
       await entrar(su.createdSessionId, "auth.welcome", pendiente?.nombre);
@@ -1736,10 +1759,32 @@ const Auth = (() => {
 
   /* ---------------- BOTÓN DEL NAVBAR ---------------- */
   $("#btnLogin").addEventListener("click", async () => {
-    iniciar();                      // por si el usuario se adelanta al idle
+    /* CON await. Sin él, quien volvía con sesión abierta y pulsaba antes de
+       que bajara el chunk de Clerk (1,4 MB) veía el formulario de entrada,
+       intentaba entrar teniendo sesión, y acababa en un error genérico. */
+    const label = $("#loginLabel");
+    if (!listo && !fallo) label.textContent = t("nav.checking");
+    await iniciar();
+    paintNav();
     const u = usuario();
-    if (!u) { paso("in"); UI.open(modal); return; }
-    Panel.abrir();          // con sesión, el botón lleva a MY BURROW
+    if (u) return Panel.abrir();
+    /* Un registro a medias se reanuda donde se quedó. Antes esto era paso("in")
+       incondicional: quien cerraba el modal en el paso del código —X, Escape,
+       clic fuera— ya no podía volver a él, y el formulario de entrada le decía
+       "email o contraseña incorrectos" con la cuenta a medio crear. */
+    /* El estado del registro vive en el cliente de Clerk y sobrevive a una
+       recarga; `pendiente` no. Por eso el correo se saca de ahí: así el paso
+       del código se reanuda incluso si se recargó la página a medias. */
+    const su = clerk?.client?.signUp;
+    const aMedias = su?.status === "missing_requirements" && su?.emailAddress;
+    if (aMedias) {
+      correoCodigo = su.emailAddress;
+      $("#lmSent").innerHTML = t("auth.codeSent", { email: su.emailAddress });
+      paso("code");
+    } else {
+      paso("in");
+    }
+    UI.open(modal);
   });
 
   /* Guarda un dato en el perfil del cliente conservando el resto: se manda
@@ -1762,13 +1807,14 @@ const Auth = (() => {
   async function salir() {
     /* Si signOut falla —red caída— antes se seguía adelante igual: se limpiaba
        todo y se decía "hasta luego" con la sesión todavía abierta. En un
-       ordenador compartido eso es dejar a alguien dentro creyendo que salió. */
+       ordenador compartido eso es dejar a alguien dentro creyendo que salió.
+       Devuelve si de verdad salió: quien llama decide qué cerrar con eso. */
     try {
       await clerk.signOut();
     } catch (e) {
       console.error("[auth] no se pudo cerrar la sesión:", e);
       toast(t("auth.outErr"));
-      return;
+      return false;
     }
     /* La dirección guardada en el navegador se va con la sesión: si no, el
        siguiente que abra el checkout en este ordenador se encuentra el nombre,
@@ -1776,6 +1822,7 @@ const Auth = (() => {
     Checkout.olvidarLocal();
     cambio();
     toast(t("auth.out"));
+    return true;
   }
 
   /* El token de la sesión en curso. Lo pide el servidor para comprobar quién
@@ -1794,7 +1841,11 @@ const Auth = (() => {
     $("#lmSentReset").innerHTML = txt;
   }
 
-  return { paintNav, user: usuario, token, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir, refreshLang };
+  /* Espera a que Clerk haya arrancado (o fallado). Para quien necesita saber
+     si hay sesión ANTES de decidir, no después. */
+  const espera = () => iniciar();
+
+  return { paintNav, user: usuario, token, listo: espera, guardarEnvio, guardarMeta, alCambiar, abrirRegistro, salir, refreshLang };
 })();
 
 /* ============================================================
@@ -1845,20 +1896,24 @@ const Madriguera = (() => {
     /* La casilla del mes en curso; antes de que arranque la serie, la primera,
        que es la que se está enseñando. */
     const hoy = new Date();
-    /* Antes del año de la serie se enseña la primera; durante, la del mes; y
-       pasado el año, ninguna: las doce quedan enterradas, que es la verdad.
-       Fingir que diciembre sigue en curso en 2029 sería inventarse un mes. */
+    /* Tres épocas. Antes del año de la serie no se enciende NINGUNA: encender
+       enero en agosto de 2026 era afirmar que la carta del mes ya corría, y el
+       aviso de abajo dice la fecha real. Durante, la del mes. Y pasado el año,
+       ninguna y todas enterradas: fingir que diciembre sigue en curso en 2029
+       sería inventarse un mes. */
     const anio = hoy.getFullYear();
-    const activa = anio === ANIO_SERIE ? hoy.getMonth() : anio < ANIO_SERIE ? 0 : -1;
+    const antes = anio < ANIO_SERIE;
+    const activa = anio === ANIO_SERIE ? hoy.getMonth() : -1;
+    $("#burEmpieza").hidden = !antes;
 
     /* Tres estados, no dos. Marcar solo la del mes deja las pasadas idénticas a
        las futuras: en junio se verían cinco "?" que parecen estar por llegar
        cuando en realidad ya no existen. Se perdería justo lo que esta rejilla
        tiene que contar, que es que llegar tarde cuesta. */
-    const acabado = activa < 0;
+    const acabado = !antes && activa < 0;
     $$(".by-card", sec).forEach((c, i) => {
       c.classList.toggle("on",  i === activa);
-      c.classList.toggle("ida", acabado || i < activa);
+      c.classList.toggle("ida", acabado || (!antes && i < activa));
     });
 
     /* La carta destacada sigue al mes en curso. Las caras se publican de una en
@@ -1872,7 +1927,7 @@ const Madriguera = (() => {
       pie.textContent = t("bur.cardCap", { mes: largos[+n - 1], n });
     };
 
-    const num = String((acabado ? 11 : activa) + 1).padStart(3, "0");
+    const num = String((antes ? 0 : acabado ? 11 : activa) + 1).padStart(3, "0");
     const src = `/assets/carta-${num}-${LANG}.webp`;
     const respaldo = () => { carta.src = `/assets/carta-001-${LANG}.webp`; rotular("001"); };
 
@@ -2218,8 +2273,13 @@ const Panel = (() => {
     salirArmado = false;
     btnSalir.classList.remove("armado");
     btnSalir.textContent = t("pn.out");
-    UI.close();
-    await Auth.salir();
+    /* Primero salir, después cerrar. Al revés, si signOut fallaba el panel ya
+       estaba cerrado y el aviso de "sigues dentro" quedaba sin contexto: el
+       cliente veía la página normal creyendo que había salido. */
+    btnSalir.disabled = true;
+    const salio = await Auth.salir();
+    btnSalir.disabled = false;
+    if (salio) UI.close();
   });
 
   /* Enlace directo al panel: #micuenta.
