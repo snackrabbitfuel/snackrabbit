@@ -1,0 +1,556 @@
+---
+/* EL CUARTEL — panel administrativo interno de SnackRabbit.
+ *
+ * Es una plataforma aparte: no carga el app.js de la tienda ni su CSS. Aquí
+ * vive el ESQUEMA completo del centro de operaciones —nueve módulos, su
+ * navegación, sus tablas y sus tarjetas— construido ANTES de que existan los
+ * datos, por decisión de Diego: cuando Stripe entre, cada módulo se enchufa a
+ * lo real sin rediseñar nada.
+ *
+ * La regla de la casa se mantiene: NI UN DATO INVENTADO. Todo indicador sin
+ * fuente real enseña "—" y el sello de qué lo activa. Lo único poblado es lo
+ * que ya existe de verdad: el catálogo (tres productos) y la identidad de
+ * quien entra.
+ *
+ * ACCESO — dos capas, y conviene entender cuál protege qué:
+ *   1. El cliente comprueba sesión de Clerk + publicMetadata.admin === true.
+ *      Eso decide qué se PINTA. publicMetadata solo lo escribe el servidor,
+ *      así que nadie se lo concede desde la consola.
+ *   2. El día que este panel tenga ACCIONES (reembolsar, cambiar stock), cada
+ *      una irá a una ruta de servidor que verificará el token y la marca de
+ *      admin POR PETICIÓN. La capa 1 es cortesía visual; la seguridad real
+ *      siempre será la 2.
+ *
+ * Para dar acceso: panel de Clerk → Users → (usuario) → Public metadata →
+ *   { "admin": true }
+ *
+ * Interfaz en español a propósito: es la herramienta interna del equipo.
+ */
+import { PRODUCTS_ADMIN } from "../data/catalogo-admin";
+const SECCIONES = [
+  { id: "resumen",     icono: "▦", nombre: "Resumen" },
+  { id: "pedidos",     icono: "▤", nombre: "Pedidos" },
+  { id: "fulfillment", icono: "▣", nombre: "Fulfillment" },
+  { id: "envios",      icono: "➤", nombre: "Envíos" },
+  { id: "clientes",    icono: "◉", nombre: "Clientes" },
+  { id: "productos",   icono: "◫", nombre: "Productos" },
+  { id: "analytics",   icono: "◭", nombre: "Analytics" },
+  { id: "soporte",     icono: "◍", nombre: "Soporte" },
+  { id: "ajustes",     icono: "⚙", nombre: "Ajustes" },
+];
+const KPIS = [
+  ["Ingresos hoy", "stripe"], ["Ingresos del mes", "stripe"],
+  ["Pedidos pendientes", "stripe"], ["Pedidos completados", "stripe"],
+  ["Clientes nuevos", "stripe"], ["Valor medio por pedido", "stripe"],
+  ["Conversión", "stripe"], ["Suscriptores activos", "stripe"],
+];
+const COLS_FUL = ["Pendiente de preparar", "Preparando", "Empacado", "Con el transportista", "Retrasado"];
+---
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#08080d">
+<title>EL CUARTEL — SnackRabbit Admin</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ffd400"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap" rel="stylesheet">
+<style>
+  /* ── sistema propio, no el de la tienda: esto es una herramienta ── */
+  :root {
+    --fondo: #08080d; --panel: #0e0e15; --panel-2: #12121b;
+    --linea: #1e1e2c; --linea-viva: #2c2c42;
+    --tinta: #050508; --hueso: #e8e8f4; --gris: #9494ab; --gris-2: #62627a;
+    --rosa: #ff4fd8; --amarillo: #ffd400; --ok: #3ddc97;
+    --ui: "Bricolage Grotesque", sans-serif;
+    --display: "Anton", sans-serif;
+    --radio: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { color-scheme: dark; }
+  body {
+    font-family: var(--ui); background: var(--fondo); color: var(--hueso);
+    font-size: 14px; line-height: 1.5; min-height: 100svh;
+  }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--amarillo); outline-offset: 2px; border-radius: 4px; }
+
+  /* ── la puerta ── */
+  .puerta {
+    min-height: 100svh; display: grid; place-content: center; gap: 14px;
+    text-align: center; padding: 24px;
+  }
+  .puerta h1 { font-family: var(--display); font-size: 34px; letter-spacing: 1px; }
+  .puerta p { color: var(--gris); max-width: 420px; }
+  .puerta a { color: var(--rosa); }
+  .puerta .sello {
+    justify-self: center; font-size: 11px; letter-spacing: 3px; font-weight: 700;
+    color: var(--tinta); background: var(--amarillo); padding: 6px 12px; border-radius: 4px;
+  }
+
+  /* ── el marco de la aplicación ── */
+  .app { display: none; grid-template-columns: 232px 1fr; min-height: 100svh; }
+  .app.abierta { display: grid; }
+
+  /* barra lateral */
+  .lado {
+    background: var(--panel); border-right: 1px solid var(--linea);
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 18px 12px; position: sticky; top: 0; height: 100svh;
+  }
+  .lado-marca {
+    display: flex; align-items: center; gap: 10px;
+    padding: 4px 10px 16px; border-bottom: 1px solid var(--linea); margin-bottom: 10px;
+  }
+  .lado-marca svg { width: 26px; height: 23px; color: var(--amarillo); }
+  .lado-marca b { font-family: var(--display); font-weight: 400; font-size: 15px; letter-spacing: 1.5px; }
+  .lado-marca small { display: block; font-size: 9px; letter-spacing: 2.5px; color: var(--gris-2); }
+  .lado nav { display: grid; gap: 2px; }
+  .lado nav button {
+    display: flex; align-items: center; gap: 11px;
+    padding: 9px 12px; border-radius: var(--radio);
+    font-size: 13px; font-weight: 600; letter-spacing: .3px; color: var(--gris);
+    transition: background .15s, color .15s;
+    text-align: left; width: 100%;
+  }
+  .lado nav button:hover { background: var(--panel-2); color: var(--hueso); }
+  .lado nav button[aria-current="true"] { background: var(--panel-2); color: var(--hueso); box-shadow: inset 2px 0 0 var(--rosa); }
+  .lado nav button .ic { width: 17px; text-align: center; color: var(--gris-2); font-style: normal; }
+  .lado nav button[aria-current="true"] .ic { color: var(--rosa); }
+  .lado-pie { margin-top: auto; display: grid; gap: 8px; padding: 10px 6px 0; border-top: 1px solid var(--linea); }
+  .lado-quien { font-size: 11.5px; color: var(--gris); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lado-pie a, .lado-pie button.salir {
+    font-size: 11px; letter-spacing: 1px; color: var(--gris-2); text-decoration: none; text-align: left;
+  }
+  .lado-pie a:hover, .lado-pie button.salir:hover { color: var(--rosa); }
+
+  /* zona de contenido */
+  .zona { padding: 26px clamp(20px, 3vw, 42px) 60px; min-width: 0; }
+  .zona-cab {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    margin-bottom: 22px; flex-wrap: wrap;
+  }
+  .zona-cab h1 { font-family: var(--display); font-weight: 400; font-size: 26px; letter-spacing: .5px; }
+  .zona-cab time { font-size: 12px; color: var(--gris-2); letter-spacing: 1px; }
+
+  /* el sello de "esto se enchufa después" — UNO, consistente, en todo el panel */
+  .sello-stripe {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9.5px; letter-spacing: 1.8px; font-weight: 700;
+    color: var(--gris-2); border: 1px dashed var(--linea-viva);
+    padding: 4px 9px; border-radius: 99px; white-space: nowrap;
+  }
+  .sello-stripe::before { content: "◌"; color: var(--rosa); }
+
+  /* tarjetas KPI */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-bottom: 26px; }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
+    padding: 16px 18px; display: grid; gap: 8px;
+    transition: border-color .2s, transform .2s;
+  }
+  .kpi:hover { border-color: var(--linea-viva); transform: translateY(-1px); }
+  .kpi h3 { font-size: 11px; letter-spacing: 1.6px; font-weight: 600; color: var(--gris); text-transform: uppercase; }
+  .kpi .valor { font-family: var(--display); font-weight: 400; font-size: 30px; color: var(--gris-2); }
+
+  /* secciones */
+  .mod { display: none; }
+  .mod.activa { display: block; animation: aparece .25s ease; }
+  @keyframes aparece { from { opacity: 0; transform: translateY(4px); } }
+  @media (prefers-reduced-motion: reduce) { .mod.activa { animation: none; } }
+
+  .tarjeta {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
+    padding: 20px; margin-bottom: 16px;
+  }
+  .tarjeta > h2 { font-size: 12px; letter-spacing: 2px; font-weight: 700; color: var(--gris); text-transform: uppercase; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+  /* tabla-esquema: la estructura real que llenará Stripe */
+  .tabla { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .tabla th {
+    text-align: left; padding: 8px 10px; color: var(--gris-2);
+    font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase;
+    border-bottom: 1px solid var(--linea);
+  }
+  .tabla td { padding: 10px; border-bottom: 1px solid var(--linea); color: var(--gris); }
+
+  /* estado vacío: diseñado, con el porqué y el cuándo */
+  .vacio {
+    display: grid; justify-items: center; gap: 10px;
+    padding: 44px 20px; text-align: center;
+  }
+  .vacio svg { width: 40px; height: 35px; color: var(--linea-viva); }
+  .vacio p { color: var(--gris-2); font-size: 13px; max-width: 380px; }
+
+  /* filtros: la estructura, deshabilitada hasta que haya qué filtrar */
+  .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filtros > * {
+    font-family: var(--ui); font-size: 12px; color: var(--gris-2);
+    background: var(--panel-2); border: 1px solid var(--linea); border-radius: 7px;
+    padding: 7px 12px;
+  }
+  .filtros [disabled] { opacity: .55; cursor: not-allowed; }
+
+  /* fulfillment: el tablero */
+  .tablero { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .col-ful {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
+    padding: 12px; min-height: 180px; display: grid; align-content: start; gap: 8px;
+  }
+  .col-ful h3 { font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--gris); display: flex; justify-content: space-between; }
+  .col-ful h3 b { color: var(--gris-2); font-weight: 600; }
+  .col-hueco {
+    border: 1px dashed var(--linea-viva); border-radius: 7px;
+    min-height: 54px; display: grid; place-content: center;
+    font-size: 10px; letter-spacing: 1.4px; color: var(--gris-2);
+  }
+
+  /* productos: lo único con datos, porque son reales */
+  .prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .prod {
+    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
+    padding: 16px 18px; display: grid; gap: 6px;
+    transition: border-color .2s;
+  }
+  .prod:hover { border-color: var(--linea-viva); }
+  .prod h3 { font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .5px; }
+  .prod .fila { display: flex; justify-content: space-between; font-size: 12px; color: var(--gris); }
+  .prod .fila b { color: var(--hueso); font-weight: 600; }
+  .prod .fila .pend { color: var(--gris-2); }
+
+  /* la línea de tiempo del pedido: el esquema del historial */
+  .linea-t { display: grid; gap: 0; margin-top: 6px; }
+  .lt-paso {
+    display: grid; grid-template-columns: 14px 1fr; gap: 12px; align-items: start;
+    padding: 0 0 14px 4px; position: relative;
+  }
+  .lt-paso::before {
+    content: ""; position: absolute; left: 9.5px; top: 14px; bottom: 0;
+    width: 1px; background: var(--linea-viva);
+  }
+  .lt-paso:last-child::before { display: none; }
+  .lt-punto {
+    width: 11px; height: 11px; border-radius: 99px; margin-top: 3px;
+    border: 2px solid var(--linea-viva); background: var(--panel);
+  }
+  .lt-paso p { font-size: 12px; color: var(--gris); }
+  .lt-paso small { color: var(--gris-2); font-size: 10.5px; }
+
+  .aviso-esquema {
+    border: 1px solid var(--linea); border-left: 3px solid var(--amarillo);
+    background: var(--panel); border-radius: 0 var(--radio) var(--radio) 0;
+    padding: 12px 16px; font-size: 12.5px; color: var(--gris); margin-bottom: 20px;
+  }
+  .aviso-esquema b { color: var(--hueso); }
+
+  @media (max-width: 900px) {
+    .app.abierta { grid-template-columns: 1fr; }
+    .lado { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .lado nav { display: flex; flex-wrap: wrap; }
+    .lado-pie { margin: 0 0 0 auto; border: 0; padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="bunny" viewBox="0.9 -0.1 8.2 7.2">
+    <g fill="currentColor"><rect x="2" y="0" width="1" height="3"/><rect x="7" y="0" width="1" height="3"/>
+    <rect x="2" y="3" width="6" height="1"/><rect x="1" y="4" width="8" height="2"/><rect x="2" y="6" width="6" height="1"/></g>
+  </symbol>
+</defs></svg>
+
+<!-- ══ LA PUERTA ══ -->
+<div class="puerta" id="puerta">
+  <span class="sello">EL CUARTEL</span>
+  <h1 id="puertaTitulo">COMPROBANDO ACCESO…</h1>
+  <p id="puertaTexto">Un momento.</p>
+  <p id="puertaAccion"></p>
+</div>
+
+<!-- ══ LA APLICACIÓN ══ -->
+<div class="app" id="app">
+  <aside class="lado">
+    <div class="lado-marca">
+      <svg aria-hidden="true"><use href="#bunny"/></svg>
+      <div><b>EL CUARTEL</b><small>SNACKRABBIT ADMIN</small></div>
+    </div>
+    <nav aria-label="Módulos">
+      {SECCIONES.map((s, i) => (
+        <button type="button" data-mod={s.id} aria-current={i === 0 ? "true" : "false"}>
+          <i class="ic" aria-hidden="true">{s.icono}</i>{s.nombre}
+        </button>
+      ))}
+    </nav>
+    <div class="lado-pie">
+      <span class="lado-quien" id="quien"></span>
+      <a href="/">← Volver a la tienda</a>
+      <button type="button" class="salir" id="salir">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="zona">
+    <div class="zona-cab">
+      <h1 id="tituloMod">Resumen</h1>
+      <time id="hoy"></time>
+    </div>
+
+    <p class="aviso-esquema">
+      <b>Este panel es el esquema del centro de operaciones.</b> Ningún número está
+      inventado: cada indicador enseña de dónde saldrá su dato y qué lo activa.
+      Cuando Stripe entre, se enchufa aquí — sin rediseñar nada.
+    </p>
+
+    <!-- ── RESUMEN ── -->
+    <section class="mod activa" data-mod="resumen">
+      <div class="kpis">
+        {KPIS.map(([nombre]) => (
+          <div class="kpi">
+            <h3>{nombre}</h3>
+            <p class="valor">—</p>
+            <span class="sello-stripe">SE ACTIVA CON STRIPE</span>
+          </div>
+        ))}
+      </div>
+      <div class="tarjeta">
+        <h2>Actividad reciente <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
+        <div class="vacio">
+          <svg aria-hidden="true"><use href="#bunny"/></svg>
+          <p>Aquí correrá el pulso del negocio: pedidos entrando, cajas saliendo,
+             altas al club. El primer evento llega con el primer cobro.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PEDIDOS ── -->
+    <section class="mod" data-mod="pedidos">
+      <div class="filtros">
+        <select disabled aria-label="Filtrar por estado"><option>Estado</option></select>
+        <select disabled aria-label="Filtrar por producto"><option>Producto</option></select>
+        <select disabled aria-label="Filtrar por país"><option>País</option></select>
+        <input disabled type="search" placeholder="Buscar pedido o cliente…" aria-label="Buscar">
+      </div>
+      <div class="tarjeta">
+        <h2>Pedidos <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
+        <table class="tabla">
+          <thead><tr>
+            <th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th>
+            <th>Pago</th><th>Estado</th><th>Fecha</th><th>Acciones</th>
+          </tr></thead>
+        </table>
+        <div class="vacio">
+          <svg aria-hidden="true"><use href="#bunny"/></svg>
+          <p>Cada fila tendrá ver · editar · reembolsar · marcar enviado · añadir
+             seguimiento. La tabla existe; los pedidos llegan con la pasarela.</p>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>Historial de un pedido — el esquema</h2>
+        <div class="linea-t">
+          {["Pedido creado", "Pago confirmado", "En preparación", "Empacado",
+            "Etiqueta generada", "Recogido por el transportista", "En tránsito",
+            "En reparto", "Entregado", "Completado"].map(paso => (
+            <div class="lt-paso">
+              <span class="lt-punto" aria-hidden="true"></span>
+              <div><p>{paso}</p><small>fecha · hora · responsable</small></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FULFILLMENT ── -->
+    <section class="mod" data-mod="fulfillment">
+      <div class="tarjeta">
+        <h2>Tablero de preparación <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
+        <div class="tablero">
+          {COLS_FUL.map(col => (
+            <div class="col-ful">
+              <h3>{col} <b>0</b></h3>
+              <div class="col-hueco">SIN CAJAS</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ENVÍOS ── -->
+    <section class="mod" data-mod="envios">
+      <div class="tarjeta">
+        <h2>Envíos <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
+        <table class="tabla">
+          <thead><tr>
+            <th>Pedido</th><th>Transportista</th><th>Seguimiento</th>
+            <th>Estado</th><th>Entrega estimada</th><th>Coste</th>
+          </tr></thead>
+        </table>
+        <div class="vacio">
+          <svg aria-hidden="true"><use href="#bunny"/></svg>
+          <p>Con alerta automática de retraso: si un envío deja de moverse más de
+             7 días laborables, sube aquí solo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CLIENTES ── -->
+    <section class="mod" data-mod="clientes">
+      <div class="tarjeta">
+        <h2>Fundadores — la cola real</h2>
+        <div class="vacio">
+          <svg aria-hidden="true"><use href="#bunny"/></svg>
+          <p>Este módulo es el primero que se conecta: la lista de fundadores ya
+             existe en Clerk, ordenada por la hora sellada de alta, con su plan y
+             su idioma. Es la pantalla del día del lanzamiento — con ella se
+             asignan las 100 cartas 000.</p>
+        </div>
+      </div>
+      <div class="tarjeta">
+        <h2>Ficha de cliente — el esquema <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
+        <table class="tabla">
+          <thead><tr>
+            <th>Cliente</th><th>Pedidos</th><th>Gasto total</th><th>Valor de vida</th>
+            <th>Frecuencia</th><th>Última compra</th><th>VIP</th>
+          </tr></thead>
+        </table>
+        <div class="vacio"><p>Historial, dirección, favoritos y valor por cliente — cuando haya compras.</p></div>
+      </div>
+    </section>
+
+    <!-- ── PRODUCTOS: datos reales, porque el catálogo existe ── -->
+    <section class="mod" data-mod="productos">
+      <div class="prods">
+        {PRODUCTS_ADMIN.map(p => (
+          <article class="prod">
+            <h3>{p.nombre}</h3>
+            <div class="fila"><span>Precio</span><b>{p.precio}</b></div>
+            <div class="fila"><span>Variantes</span><b>{p.variantes}</b></div>
+            <div class="fila"><span>SKU</span><span class="pend">— por asignar</span></div>
+            <div class="fila"><span>Stock</span><span class="pend">— con inventario</span></div>
+            <span class="sello-stripe">STOCK: SE ACTIVA CON INVENTARIO</span>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ── ANALYTICS ── -->
+    <section class="mod" data-mod="analytics">
+      <div class="kpis">
+        {["Ingresos", "Ventas", "Conversión", "Clientes recurrentes", "Retención",
+          "Ventas por país", "Carritos abandonados", "Más vendidos"].map(n => (
+          <div class="kpi"><h3>{n}</h3><p class="valor">—</p><span class="sello-stripe">SE ACTIVA CON STRIPE</span></div>
+        ))}
+      </div>
+      <div class="tarjeta">
+        <h2>Tendencias <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
+        <div class="vacio">
+          <svg aria-hidden="true"><use href="#bunny"/></svg>
+          <p>Gráficos de ingresos, comparativas por periodo y evolución del club.
+             Los ejes esperan a la primera semana de datos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SOPORTE ── -->
+    <section class="mod" data-mod="soporte">
+      <div class="tarjeta">
+        <h2>Bandeja única</h2>
+        <div class="vacio">
+          <svg aria-hidden="true"><use href="#bunny"/></svg>
+          <p>Tickets, correos a hello@, cambios y reembolsos, en un solo sitio.
+             Hoy el correo entrante vive en Zoho; este módulo lo centralizará.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AJUSTES ── -->
+    <section class="mod" data-mod="ajustes">
+      <div class="tarjeta">
+        <h2>Configuración</h2>
+        <table class="tabla">
+          <thead><tr><th>Área</th><th>Qué se administra</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>Equipo y roles</td><td>Usuarios internos y permisos por módulo</td><td><span class="sello-stripe">PRÓXIMAMENTE</span></td></tr>
+            <tr><td>Pagos</td><td>Stripe, impuestos, monedas</td><td><span class="sello-stripe">SE ACTIVA CON STRIPE</span></td></tr>
+            <tr><td>Envíos</td><td>Tarifas, zonas, transportistas</td><td><span class="sello-stripe">PENDIENTE DE TARIFA</span></td></tr>
+            <tr><td>Correo</td><td>Plantillas y remitentes — ya operativos vía Resend</td><td>Activo</td></tr>
+            <tr><td>Integraciones y API</td><td>Claves y webhooks</td><td><span class="sello-stripe">PRÓXIMAMENTE</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  /* La puerta y el enrutado del panel. Todo lo demás es marcado estático. */
+  const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+
+  const puerta = $("#puerta"), app = $("#app");
+  const titulo = $("#puertaTitulo"), texto = $("#puertaTexto"), accion = $("#puertaAccion");
+
+  function negar(t, x, enlace) {
+    titulo.textContent = t;
+    texto.textContent = x;
+    accion.innerHTML = enlace || "";
+  }
+
+  (async () => {
+    if (!PK) return negar("SIN CONFIGURAR", "Falta la clave publicable de Clerk.");
+    let clerk;
+    try {
+      const { Clerk } = await import("@clerk/clerk-js");
+      clerk = new Clerk(PK);
+      await Promise.race([
+        clerk.load(),
+        new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), 15000)),
+      ]);
+    } catch {
+      return negar("SIN CONEXIÓN", "No se pudo comprobar la sesión. Recarga para intentarlo otra vez.");
+    }
+
+    const u = clerk.user;
+    if (!u) {
+      return negar("HACE FALTA SESIÓN",
+        "Este panel es solo del equipo. Entra con tu cuenta en la tienda y vuelve.",
+        '<a href="/#micuenta">Ir a entrar →</a>');
+    }
+    /* publicMetadata solo lo escribe el servidor: nadie se concede esto desde
+       la consola. Y aun así, las ACCIONES del futuro se verificarán por
+       petición en el servidor — esta puerta solo decide qué se pinta. */
+    if (u.publicMetadata?.admin !== true) {
+      return negar("SOLO EQUIPO",
+        "Tu cuenta no tiene acceso al panel interno. Si deberías tenerlo, pide el alta.",
+        '<a href="/">Volver a la tienda →</a>');
+    }
+
+    $("#quien").textContent = u.primaryEmailAddress?.emailAddress || "";
+    $("#hoy").textContent = new Date().toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    puerta.style.display = "none";
+    app.classList.add("abierta");
+
+    $("#salir").addEventListener("click", async () => {
+      try { await clerk.signOut(); location.href = "/"; } catch { /* seguirá dentro */ }
+    });
+
+    /* enrutado por hash: #pedidos abre pedidos, y recargar conserva el sitio */
+    const NOMBRES = Object.fromEntries($$(".lado nav button").map(b => [b.dataset.mod, b.textContent.trim()]));
+    function abrir(id) {
+      if (!NOMBRES[id]) id = "resumen";
+      $$(".mod").forEach(m => m.classList.toggle("activa", m.dataset.mod === id));
+      $$(".lado nav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.mod === id)));
+      $("#tituloMod").textContent = NOMBRES[id];
+      if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+    }
+    $$(".lado nav button").forEach(b => b.addEventListener("click", () => abrir(b.dataset.mod)));
+    addEventListener("hashchange", () => abrir(location.hash.slice(1)));
+    abrir(location.hash.slice(1) || "resumen");
+  })();
+</script>
+</body>
+</html>
