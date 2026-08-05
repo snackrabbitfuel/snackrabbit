@@ -4,30 +4,32 @@
  * ni rutas, ni el panel: todo lo demás pregunta aquí.
  *
  * ─────────────────────────────────────────────────────────────────────────
- * POR QUÉ HAY DOS LLAVES Y NO UNA
+ * QUIÉN LEE ESTA LISTA
  *
- * Este repositorio es PÚBLICO y este archivo viaja al navegador, así que la
- * lista de correos de abajo la puede leer cualquiera. Eso está bien: es una
- * lista de porteros, no una contraseña. Pero significa que NO puede ser lo
- * único que protege el panel — quien la lea sabría exactamente a qué cuenta
- * atacar, y peor, un `publicMetadata` falsificado desde la consola bastaría si
- * la comprobación viviera solo en el cliente.
+ * SOLO EL SERVIDOR. El único archivo que la importa es `/api/admin`, que se
+ * ejecuta en Vercel, así que estos correos NO viajan al navegador: no están en
+ * ningún bundle, y el repositorio es público pero la web servida no los
+ * contiene. (Comprobado tras cada despliegue buscando los correos en todo lo
+ * estático: cero coincidencias. Si algún día un componente de cliente importa
+ * esto, esa propiedad se rompe en silencio — no lo hagas.)
  *
- * Por eso el acceso tiene dos llaves y hacen falta las dos:
+ * Aun así el acceso tiene DOS llaves, y conviene entender por qué la lista
+ * sola no bastaría aunque fuera secreta:
  *
- *   1. ESTA LISTA decide qué se PINTA. Si tu correo no está, el botón de
- *      administración no se renderiza — ni oculto, ni deshabilitado: no
- *      existe en el DOM. Es cortesía visual, no seguridad.
+ *   1. EL NAVEGADOR decide qué se PINTA. El botón del panel del cliente nace
+ *      oculto y sin destino, y solo se enciende cuando el servidor lo
+ *      confirma. Pero cualquiera puede reescribir el JavaScript de su propia
+ *      página: encender ese botón a mano es trivial. Por eso es cortesía
+ *      visual, nunca seguridad.
  *
- *   2. LA RUTA DE SERVIDOR (`/api/admin`) decide si de verdad eres admin.
- *      Verifica el token de Clerk criptográficamente, saca el correo de la
- *      CUENTA —nunca de lo que mande el navegador— y lo contrasta contra esta
- *      misma lista en el servidor, donde nadie puede tocarla. Esa es la
- *      seguridad real.
+ *   2. EL SERVIDOR decide quién ENTRA. `/api/admin` verifica el token de
+ *      Clerk criptográficamente, saca el correo de la CUENTA —nunca de lo que
+ *      mande el navegador— y lo contrasta aquí. Esa es la seguridad real, y
+ *      es la que no se puede tocar desde fuera.
  *
- * La regla que se deduce: cambiar esta lista en tu navegador te pinta un
- * botón que no lleva a ninguna parte. El panel pregunta al servidor antes de
- * enseñar un solo dato.
+ * La regla que se deduce: encender el botón a mano te lleva a una puerta que
+ * vuelve a preguntar, y esa no se deja engañar. El panel no enseña un solo
+ * dato hasta que el servidor responde que sí.
  *
  * ─────────────────────────────────────────────────────────────────────────
  * EL DÍA QUE ESTO CREZCA
