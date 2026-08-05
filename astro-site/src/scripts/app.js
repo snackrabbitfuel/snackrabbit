@@ -15,6 +15,23 @@ const CONTACTO = EMPRESA.email;
 const $  = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 const money = n => "$" + n.toFixed(2);
+/* Señala en el propio campo qué falta: aria-invalid lo anuncia el lector de
+   pantalla y el CSS lo pinta. Devuelve el primero fallido, para enfocarlo —
+   sin eso el error es una frase genérica y a buscar el hueco a ojo. */
+function marcarCampos(form, nombres, malos) {
+  nombres.forEach(n => {
+    const campo = form[n];
+    if (!campo) return;
+    const mal = malos.includes(n);
+    campo.setAttribute("aria-invalid", String(mal));
+    if (mal && !campo.dataset.limpia) {
+      campo.dataset.limpia = "1";
+      campo.addEventListener("input", () => campo.setAttribute("aria-invalid", "false"), { once: true });
+    }
+  });
+  const primero = malos.length && form[malos[0]];
+  if (primero) primero.focus();
+}
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const FREE_SHIP = 60;
 
@@ -28,6 +45,8 @@ const I18N = {
     "aria.openCart": "Abrir carrito",
     "aria.openMenu": "Abrir menú",
     "aria.close": "Cerrar",
+    "aria.qtyLess": "Una unidad menos",
+    "aria.qtyMore": "Una unidad más",
     "aria.cart": "Carrito",
     "aria.email": "Correo",
     "aria.help": "Ayuda",
@@ -306,6 +325,8 @@ const I18N = {
     "aria.openCart": "Open cart",
     "aria.openMenu": "Open menu",
     "aria.close": "Close",
+    "aria.qtyLess": "One unit less",
+    "aria.qtyMore": "One unit more",
     "aria.cart": "Cart",
     "aria.email": "Email",
     "aria.help": "Help",
@@ -776,6 +797,18 @@ if (statProductsNum) statProductsNum.dataset.count = PRODUCTS.length;
   $$("#mobileMenu nav a").forEach(a => a.addEventListener("click", () => toggle(false)));
   addEventListener("keydown", e => {
     if (e.key === "Escape" && menu.classList.contains("open")) toggle(false);
+    /* Con el menú abierto, Tab da la vuelta dentro de él. Sin esto se
+       tabulaba a la página de detrás: el foco seguía moviéndose bajo una
+       cortina a pantalla completa. */
+    if (e.key === "Tab" && menu.classList.contains("open")) {
+      const focos = [burger, ...menu.querySelectorAll("a, button")];
+      const primero = focos[0], ultimo = focos[focos.length - 1];
+      if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
+      else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+      else if (!menu.contains(document.activeElement) && document.activeElement !== burger) {
+        e.preventDefault(); primero.focus();
+      }
+    }
   });
 
   /* Faltaba "madriguera", que sí está en el menú: al llegar al club el navbar
@@ -1047,15 +1080,16 @@ function renderGrid(instant) {
     card.className = "pcard rv";
     card.style.setProperty("--rv-delay", i * 90 + "ms");
     card.style.setProperty("--tilt", (i % 2 ? ".6deg" : "-.6deg"));
-    card.tabIndex = 0;
-    card.setAttribute("role", "button");
-    card.setAttribute("aria-label", t("card.view", { name: p.name }));
+    /* La tarjeta ya no es role="button": envolvía un encabezado, precios y
+       OTRO botón, y un lector la anunciaba como un único control confuso. El
+       control real es el título; el clic en la tarjeta queda de cortesía
+       para el ratón. */
     const esc = ` style="--img-scale:${p.imgScale || 1}"`;
     card.innerHTML = `
       <p class="pcard-num">${p.num}</p>
       <div class="pcard-media"><img src="${p.img}" alt="${p.name}" loading="lazy"${esc}></div>
       <div class="pcard-body">
-        <h3 class="pcard-name">${p.name}</h3>
+        <h3 class="pcard-name"><button type="button" aria-label="${t("card.view", { name: p.name })}">${p.name}</button></h3>
         <p class="pcard-desc">${p.desc[LANG]}</p>
         <p class="pcard-specs">${p.specs[LANG]}</p>
         <div class="pcard-tags">
@@ -1093,6 +1127,10 @@ function renderGrid(instant) {
       const size = p.sizes[Math.floor(p.sizes.length / 2 - .5)] || p.sizes[0];
       Cart.add(p.id, { size, color: p.colorNames && elegido, qty: 1 });
       confetti.burst(e.clientX, e.clientY, 26);
+    });
+    card.querySelector(".pcard-name button").addEventListener("click", e => {
+      e.stopPropagation();
+      ProductModal.open(p.id);
     });
     card.addEventListener("click", () => ProductModal.open(p.id));
     card.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); ProductModal.open(p.id); } });
@@ -1248,6 +1286,8 @@ const Cart = (() => {
          sobrevivía apuntando a una variante que ya no se fabrica, y ese pedido
          no se puede cumplir. */
       if (p.colorNames && i.color && !p.colorNames.includes(i.color)) return;
+      /* Y la talla, por lo mismo: un pack retirado no puede pedirse. */
+      if (p.sizes && i.size && !p.sizes.includes(i.size)) return;
       const precio = p.sizePrices?.[i.size] ?? p.price;
       if (!Number.isFinite(precio)) return;
       i.unitPrice = precio;
@@ -1277,8 +1317,11 @@ const Cart = (() => {
     const up = p.sizePrices?.[size] ?? p.price;
     const key = clave(id, size, color);
     const found = items.find(i => i.key === key);
+    /* En el tope se dice el tope. Antes el recorte a 9 era silencioso y el
+       aviso seguía siendo "añadido": decía que añadía y no añadía. */
+    if (found && found.qty >= 9) { toast(t("cart.max", { n: 9 })); return; }
     if (found) found.qty = Math.min(9, found.qty + qty);
-    else items.push({ key, id, size, color, qty, unitPrice: up });
+    else items.push({ key, id, size, color, qty: Math.min(9, qty), unitPrice: up });
     save(); render();
     toast(t("cart.added", { name: p.name }));
     const cc = $("#cartCount");
@@ -1337,7 +1380,10 @@ const Cart = (() => {
         </div>`;
       const [minus, plus] = row.querySelectorAll(".citem-qty button");
       minus.addEventListener("click", () => setQty(it.key, it.qty - 1));
-      plus.addEventListener("click", () => setQty(it.key, Math.min(9, it.qty + 1)));
+      plus.addEventListener("click", () => {
+        if (it.qty >= 9) return toast(t("cart.max", { n: 9 }));
+        setQty(it.key, it.qty + 1);
+      });
       row.querySelector(".citem-del").addEventListener("click", () => { setQty(it.key, 0); toast(t("cart.removed")); });
       box.appendChild(row);
     });
@@ -1372,7 +1418,10 @@ const Checkout = (() => {
    * entrado ni entonces ni ahora. Y al cerrar sesión se borra. */
   function previoSeguro(u) {
     const local = guardadoLocal();
-    const suyo = u ? local._de === u.id : local._de == null;
+    /* Solo se reutiliza si es de la MISMA cuenta. Antes un anónimo heredaba lo
+       del anónimo anterior: en un ordenador compartido, su nombre, su teléfono
+       y su casa, rellenados para el siguiente desconocido. */
+    const suyo = !!u && local._de === u.id;
     return { ...(suyo ? local : {}), ...(u?.unsafeMetadata?.envio || {}) };
   }
 
@@ -1403,12 +1452,20 @@ const Checkout = (() => {
     e.preventDefault();
     const err = form.querySelector(".lm-err");
     const datos = Object.fromEntries(CAMPOS.map(c => [c, form[c].value.trim()]));
-    if (CAMPOS.filter(c => c !== "notes").some(c => !datos[c])) return err.textContent = t("ck.errRequired");
+    const vacios = CAMPOS.filter(c => c !== "notes" && !datos[c]);
+    marcarCampos(form, CAMPOS, vacios);
+    if (vacios.length) return err.textContent = t("ck.errRequired");
     /* Que el campo no esté vacío no lo convierte en un correo. Sin esta
        comprobación se aceptaba cualquier cosa, y a esa dirección es a donde iba
        a ir la confirmación del pedido y el seguimiento del envío. */
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email)) return err.textContent = t("ck.errEmail");
-    if (datos.phone.replace(/[^0-9]/g, "").length < 7) return err.textContent = t("ck.errPhone");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.email)) {
+      marcarCampos(form, CAMPOS, ["email"]);
+      return err.textContent = t("ck.errEmail");
+    }
+    if (datos.phone.replace(/[^0-9]/g, "").length < 7) {
+      marcarCampos(form, CAMPOS, ["phone"]);
+      return err.textContent = t("ck.errPhone");
+    }
 
     const b = form.querySelector(".lm-submit");
     b.setAttribute("aria-busy", "true"); b.disabled = true;
@@ -2020,6 +2077,14 @@ const Madriguera = (() => {
     const guardado = ficha()?.plan;
     if (!tocado && guardado) plan = guardado;
     if (queria && Auth.user()) { queria = false; guardar(false); }
+
+    /* Si el correo de bienvenida no llegó a salir —Resend caído en el momento
+       del alta— aquí se reintenta: la marca de "avisado" es pública y solo la
+       pone el servidor cuando el envío sale bien, así que su ausencia ES la
+       cola de reintentos. El servidor deduplica y exige estar en la lista, de
+       modo que esto no puede mandar dos veces ni a quien no toca. */
+    const u = Auth.user();
+    if (u && dentro() && !u.publicMetadata?.fundadorAvisado) avisarPorCorreo();
     pintar();
   });
 
@@ -2068,10 +2133,12 @@ const Panel = (() => {
        a quien sepa abrir la consola.
        Se sigue mirando unsafeMetadata como respaldo para poder probar el panel
        antes de que exista la pasarela. */
+    /* SOLO publicMetadata. El respaldo a unsafeMetadata era para probar el
+       panel antes de que existiera la pasarela, pero dejaba una puerta: quien
+       se escribía cartas desde la consola las veía como suyas. Las pruebas se
+       hacen ahora en Public metadata del panel de Clerk, que ya se usó así. */
     const pub = u.publicMetadata || {};
-    const mias = Array.isArray(pub.cartas) ? pub.cartas
-               : Array.isArray(m.cartas)   ? m.cartas
-               : [];
+    const mias = Array.isArray(pub.cartas) ? pub.cartas : [];
     $$(".pn-carta", el).forEach(c => {
       const n = +c.dataset.carta, tengo = mias.includes(n);
       c.classList.toggle("tiene", tengo);
@@ -2101,7 +2168,7 @@ const Panel = (() => {
        unsafeMetadata cualquiera se pone 300 desde la consola y aparece como
        THE RABBIT. El día que esos rangos den un pin o un plush, sería regalar
        objetos físicos a quien sepa abrir el navegador. */
-    const latasCruda = Number(pub.rango?.latas ?? m.rango?.latas);
+    const latasCruda = Number(pub.rango?.latas);
     const latas = Number.isFinite(latasCruda) && latasCruda > 0 ? Math.floor(latasCruda) : 0;
     const logrados = UMBRALES.filter(x => latas >= x).length;
     $$(".pn-peldano", el).forEach((li, i) => {
@@ -2128,9 +2195,7 @@ const Panel = (() => {
        Y el importe se convierte a número: money() hace n.toFixed(2), así que un
        total guardado como texto —que es justo como lo modela la plantilla del
        correo— lanzaba y dejaba el panel sin abrirse. */
-    const pedidos = Array.isArray(pub.pedidos) ? pub.pedidos
-                  : Array.isArray(m.pedidos)   ? m.pedidos
-                  : [];
+    const pedidos = Array.isArray(pub.pedidos) ? pub.pedidos : [];
     $("#pnPedidosN").textContent = pedidos.length || "";
     const caja = $("#pnPedidos");
     caja.textContent = "";
@@ -2221,8 +2286,13 @@ const Panel = (() => {
     ev.preventDefault();
     const err = formEnvio.querySelector(".lm-err");
     const datos = Object.fromEntries(CAMPOS_ENVIO.map(c => [c, formEnvio[c].value.trim()]));
-    if (CAMPOS_ENVIO.some(c => !datos[c])) return err.textContent = t("ck.errRequired");
-    if (datos.phone.replace(/[^0-9]/g, "").length < 7) return err.textContent = t("ck.errPhone");
+    const vacios = CAMPOS_ENVIO.filter(c => !datos[c]);
+    marcarCampos(formEnvio, CAMPOS_ENVIO, vacios);
+    if (vacios.length) return err.textContent = t("ck.errRequired");
+    if (datos.phone.replace(/[^0-9]/g, "").length < 7) {
+      marcarCampos(formEnvio, CAMPOS_ENVIO, ["phone"]);
+      return err.textContent = t("ck.errPhone");
+    }
 
     const b = formEnvio.querySelector(".lm-submit");
     b.disabled = true; err.textContent = "";

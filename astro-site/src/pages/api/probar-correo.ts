@@ -90,10 +90,11 @@ export const GET: APIRoute = async ({ url }) => {
   if (!clave) return new Response("Falta RESEND_API_KEY en Vercel.", { status: 503 });
 
   const html = await render(plantilla.el);
+  const text = await render(plantilla.el, { plainText: true });
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { authorization: `Bearer ${clave}`, "content-type": "application/json" },
-    body: JSON.stringify({ from: REMITENTE, to: [a], subject: `[PRUEBA] ${plantilla.asunto}`, html }),
+    body: JSON.stringify({ from: REMITENTE, to: [a], subject: `[PRUEBA] ${plantilla.asunto}`, html, text }),
   });
 
   const cuerpo = await r.text();

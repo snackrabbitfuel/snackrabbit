@@ -88,6 +88,12 @@ export const POST: APIRoute = async ({ request }) => {
 
     const ficha = (user.unsafeMetadata as any)?.madriguera || {};
 
+    /* Solo se avisa a quien de verdad está en la lista. Sin esta comprobación,
+       cualquier cuenta podía llamar aquí sin haberse apuntado: gastaba su único
+       correo de fundador y quedaba sellada con un puesto en una cola en la que
+       no estaba. */
+    if (!ficha.lista) return responder("sinlista", 409);
+
     /* La hora exacta del alta, sellada por el servidor.
      *
      * Es el único dato con el que se podrá decidir quiénes son los cien
@@ -111,17 +117,20 @@ export const POST: APIRoute = async ({ request }) => {
        forma —vive en el localStorage del navegador— y escribirle en inglés a
        quien navega en español es empezar pidiéndole que se esfuerce. */
     const idioma = ficha.idioma === "es" ? "es" : "en";
-    const html = await render(
-      React.createElement(WelcomeFounder, {
-        plan: NOMBRE_PLAN[ficha.plan] || "DIGGER", baja, idioma,
-      }),
-    );
+    const el = React.createElement(WelcomeFounder, {
+      plan: NOMBRE_PLAN[ficha.plan] || "DIGGER", baja, idioma,
+    });
+    const html = await render(el);
+    /* La versión en texto plano no es decorativa: los filtros de correo
+       desconfían de un mensaje solo-HTML, y los lectores de pantalla y los
+       relojes la usan tal cual. */
+    const text = await render(el, { plainText: true });
 
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${claveResend}`, "content-type": "application/json" },
       body: JSON.stringify({
-        from: REMITENTE, to: [destino], subject: idioma === "es" ? asuntoEs : asunto, html,
+        from: REMITENTE, to: [destino], subject: idioma === "es" ? asuntoEs : asunto, html, text,
         /* Gmail y Apple Mail enseñan su propio botón de baja cuando ven estas
            cabeceras, y lo tienen más en cuenta que el enlace del pie a la hora
            de decidir si un remitente es fiable. El -Post es la baja en un clic

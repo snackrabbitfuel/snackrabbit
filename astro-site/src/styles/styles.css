@@ -11,10 +11,12 @@
   --bg-dark: #0a0a12;
   --card-dark: #0d0d14;
   --line-dark: #1c1c2a;
-  /* Gris para texto sobre fondo CLARO. --gray-2 da 3,38:1 sobre blanco, por
-     debajo del 4,5 de AA; este da 4,61. El otro sigue valiendo sobre oscuro,
-     donde da 5,72. */
-  --gray-claro: #73738b;
+  /* Gris para texto sobre fondo CLARO. --gray-2 da 3,38:1 sobre blanco y
+     3,08 sobre el papel rosado de los modales (#fbf2f7): por debajo del 4,5
+     de AA en los dos. Este da 5,18 sobre blanco y 4,73 sobre el papel — el
+     primer intento (#73738b) se calculó solo contra blanco y en el papel se
+     quedaba en 4,20. El fondo real manda. */
+  --gray-claro: #6b6b82;
   --bone: #e6e6ff;
   --gray-1: #b9b9cf;
   --gray-2: #8a8a9e;
@@ -1529,7 +1531,7 @@ body::after {
 .lm-note {
   font-family: var(--f-pixel); font-style: normal;
   font-size: 9px; letter-spacing: 1.5px;
-  color: var(--gray-2);
+  color: var(--gray-claro);
   text-align: center;
   margin-top: 20px;
 }
@@ -1675,7 +1677,7 @@ body::after {
 }
 .pm-features span { font-size: 15px; line-height: 1.35; color: #4a4a58; }
 .pm-info { padding: clamp(24px, 3vw, 38px); overflow: auto; max-height: min(84vh, 84svh); }
-.pm-num { font-family: var(--f-pixel); font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--gray-2); margin-bottom: 8px; }
+.pm-num { font-family: var(--f-pixel); font-style: normal; font-size: 10px; letter-spacing: 3px; color: var(--gray-claro); margin-bottom: 8px; }
 .pm-name { font-family: var(--f-display); font-style: normal; font-size: clamp(30px, 3.6vw, 44px); margin-bottom: 10px; text-transform: uppercase; }
 .pm-desc { font-size: 18px; line-height: 1.45; margin-bottom: 12px; }
 .pm-specs {
@@ -1723,7 +1725,7 @@ body::after {
 .pm-foot { display: flex; align-items: center; gap: 18px; margin-top: 22px; flex-wrap: wrap; }
 .pm-price { font-family: var(--f-pixel); font-style: normal; font-size: 24px; font-weight: 700; }
 .pm-foot .btn { flex: 1; padding: 15px 18px; font-size: 12px; }
-.pm-ship { font-family: var(--f-pixel); font-style: normal; font-size: 9px; letter-spacing: 1.5px; color: var(--gray-2); margin-top: 16px; }
+.pm-ship { font-family: var(--f-pixel); font-style: normal; font-size: 9px; letter-spacing: 1.5px; color: var(--gray-claro); margin-top: 16px; }
 
 /* Success modal */
 .success-modal { text-align: center; }
@@ -1737,7 +1739,7 @@ body::after {
   rotate: -1.5deg;
 }
 .sc-text { font-size: 18px; line-height: 1.5; margin-bottom: 24px; }
-.sc-text em { color: var(--gray-2); font-size: .85em; }
+.sc-text em { color: var(--gray-claro); font-size: .85em; }
 
 /* ============ PANEL DE CLIENTE ============ */
 /* No es un formulario: es un sitio oscuro al que se baja. Todo lo que entra lo
@@ -2286,4 +2288,27 @@ body::after {
   font-family: var(--f-pixel); font-style: normal;
   font-size: 9px; letter-spacing: 1.2px; line-height: 1.8;
   color: var(--gray-2);
+}
+
+
+/* El título de la tarjeta es un botón de verdad: hereda el aspecto del h3.
+   La tarjeta entera dejó de ser role="button" — un botón no puede contener
+   otro botón y una lista de precios. */
+.pcard-name button {
+  all: unset;
+  cursor: pointer;
+  font: inherit; color: inherit; letter-spacing: inherit;
+}
+.pcard-name button:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--focus-halo);
+}
+
+
+/* Campo con error: se ve y se anuncia. El rojo no existe en la paleta, así que
+   el error habla rosa fuerte con borde grueso — inconfundible sin salirse. */
+input[aria-invalid="true"] {
+  border-color: var(--pink) !important;
+  box-shadow: 0 0 0 3px rgba(255, 79, 216, .25) !important;
 }

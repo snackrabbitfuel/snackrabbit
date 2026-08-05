@@ -88,7 +88,12 @@ export function Conejo({ lado = 5, cuerpo = C.tinta, hueco = C.rosa }) {
                   bgcolor={celda === 1 ? cuerpo : celda === 2 ? hueco : undefined}
                   style={{
                     width: `${lado}px`, height: `${lado}px`,
-                    lineHeight: `${lado}px`, fontSize: 0, padding: 0,
+                    lineHeight: `${lado}px`,
+                    /* Outlook de Windows redondea las alturas de línea a su
+                       aire salvo que se le exija literalidad: sin esto, las
+                       filas del conejo crecían y el logo salía estirado. */
+                    msoLineHeightRule: "exactly",
+                    fontSize: 0, padding: 0,
                     background: celda === 1 ? cuerpo : celda === 2 ? hueco : "transparent",
                   }}>&#8203;</td>
             ))}

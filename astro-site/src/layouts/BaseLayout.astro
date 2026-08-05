@@ -58,6 +58,10 @@ const {
      viven en app.js. Antes no se decía nada y quedaba una página rosa sin
      explicación; ahora al menos se sabe qué pasa y adónde escribir. -->
 <noscript>
+  <!-- El telón de carga se despega con JavaScript; sin él tapaba este mismo
+       aviso para siempre. El navegador solo aplica este estilo exactamente
+       cuando hace falta. -->
+  <style>.preloader { display: none; }</style>
   <div class="sinjs">
     <p><strong>This site needs JavaScript to shop.</strong></p>
     <p>The catalogue, the cart and your account all run in the browser. Turn it on, or write to
