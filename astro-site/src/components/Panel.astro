@@ -41,6 +41,25 @@ const CIRC = (2 * Math.PI * 54).toFixed(1);
       <span class="pn-chip-fund" id="pnChipFund" data-i18n="pn.founderChip" hidden>FOUNDER</span>
     </div>
 
+    <!-- El paso al panel interno. Nace oculto y SIN destino: app.js solo le
+         pone el href y lo enseña cuando el SERVIDOR confirma que esta cuenta
+         es de las nuestras. Si no lo es, se queda escondido y sin enlace, así
+         que ni siquiera es un botón que lleve a ninguna parte. -->
+    <a class="pn-admin" id="pnAdmin" hidden>
+      <span class="pn-admin-ins" aria-hidden="true">
+        <svg viewBox="0 0 10 10"><g fill="currentColor">
+          <rect x="4" y="0" width="2" height="10"/><rect x="0" y="4" width="10" height="2"/>
+          <rect x="1" y="1" width="2" height="2"/><rect x="7" y="1" width="2" height="2"/>
+          <rect x="1" y="7" width="2" height="2"/><rect x="7" y="7" width="2" height="2"/>
+        </g><rect x="3" y="3" width="4" height="4" fill="var(--ink)"/></svg>
+      </span>
+      <span class="pn-admin-txt">
+        <b data-i18n="pn.adminTitle">ADMIN PANEL</b>
+        <small data-i18n="pn.adminSub">Orders, stock and the day's numbers</small>
+      </span>
+      <span class="pn-admin-ir" aria-hidden="true">→</span>
+    </a>
+
     <div class="pn-rango-hero">
       <div class="pn-anillo" role="img" aria-labelledby="pnRangoN">
         <svg viewBox="0 0 120 120" aria-hidden="true">

@@ -108,6 +108,8 @@ const I18N = {
     "fuel.chipSugar": "SIN AZÚCAR",
     "fuel.cta": "PROBAR PACK ×4 — $16",
     "pn.title": "MI MADRIGUERA",
+    "pn.adminTitle": "PANEL DE ADMINISTRACIÓN",
+    "pn.adminSub": "Pedidos, stock y los números del día",
     "pn.since": "EN LA MADRIGUERA DESDE {fecha}",
     "pn.founderChip": "FUNDADOR",
     "pn.hereChip": "ESTÁS AQUÍ",
@@ -392,6 +394,8 @@ const I18N = {
     "fuel.chipSugar": "ZERO SUGAR",
     "fuel.cta": "TRY THE 4-PACK — $16",
     "pn.title": "MY BURROW",
+    "pn.adminTitle": "ADMIN PANEL",
+    "pn.adminSub": "Orders, stock and the day's numbers",
     "pn.since": "IN THE BURROW SINCE {fecha}",
     "pn.founderChip": "FOUNDER",
     "pn.hereChip": "YOU ARE HERE",
@@ -2127,6 +2131,7 @@ const Panel = (() => {
       ? t("pn.since", { fecha: creada.toLocaleDateString(LANG === "es" ? "es" : "en", { month: "long", year: "numeric" }).toUpperCase() })
       : "";
     $("#pnChipFund").hidden = !u.publicMetadata?.fundador;
+    mirarSiEsAdmin();
 
     /* Los meses también aquí: el módulo de La Madriguera los traduce, pero
        scoped a su sección, así que la rejilla del panel se quedaba en inglés
@@ -2300,6 +2305,53 @@ const Panel = (() => {
       env.append(b, document.createElement("br"),
                  document.createTextNode([e.address, e.city, e.country].filter(Boolean).join(", ")));
     }
+  }
+
+  /* ---- el paso al panel interno ----
+   *
+   * El botón NO se pinta por lo que diga el navegador. Se le pregunta al
+   * servidor, que verifica el token de Clerk con la clave secreta y saca el
+   * correo de la CUENTA, no de lo que mande esta página. Si dice que no —o si
+   * hay cualquier duda—, el botón se queda oculto y sin destino.
+   *
+   * Se recuerda la respuesta en memoria mientras dure la pestaña: abrir el
+   * panel diez veces no son diez llamadas. No se guarda en localStorage a
+   * propósito: ahí lo podría escribir cualquiera, y aunque solo pintaría un
+   * botón que el panel volvería a rechazar, es una mentira que no hace falta
+   * contar. */
+  let esAdminCache = null;
+
+  async function mirarSiEsAdmin() {
+    const boton = $("#pnAdmin");
+    if (!boton) return;
+
+    if (esAdminCache === null) {
+      esAdminCache = false;                    // por defecto, no
+      try {
+        const token = await Auth.token();
+        if (token) {
+          const r = await fetch("/api/admin", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ token }),
+          });
+          esAdminCache = (await r.json())?.admin === true;
+        }
+      } catch { /* sin red: se queda en no, que es lo seguro */ }
+    }
+    if (!esAdminCache) return;                 // ni href, ni visible
+
+    boton.href = "/admin";
+    boton.hidden = false;
+    boton.addEventListener("click", (e) => {
+      /* Salida suave: se apaga la tienda y luego se navega, para que el panel
+         no aparezca de un tajo. Con clic de rueda o ⌘/Ctrl se respeta la
+         pestaña nueva y no se toca nada. */
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      document.body.classList.add("yendo-al-cuartel");
+      setTimeout(() => { location.href = "/admin"; }, reducedMotion ? 0 : 300);
+    });
   }
 
   /* ---- cambiar la dirección de envío ----
