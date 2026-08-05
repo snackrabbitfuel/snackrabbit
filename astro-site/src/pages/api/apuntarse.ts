@@ -29,7 +29,10 @@ import { SITIO } from "../../emails/_marco";
 export const prerender = false;
 
 const REMITENTE = "SnackRabbit <hello@snackrabbit.co>";
-const NOMBRE_PLAN: Record<string, string> = { curioso: "CURIOUS", cavador: "DIGGER" };
+const NOMBRE_PLAN: Record<"es" | "en", Record<string, string>> = {
+  en: { curioso: "CURIOUS", cavador: "DIGGER" },
+  es: { curioso: "CURIOSO", cavador: "CAVADOR" },
+};
 
 const responder = (estado: string, code = 200) =>
   new Response(JSON.stringify({ estado }), {
@@ -110,15 +113,20 @@ export const POST: APIRoute = async ({ request }) => {
       await clerk.users.updateUser(userId, { publicMetadata: { ...pub, fundador } });
     }
 
-    /* El enlace de baja llega con el correo ya puesto: un clic y fuera, sin
-       teclear nada. */
-    const baja = `${SITIO}/api/baja?e=${encodeURIComponent(destino)}`;
+    /* Dos enlaces de baja distintos a propósito. El del CUERPO va a la página
+       con el correo puesto —un clic de confirmación—, porque los escáneres de
+       enlaces (Outlook SafeLinks y compañía) abren los GET de los correos y
+       daban de baja a gente que no había tocado nada. El de las CABECERAS va
+       al API: el one-click RFC 8058 manda un POST, que los escáneres no
+       disparan. */
+    const baja = `${SITIO}/unsubscribe?e=${encodeURIComponent(destino)}`;
+    const bajaApi = `${SITIO}/api/baja?e=${encodeURIComponent(destino)}`;
     /* El idioma viaja desde el alta: el servidor no puede saberlo de otra
        forma —vive en el localStorage del navegador— y escribirle en inglés a
        quien navega en español es empezar pidiéndole que se esfuerce. */
     const idioma = ficha.idioma === "es" ? "es" : "en";
     const el = React.createElement(WelcomeFounder, {
-      plan: NOMBRE_PLAN[ficha.plan] || "DIGGER", baja, idioma,
+      plan: NOMBRE_PLAN[idioma][ficha.plan] || NOMBRE_PLAN[idioma].cavador, baja, idioma,
     });
     const html = await render(el);
     /* La versión en texto plano no es decorativa: los filtros de correo
@@ -137,7 +145,7 @@ export const POST: APIRoute = async ({ request }) => {
            (RFC 8058): el cliente de correo manda un POST por su cuenta, sin que
            el lector tenga que abrir nada. */
         headers: {
-          "List-Unsubscribe": `<${baja}>`,
+          "List-Unsubscribe": `<${bajaApi}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
         },
       }),

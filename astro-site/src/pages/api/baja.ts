@@ -74,13 +74,18 @@ export const POST: APIRoute = async ({ request, url }) => {
   return responder(await darDeBaja(email.trim().toLowerCase()));
 };
 
-/* El enlace del correo entra por aquí y acaba en la página, que enseña el
-   resultado en cristiano en vez de un JSON. */
+/* El enlace del correo entra por aquí y aterriza en la página con el correo ya
+   puesto — SIN darse de baja todavía. Antes el GET ejecutaba la baja, y eso
+   tiene una trampa conocida: los escáneres de enlaces (Outlook SafeLinks, los
+   antivirus corporativos) abren por GET todos los enlaces de un correo al
+   recibirlo, y estaban dando de baja a gente que no había tocado nada. La baja
+   real es el POST: el botón del formulario o el one-click RFC 8058 de Gmail y
+   Apple Mail, que los escáneres no disparan. Un clic más para el humano; cero
+   bajas fantasma. */
 export const GET: APIRoute = async ({ url }) => {
   const email = (url.searchParams.get("e") || "").trim().toLowerCase();
-  const estado = await darDeBaja(email);
   return new Response(null, {
     status: 302,
-    headers: { location: `/unsubscribe?estado=${estado}&e=${encodeURIComponent(email)}` },
+    headers: { location: `/unsubscribe?e=${encodeURIComponent(email)}` },
   });
 };

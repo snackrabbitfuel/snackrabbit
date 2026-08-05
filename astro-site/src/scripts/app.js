@@ -2430,7 +2430,9 @@ $("#newsForm").addEventListener("submit", async e => {
     const r = await fetch("/api/subscribe", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email })
+      /* El idioma viaja con el alta: la bienvenida sale en la lengua en la
+         que navegaba quien se apuntó, no en la nuestra. */
+      body: JSON.stringify({ email, lang: LANG })
     });
     const { estado } = await r.json().catch(() => ({ estado: "error" }));
 

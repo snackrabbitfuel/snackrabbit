@@ -48,7 +48,7 @@ const T = {
 } as const;
 
 export default function WelcomeFounder({
-  plan = "DIGGER", baja, idioma = "en",
+  plan = "CAVADOR", baja, idioma = "en",
 }: { plan?: string; baja?: string; idioma?: "es" | "en" }) {
   const es = idioma === "es";
   const x = T[es ? "es" : "en"];

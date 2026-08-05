@@ -31,6 +31,22 @@ const pendiente = (v: string) => !v || v.startsWith("[");
 const NOMBRE = pendiente(EMPRESA.nombre) ? "SnackRabbit" : EMPRESA.nombre;
 const DIRECCION = pendiente(EMPRESA.direccion) ? EMPRESA.email : EMPRESA.direccion;
 
+/* La puerta del marketing.
+ *
+ * CAN-SPAM exige una dirección postal FÍSICA en todo correo comercial. Los
+ * transaccionales (recibo, envío, alta) están exentos: responden a algo que el
+ * destinatario hizo. Los de marketing —la curiosidad del mes, una campaña— no.
+ *
+ * Hasta la auditoría esto era un comentario que avisaba del riesgo y nada más:
+ * el pie caía al correo de contacto sin que nadie se enterara, y el día que
+ * saliera la primera campaña habría salido ilegal en silencio. Ahora la regla
+ * es código: quien mande marketing pregunta primero, y si no hay dirección
+ * registrada, no sale.
+ *
+ * Se desbloquea sola rellenando `direccion` en src/data/empresa.ts cuando
+ * exista la entidad. */
+export const puedeEnviarMarketing = () => !pendiente(EMPRESA.direccion);
+
 export const C = {
   tinta: "#050508",
   fondo: "#0a0a12",
@@ -76,7 +92,7 @@ export function Conejo({ lado = 5, cuerpo = C.tinta, hueco = C.rosa }) {
     /* width y tableLayout fijos: Outlook de Windows reparte el ancho sobrante
        entre las celdas si puede, y el conejo salía estirado y deforme. Con la
        tabla clavada a su tamaño exacto no tiene sobrante que repartir. */
-    <table role="presentation" cellPadding={0} cellSpacing={0} border={0}
+    <table role="presentation" aria-hidden="true" cellPadding={0} cellSpacing={0} border={0}
            width={REJILLA[0].length * lado}
            style={{ borderCollapse: "collapse", borderSpacing: 0,
                     tableLayout: "fixed", width: `${REJILLA[0].length * lado}px` }}>
@@ -130,8 +146,8 @@ export function Datos({ filas }: { filas: [string, string][] }) {
           <Column style={{ padding: "9px 0", borderBottom: `1px solid ${C.linea}`, fontFamily: F.pixel, fontSize: "12px", letterSpacing: "1px", color: C.gris }}>
             {k}
           </Column>
-          <Column align="right" style={{ padding: "9px 0", borderBottom: `1px solid ${C.linea}`, fontFamily: F.pixel, fontSize: "12px", letterSpacing: "1px", color: C.hueso }}>
-            {v}
+          <Column align="right" style={{ padding: "9px 0", borderBottom: `1px solid ${C.linea}`, fontFamily: F.pixel, fontSize: "12px", letterSpacing: "1px", color: C.hueso, wordBreak: "break-word" }}>
+            {" "}{v}
           </Column>
         </Row>
       ))}
@@ -163,6 +179,9 @@ interface MarcoProps {
   adelanto: string;      // lo que se lee en la bandeja después del asunto
   kicker: string;
   titular: string;
+  /* Por qué recibe esto. El genérico vale para lista y compras; el correo de
+     socio pasa el suyo: baja de correos ≠ cancelar la suscripción. */
+  motivo?: string;
   /* URL de baja. La pasa quien envía, porque cada envío sabe a quién escribe:
      así el enlace llega con el correo ya puesto y basta un clic. Si no se pasa,
      se cae a la página de baja genérica, donde hay que teclearlo. */
@@ -171,7 +190,7 @@ interface MarcoProps {
   children: React.ReactNode;
 }
 
-export function Marco({ adelanto, kicker, titular, baja, idioma = "en", children }: MarcoProps) {
+export function Marco({ adelanto, kicker, titular, motivo, baja, idioma = "en", children }: MarcoProps) {
   const es = idioma === "es";
   return (
     <Html lang={idioma}>
@@ -181,10 +200,11 @@ export function Marco({ adelanto, kicker, titular, baja, idioma = "en", children
             queda blanco sobre blanco y el correo desaparece. */}
         <meta name="color-scheme" content="dark" />
         <meta name="supported-color-schemes" content="dark" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <Preview>{adelanto}</Preview>
       <Body style={{ margin: 0, padding: 0, background: C.fondo }}>
-        <Container style={{ width: "600px", maxWidth: "100%", margin: "0 auto", padding: "26px 12px" }}>
+        <Container style={{ width: "100%", maxWidth: "600px", margin: "0 auto", padding: "26px 12px" }}>
 
           <Section style={{ background: C.rosa, padding: "20px 26px", border: `4px solid ${C.tinta}` }}>
             <Row>
@@ -213,18 +233,18 @@ export function Marco({ adelanto, kicker, titular, baja, idioma = "en", children
               {"  ·  "}
               <Link href="https://www.instagram.com/snackrabbit.tv/" style={{ color: C.gris, textDecoration: "none" }}>INSTAGRAM</Link>
               {"  ·  "}
-              <Link href={`${SITIO}/shipping`} style={{ color: C.gris, textDecoration: "none" }}>SHIPPING</Link>
+              <Link href={`${SITIO}/shipping`} style={{ color: C.gris, textDecoration: "none" }}>{es ? "ENVÍOS" : "SHIPPING"}</Link>
               {"  ·  "}
-              <Link href={`${SITIO}/returns`} style={{ color: C.gris, textDecoration: "none" }}>RETURNS</Link>
+              <Link href={`${SITIO}/returns`} style={{ color: C.gris, textDecoration: "none" }}>{es ? "DEVOLUCIONES" : "RETURNS"}</Link>
             </Text>
             <Hr style={{ borderColor: C.linea, margin: "0 0 10px" }} />
             {/* Dirección física y baja: en marketing no son opcionales, las exige la ley */}
-            <Text style={{ margin: 0, fontFamily: F.pixel, fontSize: "9.5px", lineHeight: "1.9", letterSpacing: "1px", color: C.tenue }}>
+            <Text style={{ margin: 0, fontFamily: F.pixel, fontSize: "10.5px", lineHeight: "1.9", letterSpacing: "1px", color: C.gris }}>
               {NOMBRE} · {DIRECCION}<br />
-              {es
+              {motivo || (es
                 ? "Recibes esto porque nos compraste algo o te apuntaste a nuestra lista."
-                : "You are receiving this because you bought from us or joined our list."}<br />
-              <Link href={baja || `${SITIO}/unsubscribe`} style={{ color: C.tenue }}>
+                : "You are receiving this because you bought from us or joined our list.")}<br />
+              <Link href={baja || `${SITIO}/unsubscribe`} style={{ color: C.gris }}>
                 {es ? "Darse de baja" : "Unsubscribe"}
               </Link>
             </Text>
