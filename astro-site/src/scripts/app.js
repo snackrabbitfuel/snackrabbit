@@ -627,8 +627,8 @@ const sizeName  = s => LANG === "en" ? (SIZE_EN[s] ?? s) : s;
 /* ============================================================
    DATOS DE PRODUCTO
    ============================================================ */
-/* OJO: el panel interno resume este catálogo en src/data/catalogo-admin.ts.
-   Si cambias un precio o una variante aquí, cámbialo también allí. */
+/* OJO: el panel interno (admin.astro) lleva un resumen de este catálogo en
+   sus datos DEMO. Si cambias un precio o una variante aquí, cámbialo allí. */
 const PRODUCTS = [
   {
     id: "rabbit-fuel",

@@ -1,50 +1,37 @@
 ---
-/* EL CUARTEL — panel administrativo interno de SnackRabbit.
+/* EL CUARTEL v2 — el centro de operaciones de SnackRabbit.
  *
- * Es una plataforma aparte: no carga el app.js de la tienda ni su CSS. Aquí
- * vive el ESQUEMA completo del centro de operaciones —nueve módulos, su
- * navegación, sus tablas y sus tarjetas— construido ANTES de que existan los
- * datos, por decisión de Diego: cuando Stripe entre, cada módulo se enchufa a
- * lo real sin rediseñar nada.
+ * No es un panel genérico con otra piel: es la MISMA identidad de la tienda
+ * llevada al cuarto de máquinas. Comparte tokens (rosa/tinta/amarillo/hueso),
+ * tipografías (Anton + Bricolage + DM Serif), y las firmas de la casa: sombras
+ * duras, dientes pixel, el barrido de brillo en los botones, el conejo oficial
+ * y la malla con máscara radial. El administrador nunca sale de SnackRabbit.
  *
- * La regla de la casa se mantiene: NI UN DATO INVENTADO. Todo indicador sin
- * fuente real enseña "—" y el sello de qué lo activa. Lo único poblado es lo
- * que ya existe de verdad: el catálogo (tres productos) y la identidad de
- * quien entra.
+ * DATOS: son DE EJEMPLO, por decisión de Diego — el panel debe sentirse vivo
+ * ya. Todos viven en DEMO (abajo, en el script) y el marco lo declara con el
+ * sello "DATOS DE EJEMPLO" fijo en la barra superior. Cuando Stripe/Supabase
+ * existan, se sustituye DEMO por las respuestas reales y el sello se quita.
  *
- * ACCESO — dos capas, y conviene entender cuál protege qué:
+ * ACCESO — dos capas, y conviene saber cuál protege qué:
  *   1. El cliente comprueba sesión de Clerk + publicMetadata.admin === true.
- *      Eso decide qué se PINTA. publicMetadata solo lo escribe el servidor,
- *      así que nadie se lo concede desde la consola.
- *   2. El día que este panel tenga ACCIONES (reembolsar, cambiar stock), cada
- *      una irá a una ruta de servidor que verificará el token y la marca de
- *      admin POR PETICIÓN. La capa 1 es cortesía visual; la seguridad real
- *      siempre será la 2.
+ *      Decide qué se PINTA. publicMetadata solo lo escribe el servidor.
+ *   2. Cuando el panel tenga ACCIONES reales, cada una irá a una ruta de
+ *      servidor que verificará token + marca de admin POR PETICIÓN.
  *
- * Para dar acceso: panel de Clerk → Users → (usuario) → Public metadata →
- *   { "admin": true }
- *
- * Interfaz en español a propósito: es la herramienta interna del equipo.
+ * Acceso: Clerk → Users → (usuario) → Public metadata → { "admin": true }
+ * Interfaz en español: es la herramienta interna del equipo.
  */
-import { PRODUCTS_ADMIN } from "../data/catalogo-admin";
 const SECCIONES = [
-  { id: "resumen",     icono: "▦", nombre: "Resumen" },
-  { id: "pedidos",     icono: "▤", nombre: "Pedidos" },
-  { id: "fulfillment", icono: "▣", nombre: "Fulfillment" },
-  { id: "envios",      icono: "➤", nombre: "Envíos" },
-  { id: "clientes",    icono: "◉", nombre: "Clientes" },
-  { id: "productos",   icono: "◫", nombre: "Productos" },
-  { id: "analytics",   icono: "◭", nombre: "Analytics" },
-  { id: "soporte",     icono: "◍", nombre: "Soporte" },
-  { id: "ajustes",     icono: "⚙", nombre: "Ajustes" },
+  { id: "resumen",     icono: "px-panel",   nombre: "Resumen" },
+  { id: "pedidos",     icono: "px-caja",    nombre: "Pedidos" },
+  { id: "fulfillment", icono: "px-pila",    nombre: "Fulfillment" },
+  { id: "envios",      icono: "px-flecha",  nombre: "Envíos" },
+  { id: "clientes",    icono: "px-cara",    nombre: "Clientes" },
+  { id: "productos",   icono: "px-lata",    nombre: "Productos" },
+  { id: "analytics",   icono: "px-barras",  nombre: "Analytics" },
+  { id: "soporte",     icono: "px-globo",   nombre: "Soporte" },
+  { id: "ajustes",     icono: "px-tuerca",  nombre: "Ajustes" },
 ];
-const KPIS = [
-  ["Ingresos hoy", "stripe"], ["Ingresos del mes", "stripe"],
-  ["Pedidos pendientes", "stripe"], ["Pedidos completados", "stripe"],
-  ["Clientes nuevos", "stripe"], ["Valor medio por pedido", "stripe"],
-  ["Conversión", "stripe"], ["Suscriptores activos", "stripe"],
-];
-const COLS_FUL = ["Pendiente de preparar", "Preparando", "Empacado", "Con el transportista", "Retrasado"];
 ---
 
 <!doctype html>
@@ -53,220 +40,471 @@ const COLS_FUL = ["Pendiente de preparar", "Preparando", "Empacado", "Con el tra
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#08080d">
-<title>EL CUARTEL — SnackRabbit Admin</title>
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ffd400"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g></svg>'>
+<meta name="theme-color" content="#0a0a12">
+<title>EL CUARTEL — SnackRabbit</title>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 9"><rect width="10" height="9" fill="%23ff4fd8"/><g fill="%23050508"><rect x="3" y="1" width="1" height="3"/><rect x="8" y="1" width="1" height="3"/><rect x="3" y="4" width="6" height="1"/><rect x="2" y="5" width="8" height="2"/><rect x="3" y="7" width="6" height="1"/></g></svg>'>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap" rel="stylesheet">
-<style>
-  /* ── sistema propio, no el de la tienda: esto es una herramienta ── */
-  :root {
-    --fondo: #08080d; --panel: #0e0e15; --panel-2: #12121b;
-    --linea: #1e1e2c; --linea-viva: #2c2c42;
-    --tinta: #050508; --hueso: #e8e8f4; --gris: #9494ab; --gris-2: #62627a;
-    --rosa: #ff4fd8; --amarillo: #ffd400; --ok: #3ddc97;
-    --ui: "Bricolage Grotesque", sans-serif;
-    --display: "Anton", sans-serif;
-    --radio: 10px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { color-scheme: dark; }
-  body {
-    font-family: var(--ui); background: var(--fondo); color: var(--hueso);
-    font-size: 14px; line-height: 1.5; min-height: 100svh;
-  }
-  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-  :focus-visible { outline: 2px solid var(--amarillo); outline-offset: 2px; border-radius: 4px; }
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bricolage+Grotesque:opsz,wght@12..96,600..700&family=DM+Serif+Display:ital@1&display=swap" rel="stylesheet">
+<style is:global>
+/* ══════════ los tokens de la casa — idénticos a styles.css ══════════ */
+:root {
+  --pink: #ff4fd8; --pink-deep: #e93fc4;
+  --ink: #050508; --paper: #fbf2f7;
+  --bg-dark: #0a0a12; --card-dark: #0d0d14; --line-dark: #1c1c2a;
+  --bone: #e6e6ff; --gray-1: #b9b9cf; --gray-2: #8a8a9e;
+  --cyan: #4fe8ff; --yellow: #ffd400; --verde: #3ddc97; --naranja: #ff6a1f;
+  --f-display: "Anton", "Arial Narrow", sans-serif;
+  --f-ui: "Bricolage Grotesque", "Archivo", sans-serif;
+  --f-serif: "DM Serif Display", Georgia, serif;
+  --ease-snap: cubic-bezier(.2, .9, .25, 1);
+  --lado-w: 236px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { color-scheme: dark; scrollbar-color: var(--line-dark) var(--bg-dark); }
+body {
+  font-family: var(--f-ui); background: var(--bg-dark); color: var(--bone);
+  font-size: 14px; line-height: 1.5; min-height: 100svh; overflow-x: hidden;
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; box-shadow: 0 0 0 6px rgba(5,5,8,.8); }
+::selection { background: var(--pink); color: var(--ink); }
 
-  /* ── la puerta ── */
-  .puerta {
-    min-height: 100svh; display: grid; place-content: center; gap: 14px;
-    text-align: center; padding: 24px;
-  }
-  .puerta h1 { font-family: var(--display); font-size: 34px; letter-spacing: 1px; }
-  .puerta p { color: var(--gris); max-width: 420px; }
-  .puerta a { color: var(--rosa); }
-  .puerta .sello {
-    justify-self: center; font-size: 11px; letter-spacing: 3px; font-weight: 700;
-    color: var(--tinta); background: var(--amarillo); padding: 6px 12px; border-radius: 4px;
-  }
+/* la malla firma (MY BURROW) + grano, en todo el fondo */
+.mesh {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(rgba(230,230,255,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230,230,255,.045) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 60% at 60% 0%, #000 20%, transparent 78%);
+          mask-image: radial-gradient(ellipse 75% 60% at 60% 0%, #000 20%, transparent 78%);
+}
+.grano {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .05; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-  /* ── el marco de la aplicación ── */
-  .app { display: none; grid-template-columns: 232px 1fr; min-height: 100svh; }
-  .app.abierta { display: grid; }
+/* dientes pixel — la cenefa de la casa */
+.dientes {
+  height: 12px; flex: none;
+  background:
+    repeating-linear-gradient(90deg, var(--edge, var(--pink)) 0 12px, transparent 12px 24px) 0 0 / 24px 6px repeat-x,
+    linear-gradient(var(--edge, var(--pink)), var(--edge, var(--pink))) 0 6px / 100% 6px no-repeat;
+}
 
-  /* barra lateral */
-  .lado {
-    background: var(--panel); border-right: 1px solid var(--linea);
-    display: flex; flex-direction: column; gap: 4px;
-    padding: 18px 12px; position: sticky; top: 0; height: 100svh;
-  }
-  .lado-marca {
-    display: flex; align-items: center; gap: 10px;
-    padding: 4px 10px 16px; border-bottom: 1px solid var(--linea); margin-bottom: 10px;
-  }
-  .lado-marca svg { width: 26px; height: 23px; color: var(--amarillo); }
-  .lado-marca b { font-family: var(--display); font-weight: 400; font-size: 15px; letter-spacing: 1.5px; }
-  .lado-marca small { display: block; font-size: 9px; letter-spacing: 2.5px; color: var(--gris-2); }
-  .lado nav { display: grid; gap: 2px; }
-  .lado nav button {
-    display: flex; align-items: center; gap: 11px;
-    padding: 9px 12px; border-radius: var(--radio);
-    font-size: 13px; font-weight: 600; letter-spacing: .3px; color: var(--gris);
-    transition: background .15s, color .15s;
-    text-align: left; width: 100%;
-  }
-  .lado nav button:hover { background: var(--panel-2); color: var(--hueso); }
-  .lado nav button[aria-current="true"] { background: var(--panel-2); color: var(--hueso); box-shadow: inset 2px 0 0 var(--rosa); }
-  .lado nav button .ic { width: 17px; text-align: center; color: var(--gris-2); font-style: normal; }
-  .lado nav button[aria-current="true"] .ic { color: var(--rosa); }
-  .lado-pie { margin-top: auto; display: grid; gap: 8px; padding: 10px 6px 0; border-top: 1px solid var(--linea); }
-  .lado-quien { font-size: 11.5px; color: var(--gris); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .lado-pie a, .lado-pie button.salir {
-    font-size: 11px; letter-spacing: 1px; color: var(--gris-2); text-decoration: none; text-align: left;
-  }
-  .lado-pie a:hover, .lado-pie button.salir:hover { color: var(--rosa); }
+/* revelado escalonado — .rv de la tienda */
+.rv { opacity: 0; transform: translateY(22px); transition: opacity .6s var(--ease-snap), transform .6s var(--ease-snap); transition-delay: calc(var(--i, 0) * 70ms); }
+.rv.in { opacity: 1; transform: translateY(0); }
 
-  /* zona de contenido */
-  .zona { padding: 26px clamp(20px, 3vw, 42px) 60px; min-width: 0; }
-  .zona-cab {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
-    margin-bottom: 22px; flex-wrap: wrap;
-  }
-  .zona-cab h1 { font-family: var(--display); font-weight: 400; font-size: 26px; letter-spacing: .5px; }
-  .zona-cab time { font-size: 12px; color: var(--gris-2); letter-spacing: 1px; }
+/* ══════════ LA PUERTA ══════════ */
+.puerta { position: relative; z-index: 1; min-height: 100svh; display: grid; place-content: center; gap: 18px; text-align: center; padding: 24px; }
+.puerta-bunny { width: 74px; height: 66px; margin: 0 auto; color: var(--pink); --bunny-eye: var(--ink); animation: salto 2.4s var(--ease-snap) infinite; }
+@keyframes salto { 0%, 100% { transform: translateY(0); } 12% { transform: translateY(-16px) rotate(-6deg); } 24% { transform: translateY(0); } }
+.puerta h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 5vw, 44px); letter-spacing: 1px; }
+.puerta p { color: var(--gray-1); max-width: 430px; margin: 0 auto; }
+.puerta a { color: var(--pink); }
+.puerta .sello-cuartel { justify-self: center; font-size: 11px; letter-spacing: 3px; font-weight: 700; color: var(--ink); background: var(--yellow); padding: 7px 14px; box-shadow: 5px 5px 0 rgba(0,0,0,.5); }
 
-  /* el sello de "esto se enchufa después" — UNO, consistente, en todo el panel */
-  .sello-stripe {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 9.5px; letter-spacing: 1.8px; font-weight: 700;
-    color: var(--gris-2); border: 1px dashed var(--linea-viva);
-    padding: 4px 9px; border-radius: 99px; white-space: nowrap;
-  }
-  .sello-stripe::before { content: "◌"; color: var(--rosa); }
+/* ══════════ EL MARCO ══════════ */
+.app { display: none; position: relative; z-index: 1; }
+.app.abierta { display: grid; grid-template-columns: var(--lado-w) 1fr; min-height: 100svh; }
+.app.plegada { --lado-w: 76px; }
 
-  /* tarjetas KPI */
-  .kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-bottom: 26px; }
-  .kpi {
-    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
-    padding: 16px 18px; display: grid; gap: 8px;
-    transition: border-color .2s, transform .2s;
-  }
-  .kpi:hover { border-color: var(--linea-viva); transform: translateY(-1px); }
-  .kpi h3 { font-size: 11px; letter-spacing: 1.6px; font-weight: 600; color: var(--gris); text-transform: uppercase; }
-  .kpi .valor { font-family: var(--display); font-weight: 400; font-size: 30px; color: var(--gris-2); }
+/* ── barra lateral ── */
+.lado {
+  background: var(--card-dark); border-right: 2px solid var(--line-dark);
+  display: flex; flex-direction: column;
+  padding: 20px 14px 16px; position: sticky; top: 0; height: 100svh; z-index: 40;
+  transition: width .35s var(--ease-snap);
+  width: var(--lado-w); overflow: hidden;
+}
+.marca { display: flex; align-items: center; gap: 12px; padding: 2px 8px 18px; border-bottom: 2px solid var(--line-dark); text-decoration: none; }
+.marca-bunny { width: 36px; height: 32px; flex: none; color: #fff; --bunny-eye: var(--ink); transition: transform .3s var(--ease-snap); }
+.marca:hover .marca-bunny { transform: rotate(-8deg) scale(1.12); }
+.marca-word { font-family: var(--f-display); font-size: 19px; letter-spacing: 1.5px; color: #fff; white-space: nowrap; }
+.marca-word small { display: block; font-family: var(--f-ui); font-size: 8.5px; letter-spacing: 3.5px; color: var(--pink); }
+.plegada .marca-word { opacity: 0; width: 0; }
 
-  /* secciones */
-  .mod { display: none; }
-  .mod.activa { display: block; animation: aparece .25s ease; }
-  @keyframes aparece { from { opacity: 0; transform: translateY(4px); } }
-  @media (prefers-reduced-motion: reduce) { .mod.activa { animation: none; } }
+.lado nav { position: relative; display: grid; gap: 3px; padding-top: 16px; }
+/* el conejo saltarín que acompaña a la sección activa */
+.hopper { position: absolute; left: -2px; width: 15px; height: 13px; color: var(--pink); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); top: 16px; transition: top .45s cubic-bezier(.3, 1.4, .4, 1); z-index: 1; }
+.lado nav button {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 10px 12px 10px 16px; text-align: left;
+  font-size: 12.5px; font-weight: 700; letter-spacing: 1.4px; color: var(--gray-2);
+  border: 2px solid transparent;
+  transition: color .2s, background .2s, transform .2s var(--ease-snap);
+  white-space: nowrap;
+}
+.lado nav button:hover { color: var(--bone); background: rgba(230,230,255,.045); transform: translateX(3px); }
+.lado nav button[aria-current="true"] { color: var(--ink); background: var(--pink); border-color: var(--ink); box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
+.lado nav button svg { width: 17px; height: 17px; flex: none; }
+.plegada .lado nav button span { opacity: 0; width: 0; }
 
-  .tarjeta {
-    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
-    padding: 20px; margin-bottom: 16px;
-  }
-  .tarjeta > h2 { font-size: 12px; letter-spacing: 2px; font-weight: 700; color: var(--gris); text-transform: uppercase; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lado-pie { margin-top: auto; display: grid; gap: 10px; padding: 14px 8px 0; border-top: 2px solid var(--line-dark); }
+.quien { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.quien-avatar { width: 30px; height: 27px; flex: none; color: var(--yellow); --bunny-eye: var(--ink); }
+.quien-mail { font-size: 11px; color: var(--gray-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lado-pie a, .lado-pie .salir { font-size: 10px; letter-spacing: 2px; font-weight: 700; color: var(--gray-2); text-decoration: none; text-align: left; transition: color .2s, transform .2s var(--ease-snap); }
+.lado-pie a:hover, .lado-pie .salir:hover { color: var(--pink); transform: translateX(3px); }
+.plegada .quien-mail, .plegada .lado-pie a span, .plegada .salir span { display: none; }
 
-  /* tabla-esquema: la estructura real que llenará Stripe */
-  .tabla { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  .tabla th {
-    text-align: left; padding: 8px 10px; color: var(--gris-2);
-    font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase;
-    border-bottom: 1px solid var(--linea);
-  }
-  .tabla td { padding: 10px; border-bottom: 1px solid var(--linea); color: var(--gris); }
+/* ── barra superior ── */
+.zona { min-width: 0; display: flex; flex-direction: column; }
+.arriba {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px clamp(18px, 3vw, 38px);
+  background: rgba(10,10,18,.92); backdrop-filter: blur(8px);
+  border-bottom: 2px solid var(--line-dark);
+}
+.btn-pliega { width: 34px; height: 34px; display: grid; place-content: center; gap: 4px; border: 2px solid var(--line-dark); transition: border-color .2s, transform .2s var(--ease-snap); }
+.btn-pliega span { display: block; width: 14px; height: 2px; background: var(--gray-1); }
+.btn-pliega:hover { border-color: var(--pink); transform: translate(-1px,-1px); }
+.arriba h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(19px, 2.4vw, 25px); letter-spacing: 1px; margin-right: auto; }
+.arriba h1 i { font-style: normal; color: var(--pink); }
 
-  /* estado vacío: diseñado, con el porqué y el cuándo */
-  .vacio {
-    display: grid; justify-items: center; gap: 10px;
-    padding: 44px 20px; text-align: center;
-  }
-  .vacio svg { width: 40px; height: 35px; color: var(--linea-viva); }
-  .vacio p { color: var(--gris-2); font-size: 13px; max-width: 380px; }
+.busca { position: relative; }
+.busca input {
+  font-family: var(--f-ui); font-size: 12px; letter-spacing: .5px; color: var(--bone);
+  background: var(--card-dark); border: 2px solid var(--line-dark);
+  padding: 9px 34px 9px 12px; width: clamp(120px, 16vw, 220px);
+  transition: border-color .2s, width .3s var(--ease-snap), box-shadow .2s;
+}
+.busca input::placeholder { color: var(--gray-2); }
+.busca input:focus { border-color: var(--pink); width: clamp(160px, 20vw, 280px); box-shadow: 4px 4px 0 rgba(0,0,0,.5); outline: none; }
+.busca kbd { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); font-family: var(--f-ui); font-size: 9px; letter-spacing: 1px; color: var(--gray-2); border: 1px solid var(--line-dark); padding: 2px 5px; pointer-events: none; }
 
-  /* filtros: la estructura, deshabilitada hasta que haya qué filtrar */
-  .filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
-  .filtros > * {
-    font-family: var(--ui); font-size: 12px; color: var(--gris-2);
-    background: var(--panel-2); border: 1px solid var(--linea); border-radius: 7px;
-    padding: 7px 12px;
-  }
-  .filtros [disabled] { opacity: .55; cursor: not-allowed; }
+.sello-demo {
+  font-size: 9px; letter-spacing: 2px; font-weight: 700; color: var(--ink);
+  background: var(--yellow); padding: 5px 10px; box-shadow: 3px 3px 0 rgba(0,0,0,.5);
+  white-space: nowrap; cursor: help;
+}
+.campana { position: relative; width: 34px; height: 34px; display: grid; place-content: center; border: 2px solid var(--line-dark); transition: border-color .2s, transform .2s var(--ease-snap); }
+.campana:hover { border-color: var(--pink); transform: translate(-1px,-1px); }
+.campana svg { width: 15px; height: 15px; }
+.campana b {
+  position: absolute; top: -7px; right: -7px; min-width: 16px; height: 16px;
+  display: grid; place-content: center; font-size: 9px; font-weight: 700;
+  background: var(--pink); color: var(--ink); border: 2px solid var(--bg-dark);
+  animation: late 2s ease infinite;
+}
+@keyframes late { 0%, 100% { transform: scale(1); } 8% { transform: scale(1.25); } 16% { transform: scale(1); } }
+.avisos {
+  position: absolute; right: 0; top: calc(100% + 10px); width: 300px;
+  background: var(--card-dark); border: 2px solid var(--line-dark); box-shadow: 8px 8px 0 rgba(0,0,0,.55);
+  opacity: 0; transform: translateY(-8px) scale(.98); pointer-events: none;
+  transition: opacity .25s var(--ease-snap), transform .25s var(--ease-snap);
+  z-index: 50;
+}
+.avisos.abierto { opacity: 1; transform: none; pointer-events: auto; }
+.avisos header { font-size: 10px; letter-spacing: 2.5px; font-weight: 700; color: var(--gray-2); padding: 12px 14px 8px; border-bottom: 2px solid var(--line-dark); }
+.avisos ul { list-style: none; }
+.avisos li { display: flex; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--line-dark); font-size: 12px; color: var(--gray-1); transition: background .2s; }
+.avisos li:hover { background: rgba(230,230,255,.04); }
+.avisos li:last-child { border-bottom: 0; }
+.avisos li i { font-style: normal; flex: none; }
+.avisos li time { display: block; font-size: 10px; color: var(--gray-2); }
 
-  /* fulfillment: el tablero */
-  .tablero { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
-  .col-ful {
-    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
-    padding: 12px; min-height: 180px; display: grid; align-content: start; gap: 8px;
-  }
-  .col-ful h3 { font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--gris); display: flex; justify-content: space-between; }
-  .col-ful h3 b { color: var(--gris-2); font-weight: 600; }
-  .col-hueco {
-    border: 1px dashed var(--linea-viva); border-radius: 7px;
-    min-height: 54px; display: grid; place-content: center;
-    font-size: 10px; letter-spacing: 1.4px; color: var(--gris-2);
-  }
+/* ── marquee de operaciones — la firma de la tienda, puesta a trabajar ── */
+.cinta { background: var(--ink); border-bottom: 2px solid var(--line-dark); overflow: hidden; padding: 9px 0; position: relative; }
+.cinta-track { display: flex; width: max-content; animation: marq 32s linear infinite; }
+.cinta:hover .cinta-track { animation-play-state: paused; }
+.cinta-track span { font-size: 11px; letter-spacing: 3px; font-weight: 700; color: var(--pink); padding: 0 22px; white-space: nowrap; }
+.cinta-track span b { color: var(--bone); }
+.cinta-track span:nth-child(even) { color: var(--yellow); }
+@keyframes marq { to { transform: translateX(-50%); } }
 
-  /* productos: lo único con datos, porque son reales */
-  .prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-  .prod {
-    background: var(--panel); border: 1px solid var(--linea); border-radius: var(--radio);
-    padding: 16px 18px; display: grid; gap: 6px;
-    transition: border-color .2s;
-  }
-  .prod:hover { border-color: var(--linea-viva); }
-  .prod h3 { font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .5px; }
-  .prod .fila { display: flex; justify-content: space-between; font-size: 12px; color: var(--gris); }
-  .prod .fila b { color: var(--hueso); font-weight: 600; }
-  .prod .fila .pend { color: var(--gris-2); }
+/* ══════════ CONTENIDO ══════════ */
+.mods { position: relative; padding: 24px clamp(18px, 3vw, 38px) 70px; }
+.mod { display: none; }
+.mod.activa { display: block; }
 
-  /* la línea de tiempo del pedido: el esquema del historial */
-  .linea-t { display: grid; gap: 0; margin-top: 6px; }
-  .lt-paso {
-    display: grid; grid-template-columns: 14px 1fr; gap: 12px; align-items: start;
-    padding: 0 0 14px 4px; position: relative;
-  }
-  .lt-paso::before {
-    content: ""; position: absolute; left: 9.5px; top: 14px; bottom: 0;
-    width: 1px; background: var(--linea-viva);
-  }
-  .lt-paso:last-child::before { display: none; }
-  .lt-punto {
-    width: 11px; height: 11px; border-radius: 99px; margin-top: 3px;
-    border: 2px solid var(--linea-viva); background: var(--panel);
-  }
-  .lt-paso p { font-size: 12px; color: var(--gris); }
-  .lt-paso small { color: var(--gris-2); font-size: 10.5px; }
+/* la rejilla con jerarquía: 12 columnas, cada tarjeta pesa lo que importa */
+.bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+.c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c5 { grid-column: span 5; }
+.c6 { grid-column: span 6; } .c7 { grid-column: span 7; } .c8 { grid-column: span 8; }
+.c12 { grid-column: span 12; }
+@media (max-width: 1180px) { .c3, .c4 { grid-column: span 6; } .c5, .c7, .c8 { grid-column: span 12; } .c6 { grid-column: span 6; } }
+@media (max-width: 760px) { .bento > *, .bento .c3, .bento .c4, .bento .c6 { grid-column: span 12; } }
 
-  .aviso-esquema {
-    border: 1px solid var(--linea); border-left: 3px solid var(--amarillo);
-    background: var(--panel); border-radius: 0 var(--radio) var(--radio) 0;
-    padding: 12px 16px; font-size: 12.5px; color: var(--gris); margin-bottom: 20px;
-  }
-  .aviso-esquema b { color: var(--hueso); }
+/* la tarjeta de la casa */
+.tarj {
+  position: relative; background: var(--card-dark); border: 2px solid var(--line-dark);
+  padding: 18px 20px; min-width: 0;
+  transition: transform .25s var(--ease-snap), box-shadow .25s var(--ease-snap), border-color .25s;
+}
+.tarj:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 rgba(0,0,0,.55); border-color: #2a2a3e; }
+.tarj-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.tarj-cab h2 { font-size: 10.5px; letter-spacing: 2.6px; font-weight: 700; color: var(--gray-2); }
+.ver-todo { font-size: 10px; letter-spacing: 1.5px; font-weight: 700; color: var(--pink); text-decoration: none; cursor: pointer; transition: transform .2s var(--ease-snap); display: inline-block; }
+.ver-todo:hover { transform: translateX(3px); }
 
-  @media (max-width: 900px) {
-    .app.abierta { grid-template-columns: 1fr; }
-    .lado { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; }
-    .lado nav { display: flex; flex-wrap: wrap; }
-    .lado-pie { margin: 0 0 0 auto; border: 0; padding: 0; }
-  }
+/* KPI */
+.kpi-n { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 2.6vw, 34px); letter-spacing: .5px; line-height: 1.1; }
+.kpi-n small { font-size: .55em; color: var(--gray-2); letter-spacing: 1px; }
+.delta { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 3px 7px; margin-top: 8px; }
+.delta.sube { color: var(--verde); background: rgba(61,220,151,.1); }
+.delta.baja { color: var(--naranja); background: rgba(255,106,31,.12); }
+.chispa { position: absolute; right: 14px; bottom: 12px; width: 86px; height: 30px; opacity: .9; }
+.chispa polyline { fill: none; stroke-width: 2; stroke-linecap: square; }
+
+/* el héroe de ingresos */
+.hero-rev { padding: 22px 24px 16px; overflow: hidden; }
+.hero-rev .dientes { position: absolute; left: 0; right: 0; top: 0; --edge: var(--pink); transform: rotate(180deg); }
+.rev-cifra { font-family: var(--f-display); font-weight: 400; font-size: clamp(38px, 4.4vw, 56px); letter-spacing: 1px; }
+.rev-cifra i { font-style: normal; color: var(--pink); }
+.rev-nota { font-family: var(--f-serif); font-style: italic; font-size: 14px; color: var(--gray-1); }
+.tabs { display: inline-flex; border: 2px solid var(--line-dark); }
+.tabs button { font-size: 10px; letter-spacing: 1.5px; font-weight: 700; color: var(--gray-2); padding: 6px 12px; transition: background .2s, color .2s; }
+.tabs button[aria-selected="true"] { background: var(--pink); color: var(--ink); }
+.grafica { width: 100%; height: 190px; margin-top: 14px; display: block; }
+.grafica .linea { fill: none; stroke: var(--pink); stroke-width: 2.5; stroke-linecap: square; }
+.grafica .area { opacity: 0; transition: opacity .8s ease .5s; }
+.grafica.dibujada .area { opacity: 1; }
+.grafica .eje { font-family: var(--f-ui); font-size: 9px; letter-spacing: 1px; fill: var(--gray-2); }
+.grafica .punto { fill: var(--yellow); stroke: var(--ink); stroke-width: 1.5; opacity: 0; transition: opacity .2s; }
+.grafica .punto.viva { opacity: 1; }
+.tip-graf {
+  position: absolute; pointer-events: none; z-index: 5;
+  background: var(--ink); border: 2px solid var(--pink); padding: 6px 10px;
+  font-size: 11px; white-space: nowrap; box-shadow: 4px 4px 0 rgba(0,0,0,.5);
+  opacity: 0; transform: translate(-50%, -8px); transition: opacity .15s;
+}
+.tip-graf b { color: var(--pink); }
+.tip-graf.viva { opacity: 1; }
+
+/* tablas de la casa */
+.tabla { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.tabla th { text-align: left; padding: 8px 10px; color: var(--gray-2); font-size: 9.5px; letter-spacing: 2px; font-weight: 700; border-bottom: 2px solid var(--line-dark); white-space: nowrap; }
+.tabla td { padding: 11px 10px; border-bottom: 1px solid var(--line-dark); color: var(--gray-1); white-space: nowrap; }
+.tabla td b { color: var(--bone); font-weight: 700; }
+.tabla tbody tr { transition: background .2s, transform .2s var(--ease-snap); }
+.tabla tbody tr[data-ped] { cursor: pointer; }
+.tabla tbody tr:hover { background: rgba(255,79,216,.05); transform: translateX(3px); }
+.tabla-scroll { overflow-x: auto; }
+
+/* estados: la lista cerrada de la casa */
+.est { display: inline-flex; align-items: center; gap: 6px; font-size: 9.5px; letter-spacing: 1.5px; font-weight: 700; padding: 4px 9px; }
+.est::before { content: ""; width: 6px; height: 6px; background: currentColor; }
+.est.pagado    { color: var(--cyan); background: rgba(79,232,255,.09); }
+.est.prepara   { color: var(--yellow); background: rgba(255,212,0,.09); }
+.est.empacado  { color: var(--gray-1); background: rgba(230,230,255,.08); }
+.est.enviado   { color: var(--pink); background: rgba(255,79,216,.1); }
+.est.entregado { color: var(--verde); background: rgba(61,220,151,.1); }
+.est.retraso   { color: var(--naranja); background: rgba(255,106,31,.12); }
+
+/* barras de progreso / stock */
+.barra { height: 10px; background: rgba(230,230,255,.07); border: 1px solid var(--line-dark); overflow: hidden; }
+.barra i { display: block; height: 100%; background: var(--pink); width: 0; transition: width 1s var(--ease-snap); }
+.barra.baja i { background: var(--naranja); }
+.barra.ok i { background: var(--verde); }
+
+/* timeline — actividad y pedido */
+.linea-t { list-style: none; position: relative; }
+.linea-t li { position: relative; display: grid; grid-template-columns: 16px 1fr; gap: 12px; padding-bottom: 16px; opacity: 0; transform: translateY(10px); animation: lt-in .5s var(--ease-snap) forwards; animation-delay: calc(var(--i) * 110ms); }
+@keyframes lt-in { to { opacity: 1; transform: none; } }
+.linea-t li::before { content: ""; position: absolute; left: 6px; top: 15px; bottom: -2px; width: 2px; background: var(--line-dark); }
+.linea-t li:last-child::before { display: none; }
+.lt-punto { width: 14px; height: 14px; margin-top: 2px; background: var(--card-dark); border: 3px solid var(--line-dark); }
+.linea-t li.hito .lt-punto { border-color: var(--pink); background: var(--pink); box-shadow: 0 0 0 3px rgba(255,79,216,.2); }
+.linea-t p { font-size: 12px; color: var(--gray-1); }
+.linea-t p b { color: var(--bone); }
+.linea-t time { font-size: 10px; letter-spacing: 1px; color: var(--gray-2); }
+
+/* tablero kanban */
+.tablero { display: grid; grid-template-columns: repeat(5, minmax(190px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 6px; }
+.col-ful { background: var(--bg-dark); border: 2px solid var(--line-dark); padding: 12px; min-height: 220px; transition: border-color .2s, background .2s; }
+.col-ful.sobre { border-color: var(--pink); background: rgba(255,79,216,.04); }
+.col-ful h3 { display: flex; justify-content: space-between; font-size: 9.5px; letter-spacing: 2px; font-weight: 700; color: var(--gray-2); margin-bottom: 10px; }
+.col-ful h3 b { color: var(--pink); }
+.ficha-ped {
+  background: var(--card-dark); border: 2px solid var(--line-dark); padding: 10px 12px; margin-bottom: 8px;
+  font-size: 11.5px; color: var(--gray-1); cursor: grab;
+  transition: transform .2s var(--ease-snap), box-shadow .2s, border-color .2s;
+}
+.ficha-ped:hover { transform: translate(-2px,-2px); box-shadow: 5px 5px 0 rgba(0,0,0,.5); border-color: var(--pink); }
+.ficha-ped.volando { opacity: .4; }
+.ficha-ped b { color: var(--bone); display: block; }
+.ficha-ped small { color: var(--gray-2); font-size: 10px; }
+
+/* clientes: el muro de fundadores */
+.muro { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.fundador { display: flex; align-items: center; gap: 10px; background: var(--bg-dark); border: 2px solid var(--line-dark); padding: 10px 12px; transition: transform .2s var(--ease-snap), border-color .2s, box-shadow .2s; }
+.fundador:hover { transform: translate(-2px,-2px); border-color: var(--yellow); box-shadow: 5px 5px 0 rgba(0,0,0,.5); }
+.fundador svg { width: 24px; height: 21px; flex: none; --bunny-eye: var(--ink); }
+.fundador div { min-width: 0; }
+.fundador b { display: block; font-size: 11.5px; color: var(--bone); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fundador small { font-size: 9.5px; letter-spacing: 1px; color: var(--gray-2); }
+
+/* productos */
+.prod-adm { display: grid; gap: 12px; }
+.prod-fila { display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; background: var(--bg-dark); border: 2px solid var(--line-dark); padding: 14px 16px; transition: transform .25s var(--ease-snap), box-shadow .25s, border-color .25s; }
+.prod-fila:hover { transform: translate(-3px,-3px); box-shadow: 8px 8px 0 rgba(0,0,0,.55); border-color: var(--pink); }
+.prod-fila h3 { font-family: var(--f-display); font-weight: 400; font-size: 19px; letter-spacing: .5px; }
+.prod-fila h3 small { font-family: var(--f-ui); font-size: 10px; letter-spacing: 2px; color: var(--gray-2); margin-left: 10px; }
+.prod-fila .precio { font-family: var(--f-display); font-size: 17px; color: var(--pink); align-self: center; }
+.prod-stock { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; font-size: 10.5px; letter-spacing: 1px; color: var(--gray-2); }
+
+/* donut */
+.donut { position: relative; width: 130px; height: 130px; margin: 6px auto; }
+.donut svg { transform: rotate(-90deg); }
+.donut .fondo { fill: none; stroke: var(--line-dark); stroke-width: 12; }
+.donut .valor { fill: none; stroke: var(--pink); stroke-width: 12; stroke-dasharray: 339.3; stroke-dashoffset: 339.3; transition: stroke-dashoffset 1.2s var(--ease-snap); }
+.donut b { position: absolute; inset: 0; display: grid; place-content: center; font-family: var(--f-display); font-weight: 400; font-size: 26px; }
+
+/* barras verticales de analytics: la altura es fija y lo que anima es la
+   escala — transicionar height hacia un % dentro de una pista de grid se
+   queda en 0 en Chrome (el porcentaje se recalcula contra la barra a medias). */
+.barraV { align-self: end; transform: scaleY(0); transform-origin: bottom; transition: transform .9s var(--ease-snap); transition-delay: var(--d, 0ms); }
+.barraV.crecida { transform: scaleY(1); }
+
+/* barras horizontales */
+.top-prod { display: grid; gap: 12px; }
+.top-prod > div { display: grid; gap: 5px; }
+.top-prod .tp-lab { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 1px; color: var(--gray-1); }
+.top-prod .tp-lab b { color: var(--bone); }
+
+/* soporte */
+.inbox { display: grid; grid-template-columns: minmax(230px, 320px) 1fr; gap: 14px; }
+@media (max-width: 900px) { .inbox { grid-template-columns: 1fr; } }
+.hilo { display: grid; gap: 4px; background: var(--bg-dark); border: 2px solid var(--line-dark); padding: 12px 14px; cursor: pointer; transition: transform .2s var(--ease-snap), border-color .2s; }
+.hilo:hover, .hilo.abierto { transform: translateX(3px); border-color: var(--pink); }
+.hilo b { font-size: 12px; color: var(--bone); }
+.hilo p { font-size: 11px; color: var(--gray-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.burbuja { max-width: 78%; padding: 10px 14px; margin-bottom: 10px; font-size: 12.5px; border: 2px solid var(--line-dark); background: var(--bg-dark); color: var(--gray-1); }
+.burbuja.mia { margin-left: auto; background: rgba(255,79,216,.09); border-color: rgba(255,79,216,.4); color: var(--bone); }
+
+/* formularios de la casa */
+.form-adm { display: grid; gap: 16px; max-width: 560px; }
+.form-adm label { display: grid; gap: 6px; font-size: 10px; letter-spacing: 2px; font-weight: 700; color: var(--gray-2); }
+.form-adm input, .form-adm select {
+  font-family: var(--f-ui); font-size: 13px; color: var(--bone);
+  background: var(--bg-dark); border: 2px solid var(--line-dark); padding: 11px 12px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.form-adm input:focus, .form-adm select:focus { border-color: var(--pink); box-shadow: 4px 4px 0 rgba(0,0,0,.5); outline: none; }
+.palanca { display: flex; align-items: center; justify-content: space-between; gap: 14px; border: 2px solid var(--line-dark); padding: 12px 14px; }
+.palanca p { font-size: 12px; color: var(--gray-1); letter-spacing: .3px; }
+.palanca p b { display: block; color: var(--bone); font-size: 12.5px; letter-spacing: 1px; }
+.inter { position: relative; flex: none; width: 46px; height: 24px; background: var(--line-dark); border: 2px solid var(--line-dark); transition: background .25s; }
+.inter::after { content: ""; position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; background: var(--gray-2); transition: transform .25s var(--ease-snap), background .25s; }
+.inter[aria-pressed="true"] { background: var(--pink); }
+.inter[aria-pressed="true"]::after { transform: translateX(22px); background: var(--ink); }
+
+/* botón de la casa (compacto para herramienta) */
+.btn {
+  position: relative; overflow: hidden; display: inline-block;
+  font-family: var(--f-ui); font-size: 11px; letter-spacing: 2px; font-weight: 700; text-align: center;
+  padding: 11px 18px; border: 3px solid var(--ink); cursor: pointer;
+  transition: transform .18s var(--ease-snap), box-shadow .18s var(--ease-snap), background .18s, color .18s;
+}
+.btn::after { content: ""; position: absolute; top: 0; bottom: 0; left: -80%; width: 45%; background: linear-gradient(105deg, transparent, rgba(255,255,255,.38), transparent); transform: skewX(-20deg); pointer-events: none; }
+.btn:hover::after { left: 125%; transition: left .5s ease; }
+.btn-pink { background: var(--pink); color: var(--ink); box-shadow: 6px 6px 0 rgba(0,0,0,.55); }
+.btn-pink:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 rgba(0,0,0,.55); background: var(--bone); }
+.btn:active { transform: translate(2px,2px); box-shadow: 3px 3px 0 rgba(0,0,0,.55); }
+
+/* tooltips de la casa */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px); white-space: nowrap;
+  background: var(--ink); color: var(--bone); border: 2px solid var(--pink);
+  font-size: 10px; letter-spacing: 1px; padding: 5px 9px; pointer-events: none;
+  opacity: 0; transition: opacity .2s, transform .2s var(--ease-snap); z-index: 60;
+  box-shadow: 4px 4px 0 rgba(0,0,0,.5);
+}
+[data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* skeleton — el pulso de carga */
+.hueso { position: relative; overflow: hidden; background: rgba(230,230,255,.06) !important; border-color: transparent !important; }
+.hueso > * { visibility: hidden; }
+.hueso::after { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(230,230,255,.09) 50%, transparent 70%); animation: brilla 1.1s ease infinite; }
+@keyframes brilla { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+
+/* toasts */
+.toasts { position: fixed; right: 20px; bottom: 20px; display: grid; gap: 10px; z-index: 90; }
+.toast {
+  display: flex; align-items: center; gap: 12px; min-width: 260px; max-width: 360px;
+  background: var(--ink); border: 2px solid var(--pink); padding: 13px 16px;
+  box-shadow: 8px 8px 0 rgba(0,0,0,.55); font-size: 12.5px; color: var(--bone);
+  animation: toast-in .4s var(--ease-snap);
+}
+.toast.fuera { animation: toast-out .35s var(--ease-snap) forwards; }
+.toast svg { width: 20px; height: 18px; flex: none; color: var(--pink); --bunny-eye: var(--ink); }
+@keyframes toast-in { from { opacity: 0; transform: translateX(40px); } }
+@keyframes toast-out { to { opacity: 0; transform: translateX(40px); } }
+
+/* modal del pedido */
+.velo { position: fixed; inset: 0; background: rgba(5,5,8,.7); backdrop-filter: blur(3px); z-index: 80; opacity: 0; pointer-events: none; transition: opacity .3s; }
+.velo.abierto { opacity: 1; pointer-events: auto; }
+.modal-ped {
+  position: fixed; top: 50%; left: 50%; z-index: 85; width: min(560px, calc(100vw - 32px));
+  max-height: 86svh; overflow: auto;
+  background: var(--card-dark); border: 3px solid var(--ink); box-shadow: 12px 12px 0 rgba(0,0,0,.6);
+  padding: 0 22px 22px; opacity: 0; pointer-events: none;
+  transform: translate(-50%, -46%) scale(.96);
+  transition: opacity .3s var(--ease-snap), transform .3s var(--ease-snap);
+}
+.modal-ped.abierto { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+.modal-ped .dientes { margin: 0 -22px 16px; }
+.modal-ped h2 { font-family: var(--f-display); font-weight: 400; font-size: 24px; letter-spacing: 1px; margin-bottom: 2px; }
+.modal-x { position: absolute; top: 18px; right: 16px; width: 32px; height: 32px; display: grid; place-content: center; border: 2px solid var(--line-dark); font-size: 14px; transition: border-color .2s, transform .2s var(--ease-snap); }
+.modal-x:hover { border-color: var(--pink); transform: rotate(90deg); }
+
+/* contadores que laten al aterrizar */
+@keyframes pop { 40% { transform: scale(1.06); } }
+.late-pop { animation: pop .5s var(--ease-snap); }
+
+@media (max-width: 860px) {
+  .app.abierta { grid-template-columns: 1fr; }
+  .lado { position: fixed; left: 0; transform: translateX(-100%); transition: transform .35s var(--ease-snap); width: 250px; box-shadow: 12px 0 30px rgba(0,0,0,.5); }
+  .app.lado-abierto .lado { transform: none; }
+  .tablero { grid-template-columns: repeat(5, 200px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .cinta-track { animation: none; }
+  .rv { opacity: 1; transform: none; }
+}
 </style>
 </head>
 <body>
 
+<div class="mesh" aria-hidden="true"></div>
+<div class="grano" aria-hidden="true"></div>
+
+<!-- el conejo oficial + iconos pixel de la casa (misma rejilla, mismo lenguaje) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <symbol id="bunny" viewBox="0.9 -0.1 8.2 7.2">
-    <g fill="currentColor"><rect x="2" y="0" width="1" height="3"/><rect x="7" y="0" width="1" height="3"/>
-    <rect x="2" y="3" width="6" height="1"/><rect x="1" y="4" width="8" height="2"/><rect x="2" y="6" width="6" height="1"/></g>
+    <g fill="currentColor"><rect x="2" y="0" width="1" height="3"/><rect x="7" y="0" width="1" height="3"/><rect x="2" y="3" width="6" height="1"/><rect x="1" y="4" width="8" height="2"/><rect x="2" y="6" width="6" height="1"/></g>
+    <rect x="3" y="4" width="1" height="1" fill="var(--bunny-eye, #050508)"/>
+    <rect x="6" y="4" width="1" height="1" fill="var(--bunny-eye, #050508)"/>
+    <rect x="4" y="5" width="2" height="1" fill="var(--bunny-muzzle, #ff4fd8)"/>
   </symbol>
+  <symbol id="px-panel" viewBox="0 0 10 10"><g fill="currentColor"><rect x="0" y="0" width="4" height="4"/><rect x="6" y="0" width="4" height="6"/><rect x="0" y="6" width="4" height="4"/><rect x="6" y="8" width="4" height="2"/></g></symbol>
+  <symbol id="px-caja" viewBox="0 0 10 10"><g fill="currentColor"><rect x="0" y="2" width="10" height="2"/><rect x="0" y="4" width="2" height="5"/><rect x="8" y="4" width="2" height="5"/><rect x="0" y="9" width="10" height="1"/><rect x="4" y="5" width="2" height="2"/></g></symbol>
+  <symbol id="px-pila" viewBox="0 0 10 10"><g fill="currentColor"><rect x="1" y="0" width="8" height="2"/><rect x="0" y="4" width="10" height="2"/><rect x="1" y="8" width="8" height="2"/></g></symbol>
+  <symbol id="px-flecha" viewBox="0 0 10 10"><g fill="currentColor"><rect x="0" y="4" width="6" height="2"/><rect x="5" y="2" width="2" height="2"/><rect x="5" y="6" width="2" height="2"/><rect x="7" y="3" width="2" height="4"/><rect x="8" y="4" width="2" height="2"/></g></symbol>
+  <symbol id="px-cara" viewBox="0 0 10 10"><g fill="currentColor"><rect x="2" y="0" width="1" height="3"/><rect x="7" y="0" width="1" height="3"/><rect x="1" y="3" width="8" height="4"/><rect x="2" y="7" width="6" height="1"/></g></symbol>
+  <symbol id="px-lata" viewBox="0 0 10 10"><g fill="currentColor"><rect x="2" y="0" width="6" height="2"/><rect x="1" y="2" width="8" height="7"/><rect x="2" y="9" width="6" height="1"/></g><rect x="3" y="4" width="4" height="2" fill="var(--bg-dark, #0a0a12)"/></symbol>
+  <symbol id="px-barras" viewBox="0 0 10 10"><g fill="currentColor"><rect x="0" y="6" width="2" height="4"/><rect x="4" y="3" width="2" height="7"/><rect x="8" y="0" width="2" height="10"/></g></symbol>
+  <symbol id="px-globo" viewBox="0 0 10 10"><g fill="currentColor"><rect x="0" y="0" width="10" height="6"/><rect x="2" y="6" width="2" height="2"/></g></symbol>
+  <symbol id="px-tuerca" viewBox="0 0 10 10"><g fill="currentColor"><rect x="4" y="0" width="2" height="10"/><rect x="0" y="4" width="10" height="2"/><rect x="1" y="1" width="2" height="2"/><rect x="7" y="1" width="2" height="2"/><rect x="1" y="7" width="2" height="2"/><rect x="7" y="7" width="2" height="2"/></g><rect x="3" y="3" width="4" height="4" fill="var(--card-dark, #0d0d14)"/></symbol>
+  <symbol id="px-campana" viewBox="0 0 10 10"><g fill="currentColor"><rect x="4" y="0" width="2" height="1"/><rect x="2" y="1" width="6" height="5"/><rect x="1" y="6" width="8" height="1"/><rect x="4" y="8" width="2" height="2"/></g></symbol>
+  <linearGradient id="gradRosa" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ff4fd8" stop-opacity=".28"/>
+    <stop offset="1" stop-color="#ff4fd8" stop-opacity="0"/>
+  </linearGradient>
 </defs></svg>
 
 <!-- ══ LA PUERTA ══ -->
 <div class="puerta" id="puerta">
-  <span class="sello">EL CUARTEL</span>
+  <svg class="puerta-bunny"><use href="#bunny"/></svg>
+  <span class="sello-cuartel">EL CUARTEL</span>
   <h1 id="puertaTitulo">COMPROBANDO ACCESO…</h1>
   <p id="puertaTexto">Un momento.</p>
   <p id="puertaAccion"></p>
@@ -274,282 +512,771 @@ const COLS_FUL = ["Pendiente de preparar", "Preparando", "Empacado", "Con el tra
 
 <!-- ══ LA APLICACIÓN ══ -->
 <div class="app" id="app">
-  <aside class="lado">
-    <div class="lado-marca">
-      <svg aria-hidden="true"><use href="#bunny"/></svg>
-      <div><b>EL CUARTEL</b><small>SNACKRABBIT ADMIN</small></div>
-    </div>
+  <aside class="lado" id="lado">
+    <a class="marca" href="/admin" aria-label="EL CUARTEL — inicio">
+      <svg class="marca-bunny"><use href="#bunny"/></svg>
+      <span class="marca-word">SNACKRABBIT<small>EL CUARTEL</small></span>
+    </a>
     <nav aria-label="Módulos">
+      <svg class="hopper" id="hopper" aria-hidden="true"><use href="#bunny"/></svg>
       {SECCIONES.map((s, i) => (
         <button type="button" data-mod={s.id} aria-current={i === 0 ? "true" : "false"}>
-          <i class="ic" aria-hidden="true">{s.icono}</i>{s.nombre}
+          <svg aria-hidden="true"><use href={`#${s.icono}`}/></svg><span>{s.nombre.toUpperCase()}</span>
         </button>
       ))}
     </nav>
     <div class="lado-pie">
-      <span class="lado-quien" id="quien"></span>
-      <a href="/">← Volver a la tienda</a>
-      <button type="button" class="salir" id="salir">Cerrar sesión</button>
+      <div class="quien">
+        <svg class="quien-avatar"><use href="#bunny"/></svg>
+        <span class="quien-mail" id="quien"></span>
+      </div>
+      <a href="/">← <span>VOLVER A LA TIENDA</span></a>
+      <button type="button" class="salir" id="salir">✕ <span>CERRAR SESIÓN</span></button>
     </div>
   </aside>
 
-  <main class="zona">
-    <div class="zona-cab">
-      <h1 id="tituloMod">Resumen</h1>
-      <time id="hoy"></time>
+  <div class="zona">
+    <header class="arriba">
+      <button type="button" class="btn-pliega" id="pliega" aria-label="Plegar menú"><span></span><span></span><span></span></button>
+      <h1><i>▸</i> <span id="tituloMod">Resumen</span></h1>
+      <div class="busca">
+        <input type="search" id="buscaGlobal" placeholder="BUSCAR PEDIDO, CLIENTE…" aria-label="Buscar">
+        <kbd>/</kbd>
+      </div>
+      <span class="sello-demo" data-tip="Se sustituyen por datos reales al conectar Stripe">DATOS DE EJEMPLO</span>
+      <div style="position:relative">
+        <button type="button" class="campana" id="campana" aria-label="Notificaciones" aria-expanded="false">
+          <svg><use href="#px-campana"/></svg><b id="campanaN">3</b>
+        </button>
+        <div class="avisos" id="avisos">
+          <header>AVISOS</header>
+          <ul>
+            <li><i>📦</i><div>Stock bajo: RABBIT FUEL ×4 — quedan 18<time>hace 12 min</time></div></li>
+            <li><i>🚚</i><div>SR-1043 sin movimiento hace 6 días<time>hace 1 h</time></div></li>
+            <li><i>⭐</i><div>Fundador nuevo: @mochi.dev (67/100)<time>hace 3 h</time></div></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="cinta" aria-hidden="true">
+      <div class="cinta-track" id="cinta"></div>
     </div>
 
-    <p class="aviso-esquema">
-      <b>Este panel es el esquema del centro de operaciones.</b> Ningún número está
-      inventado: cada indicador enseña de dónde saldrá su dato y qué lo activa.
-      Cuando Stripe entre, se enchufa aquí — sin rediseñar nada.
-    </p>
+    <main class="mods" id="mods">
 
-    <!-- ── RESUMEN ── -->
-    <section class="mod activa" data-mod="resumen">
-      <div class="kpis">
-        {KPIS.map(([nombre]) => (
-          <div class="kpi">
-            <h3>{nombre}</h3>
-            <p class="valor">—</p>
-            <span class="sello-stripe">SE ACTIVA CON STRIPE</span>
-          </div>
-        ))}
-      </div>
-      <div class="tarjeta">
-        <h2>Actividad reciente <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
-        <div class="vacio">
-          <svg aria-hidden="true"><use href="#bunny"/></svg>
-          <p>Aquí correrá el pulso del negocio: pedidos entrando, cajas saliendo,
-             altas al club. El primer evento llega con el primer cobro.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── PEDIDOS ── -->
-    <section class="mod" data-mod="pedidos">
-      <div class="filtros">
-        <select disabled aria-label="Filtrar por estado"><option>Estado</option></select>
-        <select disabled aria-label="Filtrar por producto"><option>Producto</option></select>
-        <select disabled aria-label="Filtrar por país"><option>País</option></select>
-        <input disabled type="search" placeholder="Buscar pedido o cliente…" aria-label="Buscar">
-      </div>
-      <div class="tarjeta">
-        <h2>Pedidos <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
-        <table class="tabla">
-          <thead><tr>
-            <th>Pedido</th><th>Cliente</th><th>Productos</th><th>Total</th>
-            <th>Pago</th><th>Estado</th><th>Fecha</th><th>Acciones</th>
-          </tr></thead>
-        </table>
-        <div class="vacio">
-          <svg aria-hidden="true"><use href="#bunny"/></svg>
-          <p>Cada fila tendrá ver · editar · reembolsar · marcar enviado · añadir
-             seguimiento. La tabla existe; los pedidos llegan con la pasarela.</p>
-        </div>
-      </div>
-      <div class="tarjeta">
-        <h2>Historial de un pedido — el esquema</h2>
-        <div class="linea-t">
-          {["Pedido creado", "Pago confirmado", "En preparación", "Empacado",
-            "Etiqueta generada", "Recogido por el transportista", "En tránsito",
-            "En reparto", "Entregado", "Completado"].map(paso => (
-            <div class="lt-paso">
-              <span class="lt-punto" aria-hidden="true"></span>
-              <div><p>{paso}</p><small>fecha · hora · responsable</small></div>
+      <!-- ════ RESUMEN ════ -->
+      <section class="mod activa" data-mod="resumen">
+        <div class="bento">
+          <article class="tarj hero-rev c8 rv" style="--i:0">
+            <div class="dientes" aria-hidden="true"></div>
+            <div class="tarj-cab" style="margin-top:8px">
+              <h2>INGRESOS</h2>
+              <div class="tabs" role="tablist" aria-label="Periodo">
+                <button role="tab" aria-selected="true"  data-per="7">7D</button>
+                <button role="tab" aria-selected="false" data-per="30">30D</button>
+                <button role="tab" aria-selected="false" data-per="90">90D</button>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- ── FULFILLMENT ── -->
-    <section class="mod" data-mod="fulfillment">
-      <div class="tarjeta">
-        <h2>Tablero de preparación <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
-        <div class="tablero">
-          {COLS_FUL.map(col => (
-            <div class="col-ful">
-              <h3>{col} <b>0</b></h3>
-              <div class="col-hueco">SIN CAJAS</div>
+            <p class="rev-cifra"><i>$</i><span id="revTotal" data-n="14382">0</span></p>
+            <p class="rev-nota">el mes va un 23% por encima del anterior — las latas tiran del carro.</p>
+            <div style="position:relative">
+              <svg class="grafica" id="grafRev" preserveAspectRatio="none" role="img" aria-label="Ingresos por día"></svg>
+              <div class="tip-graf" id="tipGraf"></div>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- ── ENVÍOS ── -->
-    <section class="mod" data-mod="envios">
-      <div class="tarjeta">
-        <h2>Envíos <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
-        <table class="tabla">
-          <thead><tr>
-            <th>Pedido</th><th>Transportista</th><th>Seguimiento</th>
-            <th>Estado</th><th>Entrega estimada</th><th>Coste</th>
-          </tr></thead>
-        </table>
-        <div class="vacio">
-          <svg aria-hidden="true"><use href="#bunny"/></svg>
-          <p>Con alerta automática de retraso: si un envío deja de moverse más de
-             7 días laborables, sube aquí solo.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── CLIENTES ── -->
-    <section class="mod" data-mod="clientes">
-      <div class="tarjeta">
-        <h2>Fundadores — la cola real</h2>
-        <div class="vacio">
-          <svg aria-hidden="true"><use href="#bunny"/></svg>
-          <p>Este módulo es el primero que se conecta: la lista de fundadores ya
-             existe en Clerk, ordenada por la hora sellada de alta, con su plan y
-             su idioma. Es la pantalla del día del lanzamiento — con ella se
-             asignan las 100 cartas 000.</p>
-        </div>
-      </div>
-      <div class="tarjeta">
-        <h2>Ficha de cliente — el esquema <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
-        <table class="tabla">
-          <thead><tr>
-            <th>Cliente</th><th>Pedidos</th><th>Gasto total</th><th>Valor de vida</th>
-            <th>Frecuencia</th><th>Última compra</th><th>VIP</th>
-          </tr></thead>
-        </table>
-        <div class="vacio"><p>Historial, dirección, favoritos y valor por cliente — cuando haya compras.</p></div>
-      </div>
-    </section>
-
-    <!-- ── PRODUCTOS: datos reales, porque el catálogo existe ── -->
-    <section class="mod" data-mod="productos">
-      <div class="prods">
-        {PRODUCTS_ADMIN.map(p => (
-          <article class="prod">
-            <h3>{p.nombre}</h3>
-            <div class="fila"><span>Precio</span><b>{p.precio}</b></div>
-            <div class="fila"><span>Variantes</span><b>{p.variantes}</b></div>
-            <div class="fila"><span>SKU</span><span class="pend">— por asignar</span></div>
-            <div class="fila"><span>Stock</span><span class="pend">— con inventario</span></div>
-            <span class="sello-stripe">STOCK: SE ACTIVA CON INVENTARIO</span>
           </article>
-        ))}
-      </div>
-    </section>
 
-    <!-- ── ANALYTICS ── -->
-    <section class="mod" data-mod="analytics">
-      <div class="kpis">
-        {["Ingresos", "Ventas", "Conversión", "Clientes recurrentes", "Retención",
-          "Ventas por país", "Carritos abandonados", "Más vendidos"].map(n => (
-          <div class="kpi"><h3>{n}</h3><p class="valor">—</p><span class="sello-stripe">SE ACTIVA CON STRIPE</span></div>
-        ))}
-      </div>
-      <div class="tarjeta">
-        <h2>Tendencias <span class="sello-stripe">SE ACTIVA CON STRIPE</span></h2>
-        <div class="vacio">
-          <svg aria-hidden="true"><use href="#bunny"/></svg>
-          <p>Gráficos de ingresos, comparativas por periodo y evolución del club.
-             Los ejes esperan a la primera semana de datos.</p>
+          <div class="c4" style="display:grid; gap:14px">
+            <article class="tarj rv" style="--i:1">
+              <div class="tarj-cab"><h2>PEDIDOS HOY</h2></div>
+              <p class="kpi-n" data-cuenta="12">0</p>
+              <span class="delta sube">▲ +3 VS AYER</span>
+              <svg class="chispa" data-serie="4,6,3,7,5,9,12" data-color="var(--cyan)"></svg>
+            </article>
+            <article class="tarj rv" style="--i:2">
+              <div class="tarj-cab"><h2>CLIENTES NUEVOS · MES</h2></div>
+              <p class="kpi-n" data-cuenta="38">0</p>
+              <span class="delta sube">▲ +12% VS JULIO</span>
+              <svg class="chispa" data-serie="2,3,5,4,6,8,10" data-color="var(--yellow)"></svg>
+            </article>
+            <article class="tarj rv" style="--i:3">
+              <div class="tarj-cab"><h2>VALOR MEDIO</h2></div>
+              <p class="kpi-n"><small>$</small><span data-cuenta="40">0</span>.20</p>
+              <span class="delta baja">▼ −2% VS JULIO</span>
+              <svg class="chispa" data-serie="9,8,9,7,8,7,7" data-color="var(--pink)"></svg>
+            </article>
+          </div>
+
+          <article class="tarj c7 rv" style="--i:4">
+            <div class="tarj-cab"><h2>ÚLTIMOS PEDIDOS</h2><span class="ver-todo" data-ir="pedidos" role="button" tabindex="0">VER TODOS →</span></div>
+            <div class="tabla-scroll"><table class="tabla" id="tablaResumen"><thead><tr>
+              <th>PEDIDO</th><th>CLIENTE</th><th>TOTAL</th><th>ESTADO</th>
+            </tr></thead><tbody></tbody></table></div>
+          </article>
+
+          <article class="tarj c5 rv" style="--i:5">
+            <div class="tarj-cab"><h2>ACTIVIDAD</h2></div>
+            <ol class="linea-t" id="actividad"></ol>
+          </article>
+
+          <article class="tarj c5 rv" style="--i:6">
+            <div class="tarj-cab"><h2>STOCK BAJO</h2><span class="ver-todo" data-ir="productos" role="button" tabindex="0">INVENTARIO →</span></div>
+            <div class="top-prod" id="stockBajo"></div>
+          </article>
+
+          <article class="tarj c4 rv" style="--i:7">
+            <div class="tarj-cab"><h2>MÁS VENDIDOS · MES</h2></div>
+            <div class="top-prod" id="topProd"></div>
+          </article>
+
+          <article class="tarj c3 rv" style="--i:8">
+            <div class="tarj-cab"><h2>CONVERSIÓN</h2></div>
+            <div class="donut">
+              <svg viewBox="0 0 120 120" width="130" height="130">
+                <circle class="fondo" cx="60" cy="60" r="54"/>
+                <circle class="valor" id="donutConv" cx="60" cy="60" r="54"/>
+              </svg>
+              <b>2.8%</b>
+            </div>
+            <p style="text-align:center; font-size:10px; letter-spacing:1.5px; color:var(--gray-2)">DE VISITA A COMPRA</p>
+          </article>
+
+          <article class="tarj c12 rv" style="--i:9">
+            <div class="tarj-cab"><h2>FULFILLMENT AHORA</h2><span class="ver-todo" data-ir="fulfillment" role="button" tabindex="0">AL TABLERO →</span></div>
+            <div id="fulMini" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:12px"></div>
+          </article>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ── SOPORTE ── -->
-    <section class="mod" data-mod="soporte">
-      <div class="tarjeta">
-        <h2>Bandeja única</h2>
-        <div class="vacio">
-          <svg aria-hidden="true"><use href="#bunny"/></svg>
-          <p>Tickets, correos a hello@, cambios y reembolsos, en un solo sitio.
-             Hoy el correo entrante vive en Zoho; este módulo lo centralizará.</p>
+      <!-- ════ PEDIDOS ════ -->
+      <section class="mod" data-mod="pedidos">
+        <div class="bento">
+          <article class="tarj c12 rv" style="--i:0">
+            <div class="tarj-cab">
+              <h2>TODOS LOS PEDIDOS</h2>
+              <div class="tabs" role="tablist" aria-label="Filtrar por estado" id="filtroEstado">
+                <button role="tab" aria-selected="true" data-f="">TODOS</button>
+                <button role="tab" aria-selected="false" data-f="pagado">PAGADOS</button>
+                <button role="tab" aria-selected="false" data-f="prepara">PREPARANDO</button>
+                <button role="tab" aria-selected="false" data-f="enviado">ENVIADOS</button>
+                <button role="tab" aria-selected="false" data-f="entregado">ENTREGADOS</button>
+              </div>
+            </div>
+            <div class="tabla-scroll"><table class="tabla" id="tablaPedidos"><thead><tr>
+              <th>PEDIDO</th><th>CLIENTE</th><th>PRODUCTOS</th><th>TOTAL</th><th>ESTADO</th><th>FECHA</th>
+            </tr></thead><tbody></tbody></table></div>
+          </article>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ── AJUSTES ── -->
-    <section class="mod" data-mod="ajustes">
-      <div class="tarjeta">
-        <h2>Configuración</h2>
-        <table class="tabla">
-          <thead><tr><th>Área</th><th>Qué se administra</th><th>Estado</th></tr></thead>
-          <tbody>
-            <tr><td>Equipo y roles</td><td>Usuarios internos y permisos por módulo</td><td><span class="sello-stripe">PRÓXIMAMENTE</span></td></tr>
-            <tr><td>Pagos</td><td>Stripe, impuestos, monedas</td><td><span class="sello-stripe">SE ACTIVA CON STRIPE</span></td></tr>
-            <tr><td>Envíos</td><td>Tarifas, zonas, transportistas</td><td><span class="sello-stripe">PENDIENTE DE TARIFA</span></td></tr>
-            <tr><td>Correo</td><td>Plantillas y remitentes — ya operativos vía Resend</td><td>Activo</td></tr>
-            <tr><td>Integraciones y API</td><td>Claves y webhooks</td><td><span class="sello-stripe">PRÓXIMAMENTE</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+      <!-- ════ FULFILLMENT ════ -->
+      <section class="mod" data-mod="fulfillment">
+        <div class="bento">
+          <article class="tarj c12 rv" style="--i:0">
+            <div class="tarj-cab"><h2>TABLERO — ARRASTRA LAS CAJAS ENTRE COLUMNAS</h2></div>
+            <div class="tablero" id="tablero"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ════ ENVÍOS ════ -->
+      <section class="mod" data-mod="envios">
+        <div class="bento">
+          <article class="tarj c8 rv" style="--i:0">
+            <div class="tarj-cab"><h2>EN TRÁNSITO</h2></div>
+            <div class="tabla-scroll"><table class="tabla" id="tablaEnvios"><thead><tr>
+              <th>PEDIDO</th><th>TRANSPORTISTA</th><th>SEGUIMIENTO</th><th>ESTADO</th><th>ENTREGA EST.</th>
+            </tr></thead><tbody></tbody></table></div>
+          </article>
+          <article class="tarj c4 rv" style="--i:1">
+            <div class="tarj-cab"><h2>ALERTA DE RETRASO</h2></div>
+            <p style="font-size:12.5px; color:var(--gray-1); margin-bottom:12px">Un envío sin movimiento
+              <b style="color:var(--bone)">más de 6 días laborables</b> sube aquí solo.</p>
+            <div class="ficha-ped">
+              <b>SR-1043 · Jordan M.</b>
+              <small>USPS · sin escaneo desde el 29 JUL</small>
+              <span class="est retraso" style="margin-top:8px">RETRASADO</span>
+            </div>
+            <button class="btn btn-pink" style="margin-top:14px" data-toast="Reclamo abierto con USPS para SR-1043. (Demo)">ABRIR RECLAMO ▸</button>
+          </article>
+        </div>
+      </section>
+
+      <!-- ════ CLIENTES ════ -->
+      <section class="mod" data-mod="clientes">
+        <div class="bento">
+          <article class="tarj c4 rv" style="--i:0">
+            <div class="tarj-cab"><h2>LA CUENTA FUNDADORA</h2></div>
+            <p class="kpi-n"><span data-cuenta="67">0</span><small> / 100</small></p>
+            <div class="barra ok" style="margin-top:10px"><i data-w="67%"></i></div>
+            <p style="font-size:11px; color:var(--gray-2); margin-top:8px; letter-spacing:.5px">
+              33 cartas 000 restantes. Al llegar a 100, el corte es para siempre.</p>
+          </article>
+          <article class="tarj c8 rv" style="--i:1">
+            <div class="tarj-cab"><h2>EL MURO DE LA MADRIGUERA — ÚLTIMOS FUNDADORES</h2></div>
+            <div class="muro" id="muro"></div>
+          </article>
+          <article class="tarj c12 rv" style="--i:2">
+            <div class="tarj-cab"><h2>CLIENTES CON MÁS VALOR</h2></div>
+            <div class="tabla-scroll"><table class="tabla" id="tablaClientes"><thead><tr>
+              <th>CLIENTE</th><th>PEDIDOS</th><th>GASTO TOTAL</th><th>ÚLTIMA COMPRA</th><th>RANGO</th>
+            </tr></thead><tbody></tbody></table></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ════ PRODUCTOS ════ -->
+      <section class="mod" data-mod="productos">
+        <div class="bento">
+          <article class="tarj c12 rv" style="--i:0">
+            <div class="tarj-cab"><h2>CATÁLOGO E INVENTARIO</h2></div>
+            <div class="prod-adm" id="prodAdm"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ════ ANALYTICS ════ -->
+      <section class="mod" data-mod="analytics">
+        <div class="bento">
+          <article class="tarj c6 rv" style="--i:0">
+            <div class="tarj-cab"><h2>VENTAS POR SEMANA</h2></div>
+            <div id="barrasSem" style="display:flex; align-items:flex-end; gap:10px; height:180px; padding-top:10px"></div>
+          </article>
+          <article class="tarj c3 rv" style="--i:1">
+            <div class="tarj-cab"><h2>RECURRENTES</h2></div>
+            <div class="donut">
+              <svg viewBox="0 0 120 120" width="130" height="130">
+                <circle class="fondo" cx="60" cy="60" r="54"/>
+                <circle class="valor" id="donutRec" cx="60" cy="60" r="54" style="stroke:var(--cyan)"/>
+              </svg>
+              <b>31%</b>
+            </div>
+            <p style="text-align:center; font-size:10px; letter-spacing:1.5px; color:var(--gray-2)">VUELVEN A COMPRAR</p>
+          </article>
+          <article class="tarj c3 rv" style="--i:2">
+            <div class="tarj-cab"><h2>CARRITOS SALVADOS</h2></div>
+            <p class="kpi-n"><span data-cuenta="17">0</span><small> / 41</small></p>
+            <div class="barra" style="margin-top:10px"><i data-w="41%"></i></div>
+            <p style="font-size:11px; color:var(--gray-2); margin-top:8px; letter-spacing:.5px">
+              El correo de carrito abandonado recupera un 41%.</p>
+          </article>
+          <article class="tarj c7 rv" style="--i:3">
+            <div class="tarj-cab"><h2>VENTAS POR ESTADO (EE.UU.)</h2></div>
+            <div class="top-prod" id="porEstado"></div>
+          </article>
+          <article class="tarj c5 rv" style="--i:4">
+            <div class="tarj-cab"><h2>DE DÓNDE LLEGAN</h2></div>
+            <div class="top-prod" id="fuentes"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ════ SOPORTE ════ -->
+      <section class="mod" data-mod="soporte">
+        <div class="bento">
+          <article class="tarj c12 rv" style="--i:0">
+            <div class="tarj-cab"><h2>BANDEJA — hello@snackrabbit.co</h2></div>
+            <div class="inbox">
+              <div style="display:grid; gap:8px; align-content:start" id="hilos"></div>
+              <div style="border:2px solid var(--line-dark); padding:16px; min-height:280px" id="conversa"></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ════ AJUSTES ════ -->
+      <section class="mod" data-mod="ajustes">
+        <div class="bento">
+          <article class="tarj c6 rv" style="--i:0">
+            <div class="tarj-cab"><h2>LA TIENDA</h2></div>
+            <div class="form-adm">
+              <label>NOMBRE PÚBLICO<input value="SNACKRABBIT" /></label>
+              <label>CORREO DE SOPORTE<input value="hello@snackrabbit.co" /></label>
+              <label>UMBRAL DE ENVÍO GRATIS<input value="$60" /></label>
+              <label>TARIFA PLANA (EE.UU. CONTIGUO)<input value="$6.95" /></label>
+              <button class="btn btn-pink" data-toast="Ajustes guardados. (Demo: sin efecto real todavía)">GUARDAR ▸</button>
+            </div>
+          </article>
+          <article class="tarj c6 rv" style="--i:1">
+            <div class="tarj-cab"><h2>OPERACIÓN</h2></div>
+            <div style="display:grid; gap:10px">
+              <div class="palanca"><p><b>ALERTA DE STOCK BAJO</b>Avisar al caer de 20 unidades</p><button class="inter" aria-pressed="true" aria-label="Alerta de stock bajo"></button></div>
+              <div class="palanca"><p><b>ALERTA DE ENVÍO PARADO</b>Sin escaneo 6 días laborables</p><button class="inter" aria-pressed="true" aria-label="Alerta de envío parado"></button></div>
+              <div class="palanca"><p><b>RESUMEN DIARIO POR CORREO</b>Cada mañana a las 8:00</p><button class="inter" aria-pressed="false" aria-label="Resumen diario"></button></div>
+              <div class="palanca"><p><b>MODO MANTENIMIENTO</b>Cierra la tienda al público</p><button class="inter" aria-pressed="false" aria-label="Modo mantenimiento"></button></div>
+            </div>
+          </article>
+          <article class="tarj c12 rv" style="--i:2">
+            <div class="tarj-cab"><h2>CONEXIONES</h2></div>
+            <div class="tabla-scroll"><table class="tabla"><thead><tr><th>SERVICIO</th><th>PARA QUÉ</th><th>ESTADO</th></tr></thead><tbody>
+              <tr><td><b>Resend</b></td><td>Correo transaccional y lista</td><td><span class="est entregado">ACTIVO</span></td></tr>
+              <tr><td><b>Clerk</b></td><td>Cuentas y acceso</td><td><span class="est entregado">ACTIVO</span></td></tr>
+              <tr><td><b>Stripe</b></td><td>Pagos y suscripciones</td><td><span class="est prepara">PENDIENTE DE ENTIDAD</span></td></tr>
+              <tr><td><b>3PL / fulfillment</b></td><td>Almacén y envíos desde ~300 cajas</td><td><span class="est pagado">EVALUANDO</span></td></tr>
+            </tbody></table></div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
 </div>
 
+<div class="velo" id="velo"></div>
+<aside class="modal-ped" id="modalPed" role="dialog" aria-modal="true" aria-labelledby="mpTitulo">
+  <div class="dientes" aria-hidden="true"></div>
+  <button type="button" class="modal-x" id="mpCerrar" aria-label="Cerrar">✕</button>
+  <h2 id="mpTitulo">SR-0000</h2>
+  <p id="mpQuien" style="color:var(--gray-1); font-size:13px; margin-bottom:14px"></p>
+  <div class="tabla-scroll"><table class="tabla" id="mpLineas"><thead><tr><th>PRODUCTO</th><th>CANT.</th><th>PRECIO</th></tr></thead><tbody></tbody></table></div>
+  <p style="text-align:right; font-family:var(--f-display); font-size:22px; margin:12px 0 18px">TOTAL <i style="font-style:normal;color:var(--pink)" id="mpTotal"></i></p>
+  <div class="tarj-cab"><h2>HISTORIAL</h2></div>
+  <ol class="linea-t" id="mpTimeline"></ol>
+  <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap">
+    <button class="btn btn-pink" data-toast="Etiqueta generada. (Demo)">ETIQUETA ▸</button>
+    <button class="btn btn-pink" data-toast="Marcado como enviado. (Demo)">MARCAR ENVIADO ▸</button>
+  </div>
+</aside>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
 <script>
-  /* La puerta y el enrutado del panel. Todo lo demás es marcado estático. */
+  /* EL CUARTEL v2 — puerta, enrutado y vida.
+   * TODO Stripe/Supabase: TODO lo que hay en DEMO se sustituye por datos
+   * reales; nada más de este archivo debería tener que cambiar. */
   const PK = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+  const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const puerta = $("#puerta"), app = $("#app");
-  const titulo = $("#puertaTitulo"), texto = $("#puertaTexto"), accion = $("#puertaAccion");
+  /* ══════════ DATOS DE EJEMPLO ══════════ */
+  const DEMO = {
+    pedidos: [
+      { id: "SR-1049", quien: "Ava R. · Austin, TX",      items: [["RABBIT FUEL ×12", 1, 42], ["THE ZOOMIES", 1, 29]], estado: "pagado",    fecha: "5 AGO 09:41" },
+      { id: "SR-1048", quien: "Mateo G. · Miami, FL",     items: [["THE LOOKOUT · NEGRO", 1, 35]],                     estado: "pagado",    fecha: "5 AGO 08:12" },
+      { id: "SR-1047", quien: "Jordan K. · Portland, OR", items: [["RABBIT FUEL ×4", 2, 16]],                          estado: "prepara",   fecha: "4 AGO 19:03" },
+      { id: "SR-1046", quien: "Sofía L. · Queens, NY",    items: [["RABBIT FUEL ×12", 1, 42], ["THE LOOKOUT · BLANCO", 1, 35]], estado: "prepara", fecha: "4 AGO 16:40" },
+      { id: "SR-1045", quien: "Noah P. · Denver, CO",     items: [["THE ZOOMIES", 2, 29]],                             estado: "enviado",   fecha: "4 AGO 11:22" },
+      { id: "SR-1044", quien: "Emma T. · Chicago, IL",    items: [["RABBIT FUEL ×12", 2, 42]],                         estado: "enviado",   fecha: "3 AGO 15:08" },
+      { id: "SR-1043", quien: "Jordan M. · Boise, ID",    items: [["RABBIT FUEL ×4", 1, 16], ["THE ZOOMIES", 1, 29]],  estado: "retraso",   fecha: "29 JUL 10:15" },
+      { id: "SR-1042", quien: "Liam S. · Nashville, TN",  items: [["THE LOOKOUT · NEGRO", 1, 35]],                     estado: "entregado", fecha: "2 AGO 09:54" },
+      { id: "SR-1041", quien: "Mía C. · Phoenix, AZ",     items: [["RABBIT FUEL ×12", 1, 42]],                         estado: "entregado", fecha: "1 AGO 17:31" },
+      { id: "SR-1040", quien: "Lucas B. · Seattle, WA",   items: [["RABBIT FUEL ×4", 3, 16]],                          estado: "entregado", fecha: "1 AGO 12:19" },
+    ],
+    series: {
+      7:  [412, 388, 641, 502, 720, 655, 487],
+      30: [220, 310, 290, 405, 380, 340, 412, 505, 470, 390, 520, 610, 480, 530, 590, 640, 410, 505, 635, 720, 680, 590, 612, 640, 700, 655, 610, 590, 640, 487],
+      90: Array.from({ length: 90 }, (_, i) => 260 + Math.round(180 * Math.sin(i / 8) + i * 3.2 + (i * 37 % 90))),
+    },
+    actividad: [
+      { t: "09:41", que: "<b>SR-1049</b> pagado — $71.00", hito: true },
+      { t: "09:12", que: "Fundador nuevo: <b>@mochi.dev</b> (67/100)", hito: true },
+      { t: "08:12", que: "<b>SR-1048</b> pagado — $35.00" },
+      { t: "07:55", que: "Reseña 5★ en <b>THE ZOOMIES</b>" },
+      { t: "AYER",  que: "<b>SR-1045</b> y <b>SR-1044</b> recogidos por USPS" },
+    ],
+    envios: [
+      ["SR-1045", "USPS Ground Advantage", "9400 1112 0345", "enviado", "7 AGO"],
+      ["SR-1044", "USPS Priority Cubic",   "9405 5036 9930", "enviado", "6 AGO"],
+      ["SR-1043", "USPS Ground Advantage", "9400 1108 2214", "retraso", "—"],
+      ["SR-1042", "UPS Ground",            "1Z 999 AA1 01",  "entregado", "2 AGO"],
+    ],
+    fundadores: ["@mochi.dev", "@la.vecina.astral", "@pixelhops", "@caro_zzz", "@bunnywatcher", "@el.tomas", "@dailyfuel", "@renata.gif"],
+    clientes: [
+      ["Emma T. · Chicago, IL", 6, "$318.40", "3 AGO", "IV · THE DIGGER"],
+      ["Lucas B. · Seattle, WA", 5, "$241.00", "1 AGO", "III · THE SCOUT"],
+      ["Ava R. · Austin, TX", 4, "$226.50", "HOY", "III · THE SCOUT"],
+      ["Sofía L. · Queens, NY", 3, "$188.20", "4 AGO", "II · THE HOPPER"],
+    ],
+    productos: [
+      { n: "RABBIT FUEL", v: "PACK ×4 · $16 — PACK ×12 · $42", stock: 18,  max: 200, ventas: 82 },
+      { n: "THE LOOKOUT", v: "BLANCO · NEGRO — $35",           stock: 64,  max: 120, ventas: 34 },
+      { n: "THE ZOOMIES", v: "NEGRO — $29",                    stock: 91,  max: 150, ventas: 27 },
+    ],
+    porEstado: [["TEXAS", 21], ["CALIFORNIA", 18], ["NUEVA YORK", 14], ["FLORIDA", 11], ["ILLINOIS", 8]],
+    fuentes: [["TIKTOK / IG ORGÁNICO", 64], ["DIRECTO", 22], ["BÚSQUEDA", 9], ["LISTA DE CORREO", 5]],
+    hilos: [
+      { de: "ava@…com", tema: "¿Cuándo llega la carta de agosto?", msgs: [["ellos", "¡Hola! Pedí la ×12 y quería saber cuándo sale la carta del mes."], ["yo", "¡Hola Ava! Las cajas del club salen juntas la primera semana del mes — la tuya sale el lunes con la carta dentro. 🐰"]] },
+      { de: "jordan@…com", tema: "Mi pedido no se mueve", msgs: [["ellos", "SR-1043 lleva días sin actualizar el tracking…"], ["yo", "Tienes razón y ya está en la cola de reclamo con USPS. Si el sábado no se mueve, te reenviamos sin coste."]] },
+      { de: "sam@…com", tema: "¿Talla de THE LOOKOUT?", msgs: [["ellos", "¿La M queda oversize?"]] },
+    ],
+  };
+  const COLS = [["pagado", "PENDIENTE"], ["prepara", "PREPARANDO"], ["empacado", "EMPACADO"], ["enviado", "TRANSPORTISTA"], ["retraso", "RETRASADO"]];
+  const TXT = { pagado: "PAGADO", prepara: "PREPARANDO", empacado: "EMPACADO", enviado: "ENVIADO", entregado: "ENTREGADO", retraso: "RETRASADO" };
+  const money = n => "$" + n.toFixed(2);
+  const total = p => p.items.reduce((s, [, c, pr]) => s + c * pr, 0);
 
-  function negar(t, x, enlace) {
-    titulo.textContent = t;
-    texto.textContent = x;
-    accion.innerHTML = enlace || "";
+  /* ══════════ utilidades de vida ══════════ */
+  function contar(el, fin, dur = 900) {
+    if (reducido) { el.textContent = fin.toLocaleString("en-US"); return; }
+    const t0 = performance.now();
+    const paso = t => {
+      const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(fin * e).toLocaleString("en-US");
+      if (k < 1) requestAnimationFrame(paso);
+      else { el.classList.add("late-pop"); setTimeout(() => el.classList.remove("late-pop"), 600); }
+    };
+    requestAnimationFrame(paso);
+  }
+  function toast(msg) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.innerHTML = '<svg><use href="#bunny"/></svg><span></span>';
+    t.lastElementChild.textContent = msg;
+    $("#toasts").appendChild(t);
+    setTimeout(() => { t.classList.add("fuera"); setTimeout(() => t.remove(), 400); }, 3400);
+  }
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-toast]");
+    if (b) toast(b.dataset.toast);
+  });
+
+  /* revelado escalonado al entrar cada sección */
+  function revelar(sec) {
+    $$(".rv", sec).forEach(el => el.classList.remove("in"));
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      $$(".rv", sec).forEach(el => el.classList.add("in"))));
+    $$("[data-cuenta]", sec).forEach(el => contar(el, +el.dataset.cuenta));
+    $$(".barra i[data-w]", sec).forEach(i => { i.style.width = "0"; requestAnimationFrame(() => requestAnimationFrame(() => { i.style.width = i.dataset.w; })); });
+    $$(".linea-t li", sec).forEach(li => { li.style.animation = "none"; void li.offsetWidth; li.style.animation = ""; });
   }
 
+  /* ══════════ pintado con datos DEMO ══════════ */
+  function filaPedido(p, corta = false) {
+    const tr = document.createElement("tr");
+    tr.dataset.ped = p.id;
+    const celdas = corta
+      ? [`<b>${p.id}</b>`, p.quien.split(" · ")[0], `<b>${money(total(p))}</b>`, `<span class="est ${p.estado}">${TXT[p.estado]}</span>`]
+      : [`<b>${p.id}</b>`, p.quien, p.items.map(i => i[0]).join(" + "), `<b>${money(total(p))}</b>`, `<span class="est ${p.estado}">${TXT[p.estado]}</span>`, p.fecha];
+    tr.innerHTML = celdas.map(c => `<td>${c}</td>`).join("");
+    tr.addEventListener("click", () => abrirPedido(p));
+    return tr;
+  }
+  function pintarTablas(filtro = "", busca = "") {
+    const tb1 = $("#tablaResumen tbody"), tb2 = $("#tablaPedidos tbody");
+    tb1.textContent = ""; tb2.textContent = "";
+    DEMO.pedidos.slice(0, 5).forEach(p => tb1.appendChild(filaPedido(p, true)));
+    DEMO.pedidos
+      .filter(p => !filtro || p.estado === filtro)
+      .filter(p => !busca || (p.id + p.quien).toLowerCase().includes(busca))
+      .forEach(p => tb2.appendChild(filaPedido(p)));
+  }
+  function pintarActividad() {
+    $("#actividad").innerHTML = DEMO.actividad.map((a, i) =>
+      `<li style="--i:${i}" class="${a.hito ? "hito" : ""}"><span class="lt-punto"></span><div><p>${a.que}</p><time>${a.t}</time></div></li>`).join("");
+  }
+  function pintarStock() {
+    $("#stockBajo").innerHTML = DEMO.productos.map(p => {
+      const pct = Math.round(p.stock / p.max * 100);
+      const clase = pct < 15 ? "baja" : pct < 45 ? "" : "ok";
+      return `<div><div class="tp-lab"><span>${p.n}</span><b>${p.stock} uds</b></div><div class="barra ${clase}"><i data-w="${pct}%"></i></div></div>`;
+    }).join("");
+    $("#topProd").innerHTML = DEMO.productos.map(p => {
+      const pct = Math.round(p.ventas / DEMO.productos[0].ventas * 100);
+      return `<div><div class="tp-lab"><span>${p.n}</span><b>${p.ventas}</b></div><div class="barra"><i data-w="${pct}%"></i></div></div>`;
+    }).join("");
+  }
+  function pintarFulMini() {
+    const cuenta = Object.fromEntries(COLS.map(([k]) => [k, 0]));
+    DEMO.pedidos.forEach(p => { if (p.estado in cuenta) cuenta[p.estado]++; });
+    $("#fulMini").innerHTML = COLS.map(([k, nom]) =>
+      `<div style="border:2px solid var(--line-dark); padding:12px; text-align:center">
+        <p class="kpi-n" style="font-size:24px">${cuenta[k]}</p>
+        <p style="font-size:9px; letter-spacing:1.6px; color:var(--gray-2); margin-top:4px">${nom}</p>
+      </div>`).join("");
+  }
+  function pintarTablero() {
+    const t = $("#tablero"); t.textContent = "";
+    COLS.forEach(([k, nom]) => {
+      const col = document.createElement("div");
+      col.className = "col-ful"; col.dataset.col = k;
+      const suyos = DEMO.pedidos.filter(p => p.estado === k);
+      col.innerHTML = `<h3>${nom} <b>${suyos.length}</b></h3>`;
+      suyos.forEach(p => {
+        const f = document.createElement("div");
+        f.className = "ficha-ped"; f.draggable = true; f.dataset.ped = p.id;
+        f.innerHTML = `<b>${p.id}</b><small>${p.quien}</small>`;
+        f.addEventListener("dragstart", e => { f.classList.add("volando"); e.dataTransfer.setData("text/plain", p.id); });
+        f.addEventListener("dragend", () => f.classList.remove("volando"));
+        f.addEventListener("click", () => abrirPedido(p));
+        col.appendChild(f);
+      });
+      col.addEventListener("dragover", e => { e.preventDefault(); col.classList.add("sobre"); });
+      col.addEventListener("dragleave", () => col.classList.remove("sobre"));
+      col.addEventListener("drop", e => {
+        e.preventDefault(); col.classList.remove("sobre");
+        const id = e.dataTransfer.getData("text/plain");
+        const p = DEMO.pedidos.find(x => x.id === id);
+        if (p && p.estado !== k) { p.estado = k; pintarTablero(); pintarTablas(); pintarFulMini(); toast(`${id} → ${nom}. (Demo)`); }
+      });
+      t.appendChild(col);
+    });
+  }
+  function pintarEnvios() {
+    $("#tablaEnvios tbody").innerHTML = DEMO.envios.map(([id, quien, seg, est, fecha]) =>
+      `<tr><td><b>${id}</b></td><td>${quien}</td><td>${seg}…</td><td><span class="est ${est}">${TXT[est]}</span></td><td>${fecha}</td></tr>`).join("");
+  }
+  function pintarClientes() {
+    $("#muro").innerHTML = DEMO.fundadores.map((f, i) =>
+      `<div class="fundador"><svg style="color:${["var(--pink)", "var(--yellow)", "var(--cyan)"][i % 3]}"><use href="#bunny"/></svg><div><b>${f}</b><small>FUNDADOR ${String(67 - i).padStart(3, "0")}</small></div></div>`).join("");
+    $("#tablaClientes tbody").innerHTML = DEMO.clientes.map(c =>
+      `<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td><b>${c[2]}</b></td><td>${c[3]}</td><td>${c[4]}</td></tr>`).join("");
+  }
+  function pintarProductos() {
+    $("#prodAdm").innerHTML = DEMO.productos.map(p => {
+      const pct = Math.round(p.stock / p.max * 100);
+      const clase = pct < 15 ? "baja" : pct < 45 ? "" : "ok";
+      return `<div class="prod-fila">
+        <h3>${p.n}<small>${p.v}</small></h3><span class="precio">${p.ventas} VENTAS/MES</span>
+        <div class="prod-stock"><div class="barra ${clase}"><i data-w="${pct}%"></i></div><span>${p.stock} / ${p.max} UDS</span></div>
+      </div>`;
+    }).join("");
+  }
+  function pintarAnalytics() {
+    const semanas = [3120, 2840, 3610, 3980];
+    const max = Math.max(...semanas);
+    $("#barrasSem").innerHTML = semanas.map((v, i) =>
+      `<div style="flex:1; display:grid; grid-template-rows:1fr auto; gap:6px; height:100%">
+        <div class="barraV" data-tip="${money(v)}" style="--d:${i * 120}ms; height:${Math.round(v / max * 100)}%; background:${i === semanas.length - 1 ? "var(--pink)" : "rgba(230,230,255,.14)"}"></div>
+        <p style="text-align:center; font-size:9px; letter-spacing:1.5px; color:var(--gray-2)">SEM ${i + 1}</p>
+      </div>`).join("");
+    $("#porEstado").innerHTML = DEMO.porEstado.map(([n, v]) =>
+      `<div><div class="tp-lab"><span>${n}</span><b>${v}%</b></div><div class="barra"><i data-w="${v * 4}%"></i></div></div>`).join("");
+    $("#fuentes").innerHTML = DEMO.fuentes.map(([n, v]) =>
+      `<div><div class="tp-lab"><span>${n}</span><b>${v}%</b></div><div class="barra"><i data-w="${v}%" style="background:var(--cyan)"></i></div></div>`).join("");
+  }
+  function pintarSoporte() {
+    const caja = $("#hilos"); caja.textContent = "";
+    DEMO.hilos.forEach((h, i) => {
+      const d = document.createElement("div");
+      d.className = "hilo" + (i === 0 ? " abierto" : "");
+      d.innerHTML = `<b>${h.tema}</b><p>${h.de} — ${h.msgs[h.msgs.length - 1][1]}</p>`;
+      d.addEventListener("click", () => { $$(".hilo").forEach(x => x.classList.remove("abierto")); d.classList.add("abierto"); pintarConversa(h); });
+      caja.appendChild(d);
+    });
+    pintarConversa(DEMO.hilos[0]);
+  }
+  function pintarConversa(h) {
+    $("#conversa").innerHTML = h.msgs.map(([quien, txt]) =>
+      `<div class="burbuja ${quien === "yo" ? "mia" : ""}">${txt}</div>`).join("") +
+      `<div style="display:flex; gap:8px; margin-top:14px">
+        <input placeholder="RESPONDER…" style="flex:1; font-family:var(--f-ui); font-size:12px; color:var(--bone); background:var(--bg-dark); border:2px solid var(--line-dark); padding:10px 12px" aria-label="Responder">
+        <button class="btn btn-pink" data-toast="Respuesta enviada. (Demo)">ENVIAR ▸</button>
+      </div>`;
+  }
+
+  /* ══════════ la gráfica del héroe ══════════ */
+  function dibujarRev(dias) {
+    const svg = $("#grafRev"), serie = DEMO.series[dias];
+    const W = 600, H = 190, m = 24;
+    const max = Math.max(...serie) * 1.15;
+    const X = i => m + i * (W - m * 2) / (serie.length - 1);
+    const Y = v => H - 22 - v / max * (H - 44);
+    const pts = serie.map((v, i) => [X(i), Y(v)]);
+    const d = "M" + pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" L");
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.classList.remove("dibujada");
+    svg.innerHTML = `
+      <path class="area" fill="url(#gradRosa)" d="${d} L${X(serie.length - 1).toFixed(1)},${H - 20} L${X(0).toFixed(1)},${H - 20} Z"/>
+      <path class="linea" d="${d}"/>
+      <circle class="punto" r="4"/>
+      <text class="eje" x="${m}" y="${H - 6}">HACE ${dias} DÍAS</text>
+      <text class="eje" x="${W - m}" y="${H - 6}" text-anchor="end">HOY</text>`;
+    const linea = $(".linea", svg);
+    const largo = linea.getTotalLength();
+    if (!reducido) {
+      linea.style.strokeDasharray = largo;
+      linea.style.strokeDashoffset = largo;
+      linea.getBoundingClientRect();
+      linea.style.transition = "stroke-dashoffset 1.1s var(--ease-snap)";
+      linea.style.strokeDashoffset = "0";
+    }
+    requestAnimationFrame(() => svg.classList.add("dibujada"));
+    /* el dedo sobre la gráfica: punto + tooltip */
+    const tip = $("#tipGraf"), punto = $(".punto", svg);
+    svg.onmousemove = e => {
+      const r = svg.getBoundingClientRect();
+      const i = Math.round((e.clientX - r.left) / r.width * (serie.length - 1));
+      if (i < 0 || i >= serie.length) return;
+      punto.setAttribute("cx", X(i)); punto.setAttribute("cy", Y(serie[i]));
+      punto.classList.add("viva");
+      tip.innerHTML = `<b>${money(serie[i])}</b> · día ${i + 1}`;
+      tip.style.left = (X(i) / W * 100) + "%";
+      tip.style.top = (Y(serie[i]) / H * 100 - 14) + "%";
+      tip.classList.add("viva");
+    };
+    svg.onmouseleave = () => { punto.classList.remove("viva"); tip.classList.remove("viva"); };
+  }
+  $$("[data-per]").forEach(b => b.addEventListener("click", () => {
+    $$("[data-per]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+    dibujarRev(+b.dataset.per);
+  }));
+
+  /* chispas (sparklines) */
+  function chispas() {
+    $$(".chispa").forEach(svg => {
+      const serie = svg.dataset.serie.split(",").map(Number);
+      const max = Math.max(...serie), W = 86, H = 30;
+      const pts = serie.map((v, i) => `${(i * W / (serie.length - 1)).toFixed(1)},${(H - 3 - v / max * (H - 6)).toFixed(1)}`).join(" ");
+      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      svg.innerHTML = `<polyline points="${pts}" style="stroke:${svg.dataset.color}"/>`;
+    });
+  }
+
+  /* donuts */
+  function donuts() {
+    const C = 2 * Math.PI * 54;
+    [["#donutConv", .28], ["#donutRec", .31]].forEach(([sel, frac]) => {
+      const el = $(sel); if (!el) return;
+      el.style.strokeDashoffset = C;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.strokeDashoffset = C * (1 - Math.min(1, frac));
+      }));
+    });
+  }
+
+  /* la cinta de operaciones */
+  function cinta() {
+    const trozos = [
+      "PEDIDOS HOY <b>12</b>", "INGRESOS HOY <b>$487</b>", "FUNDADORES <b>67/100</b>",
+      "STOCK RABBIT FUEL ×4 <b>18 UDS</b>", "EN TRÁNSITO <b>2</b>", "MES <b>$14,382</b>",
+    ];
+    $("#cinta").innerHTML = [...trozos, ...trozos].map(t => `<span>${t} ·</span>`).join("");
+  }
+
+  /* ══════════ modal de pedido ══════════ */
+  let ultimoFoco = null;
+  function abrirPedido(p) {
+    ultimoFoco = document.activeElement;
+    $("#mpTitulo").textContent = p.id;
+    $("#mpQuien").textContent = p.quien + " · " + p.fecha;
+    $("#mpLineas tbody").innerHTML = p.items.map(([n, c, pr]) =>
+      `<tr><td><b>${n}</b></td><td>${c}</td><td>${money(pr * c)}</td></tr>`).join("");
+    $("#mpTotal").textContent = money(total(p));
+    const pasos = [["Pedido creado", true], ["Pago confirmado", true],
+      ["En preparación", ["prepara", "empacado", "enviado", "entregado", "retraso"].includes(p.estado)],
+      ["Con el transportista", ["enviado", "entregado", "retraso"].includes(p.estado)],
+      ["Entregado", p.estado === "entregado"]];
+    $("#mpTimeline").innerHTML = pasos.map(([n, hecho], i) =>
+      `<li style="--i:${i}" class="${hecho ? "hito" : ""}"><span class="lt-punto"></span><div><p>${hecho ? "<b>" + n + "</b>" : n}</p><time>${hecho ? p.fecha : "PENDIENTE"}</time></div></li>`).join("");
+    $("#velo").classList.add("abierto");
+    $("#modalPed").classList.add("abierto");
+    $("#mpCerrar").focus();
+  }
+  function cerrarPedido() {
+    $("#velo").classList.remove("abierto");
+    $("#modalPed").classList.remove("abierto");
+    ultimoFoco?.focus();
+  }
+  $("#mpCerrar").addEventListener("click", cerrarPedido);
+  $("#velo").addEventListener("click", cerrarPedido);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { cerrarPedido(); $("#avisos").classList.remove("abierto"); } });
+
+  /* ══════════ enrutado con transición + skeleton breve ══════════ */
+  const NOMBRES = Object.fromEntries($$(".lado nav button").map(b => [b.dataset.mod, b.querySelector("span").textContent]));
+  function moverHopper() {
+    const activo = $('.lado nav button[aria-current="true"]');
+    if (activo) $("#hopper").style.top = (activo.offsetTop + activo.offsetHeight / 2 - 7) + "px";
+  }
+  function abrir(id, primera = false) {
+    if (!NOMBRES[id]) id = "resumen";
+    $$(".mod").forEach(m => m.classList.toggle("activa", m.dataset.mod === id));
+    $$(".lado nav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.mod === id)));
+    $("#tituloMod").textContent = NOMBRES[id].charAt(0) + NOMBRES[id].slice(1).toLowerCase();
+    moverHopper();
+    if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+    const sec = $(`.mod[data-mod="${id}"]`);
+    const arrancar = () => {
+      revelar(sec);
+      if (id === "resumen") { dibujarRev(+$('[data-per][aria-selected="true"]').dataset.per); donuts(); }
+      if (id === "analytics") {
+        donuts();
+        $$("#barrasSem .barraV").forEach(b => b.classList.remove("crecida"));
+        setTimeout(() => $$("#barrasSem .barraV").forEach(b => b.classList.add("crecida")), 250);
+      }
+    };
+    if (!primera && !reducido) {
+      /* skeleton de un latido: la casa enseña que está trabajando */
+      const tarjs = $$(".tarj", sec);
+      tarjs.forEach(t => t.classList.add("hueso"));
+      setTimeout(() => { tarjs.forEach(t => t.classList.remove("hueso")); arrancar(); }, 240);
+    } else arrancar();
+    $("#app").classList.remove("lado-abierto");
+    scrollTo({ top: 0, behavior: "instant" });
+  }
+  $$(".lado nav button").forEach(b => b.addEventListener("click", () => abrir(b.dataset.mod)));
+  $$("[data-ir]").forEach(b => {
+    b.addEventListener("click", () => abrir(b.dataset.ir));
+    b.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrir(b.dataset.ir); } });
+  });
+  addEventListener("hashchange", () => abrir(location.hash.slice(1)));
+
+  /* búsqueda: filtra pedidos y salta a la sección */
+  $("#buscaGlobal").addEventListener("input", e => {
+    const q = e.target.value.trim().toLowerCase();
+    pintarTablas($('#filtroEstado [aria-selected="true"]')?.dataset.f || "", q);
+    if (q && $(".mod.activa").dataset.mod !== "pedidos") abrir("pedidos");
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); $("#buscaGlobal").focus(); }
+  });
+  $("#filtroEstado").addEventListener("click", e => {
+    const b = e.target.closest("[data-f]"); if (!b) return;
+    $$("#filtroEstado [data-f]").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+    pintarTablas(b.dataset.f, $("#buscaGlobal").value.trim().toLowerCase());
+  });
+
+  /* campana, palancas, plegado */
+  $("#campana").addEventListener("click", e => {
+    e.stopPropagation();
+    const abierto = $("#avisos").classList.toggle("abierto");
+    $("#campana").setAttribute("aria-expanded", String(abierto));
+    if (abierto) $("#campanaN").style.display = "none";
+  });
+  document.addEventListener("click", e => { if (!e.target.closest("#avisos, #campana")) $("#avisos").classList.remove("abierto"); });
+  document.addEventListener("click", e => {
+    const p = e.target.closest(".inter");
+    if (p) p.setAttribute("aria-pressed", String(p.getAttribute("aria-pressed") !== "true"));
+  });
+  $("#pliega").addEventListener("click", () => {
+    const app = $("#app");
+    if (matchMedia("(max-width: 860px)").matches) app.classList.toggle("lado-abierto");
+    else { app.classList.toggle("plegada"); setTimeout(moverHopper, 380); }
+  });
+
+  /* ══════════ LA PUERTA ══════════ */
+  const negar = (t, x, enlace) => {
+    $("#puertaTitulo").textContent = t;
+    $("#puertaTexto").textContent = x;
+    $("#puertaAccion").innerHTML = enlace || "";
+  };
   (async () => {
     if (!PK) return negar("SIN CONFIGURAR", "Falta la clave publicable de Clerk.");
     let clerk;
     try {
       const { Clerk } = await import("@clerk/clerk-js");
       clerk = new Clerk(PK);
-      await Promise.race([
-        clerk.load(),
-        new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), 15000)),
-      ]);
+      await Promise.race([clerk.load(), new Promise((_, no) => setTimeout(() => no(new Error("tiempo")), 15000))]);
     } catch {
       return negar("SIN CONEXIÓN", "No se pudo comprobar la sesión. Recarga para intentarlo otra vez.");
     }
-
     const u = clerk.user;
-    if (!u) {
-      return negar("HACE FALTA SESIÓN",
-        "Este panel es solo del equipo. Entra con tu cuenta en la tienda y vuelve.",
-        '<a href="/#micuenta">Ir a entrar →</a>');
-    }
-    /* publicMetadata solo lo escribe el servidor: nadie se concede esto desde
-       la consola. Y aun así, las ACCIONES del futuro se verificarán por
-       petición en el servidor — esta puerta solo decide qué se pinta. */
-    if (u.publicMetadata?.admin !== true) {
-      return negar("SOLO EQUIPO",
-        "Tu cuenta no tiene acceso al panel interno. Si deberías tenerlo, pide el alta.",
-        '<a href="/">Volver a la tienda →</a>');
-    }
+    if (!u) return negar("HACE FALTA SESIÓN", "Este panel es solo del equipo. Entra con tu cuenta en la tienda y vuelve.", '<a href="/#micuenta">Ir a entrar →</a>');
+    /* publicMetadata solo lo escribe el servidor. Y aun así: esta capa decide
+       qué se PINTA; las acciones reales del futuro se verificarán por petición. */
+    if (u.publicMetadata?.admin !== true)
+      return negar("SOLO EQUIPO", "Tu cuenta no tiene acceso al panel interno. Si deberías tenerlo, pide el alta.", '<a href="/">Volver a la tienda →</a>');
 
     $("#quien").textContent = u.primaryEmailAddress?.emailAddress || "";
-    $("#hoy").textContent = new Date().toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-    puerta.style.display = "none";
-    app.classList.add("abierta");
+    $("#puerta").style.display = "none";
+    $("#app").classList.add("abierta");
+    $("#salir").addEventListener("click", async () => { try { await clerk.signOut(); location.href = "/"; } catch {} });
 
-    $("#salir").addEventListener("click", async () => {
-      try { await clerk.signOut(); location.href = "/"; } catch { /* seguirá dentro */ }
-    });
-
-    /* enrutado por hash: #pedidos abre pedidos, y recargar conserva el sitio */
-    const NOMBRES = Object.fromEntries($$(".lado nav button").map(b => [b.dataset.mod, b.textContent.trim()]));
-    function abrir(id) {
-      if (!NOMBRES[id]) id = "resumen";
-      $$(".mod").forEach(m => m.classList.toggle("activa", m.dataset.mod === id));
-      $$(".lado nav button").forEach(b => b.setAttribute("aria-current", String(b.dataset.mod === id)));
-      $("#tituloMod").textContent = NOMBRES[id];
-      if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
-    }
-    $$(".lado nav button").forEach(b => b.addEventListener("click", () => abrir(b.dataset.mod)));
-    addEventListener("hashchange", () => abrir(location.hash.slice(1)));
-    abrir(location.hash.slice(1) || "resumen");
+    /* pintar todo y arrancar */
+    cinta(); chispas(); pintarTablas(); pintarActividad(); pintarStock();
+    pintarFulMini(); pintarTablero(); pintarEnvios(); pintarClientes();
+    pintarProductos(); pintarAnalytics(); pintarSoporte();
+    contar($("#revTotal"), +$("#revTotal").dataset.n, 1200);
+    abrir(location.hash.slice(1) || "resumen", true);
   })();
 </script>
 </body>
