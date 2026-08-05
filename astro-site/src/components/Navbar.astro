@@ -14,9 +14,13 @@
   </nav>
 
   <div class="nav-actions">
-    <button class="btn-lang" id="btnLang" type="button" aria-label="Cambiar idioma / Change language">
-      <span data-lang-opt="es">ES</span><i>/</i><span data-lang-opt="en">EN</span>
-    </button>
+    <!-- El mismo selector del panel interno: dos segmentos, bandera y código.
+         Se ve de un vistazo en qué idioma estás y cuál es el otro, en vez de
+         adivinar cuál de los dos lados del "ES / EN" está activo. -->
+    <div class="idiomas" id="idiomas" role="group" aria-label="Language / Idioma">
+      <button type="button" data-lang="en" aria-pressed="false"><span aria-hidden="true">🇺🇸</span> EN</button>
+      <button type="button" data-lang="es" aria-pressed="false"><span aria-hidden="true">🇪🇸</span> ES</button>
+    </div>
     <button class="btn-login" id="btnLogin" type="button">
       <svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><rect x="4" y="1" width="4" height="4"/><rect x="2" y="7" width="8" height="4"/></svg>
       <span id="loginLabel">LOGIN</span>
@@ -43,8 +47,9 @@
     <a href="#historia" data-i18n="nav.manifesto" data-i="05">MANIFESTO</a>
     <a href="#faq" data-i="06">FAQ</a>
   </nav>
-  <button class="btn-lang mm-lang" id="btnLangM" type="button" aria-label="Cambiar idioma / Change language">
-    <span data-lang-opt="es">ES</span><i>/</i><span data-lang-opt="en">EN</span>
-  </button>
+  <div class="idiomas idiomas-mm" role="group" aria-label="Language / Idioma">
+    <button type="button" data-lang="en" aria-pressed="false"><span aria-hidden="true">🇺🇸</span> EN</button>
+    <button type="button" data-lang="es" aria-pressed="false"><span aria-hidden="true">🇪🇸</span> ES</button>
+  </div>
   <p class="mm-foot">@SNACKRABBIT.TV · DROP 001</p>
 </div>

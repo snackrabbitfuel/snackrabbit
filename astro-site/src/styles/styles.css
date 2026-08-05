@@ -302,22 +302,39 @@ body::after {
 .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
 
 .nav-actions { display: flex; align-items: center; gap: 12px; }
-.btn-lang {
-  display: flex; align-items: center; gap: 4px;
-  font-family: var(--f-ui); font-style: normal;
-  font-size: 11px; letter-spacing: 1px;
-  background: var(--card-dark); color: var(--gray-2);
+/* ---- Selector de idioma: el mismo del panel interno ----
+   Dos segmentos con bandera en vez de un "ES / EN" que había que descifrar.
+   El fondo oscuro del propio control es lo que permite que funcione en los
+   dos estados del navbar —sobre el hero rosa y con la barra ya oscura— sin
+   necesitar una variante por estado: el contraste lo pone el control, no la
+   página que hay detrás. */
+.idiomas {
+  display: inline-flex; flex: none;
+  background: var(--card-dark);
   border: 3px solid var(--ink);
   box-shadow: 4px 4px 0 var(--ink);
-  padding: 10px 12px;
   transition: transform .15s var(--ease-snap), box-shadow .15s var(--ease-snap);
 }
-.btn-lang:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
-.btn-lang i { font-style: normal; opacity: .5; }
-.btn-lang span { transition: color .2s; }
-.btn-lang span.active { color: var(--pink); text-decoration: underline 2px; text-underline-offset: 3px; }
-.mm-lang { margin: 26px auto 0; background: var(--card-dark); }
-.mm-lang span { font-size: 14px; }
+.idiomas:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+.idiomas button {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 10px; letter-spacing: 1.5px; font-weight: 700;
+  color: var(--gray-2); background: none; border: 0; cursor: pointer;
+  padding: 8px 10px;
+  transition: background .2s var(--ease-snap), color .2s;
+}
+.idiomas button:hover { color: var(--bone); background: rgba(230, 230, 255, .06); }
+.idiomas button[aria-pressed="true"] { background: var(--pink); color: var(--ink); }
+/* La bandera un punto mayor que el código: es lo que se lee primero. Si el
+   sistema no tiene emoji de bandera, cae a las letras del país y el control
+   sigue leyéndose — por eso el código va siempre al lado. */
+.idiomas button span { font-size: 12px; line-height: 1; }
+
+/* En el menú móvil el mismo control, en grande y centrado. */
+.idiomas-mm { margin: 26px auto 0; display: flex; }
+.idiomas-mm button { font-size: 13px; padding: 12px 18px; }
+.idiomas-mm button span { font-size: 16px; }
 .btn-login, .btn-cart {
   display: flex; align-items: center; gap: 8px;
   font-family: var(--f-ui); font-style: normal;
@@ -2065,7 +2082,7 @@ body::after {
   .nav { gap: 10px; padding: 0 14px; }
   .nav-word { display: none; }
   .nav-actions { gap: 8px; }
-  .nav .btn-lang { display: none; }
+  .nav .idiomas { display: none; }
   .btn-login, .btn-cart { padding: 9px 10px; font-size: 10px; }
   .btn-login span { max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .stats { grid-template-columns: 1fr 1fr; }

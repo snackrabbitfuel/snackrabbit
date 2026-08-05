@@ -2620,7 +2620,7 @@ function applyLang() {
   $$("[data-i18n-html]").forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
   $$("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
   $$("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
-  $$("[data-lang-opt]").forEach(el => el.classList.toggle("active", el.dataset.langOpt === LANG));
+  $$("[data-lang]").forEach(el => el.setAttribute("aria-pressed", String(el.dataset.lang === LANG)));
   $$(".marquee-track span").forEach(sp => { sp.innerHTML = t("marquee.text").replaceAll("▸", "<i>▸</i>") + "&nbsp;"; });
   splitTitle();
 
@@ -2640,7 +2640,12 @@ function setLang(l) {
   try { localStorage.setItem(LANG_KEY, l); } catch {}
   applyLang();
 }
-$("#btnLang").addEventListener("click", () => setLang(LANG === "es" ? "en" : "es"));
-$("#btnLangM").addEventListener("click", () => setLang(LANG === "es" ? "en" : "es"));
+/* Un solo oyente para los dos controles —el de la barra y el del menú móvil—:
+   cada segmento dice a qué idioma va, así que no hay que alternar ni saber
+   cuál se pulsó. */
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".idiomas [data-lang]");
+  if (b) setLang(b.dataset.lang);
+});
 
 applyLang();
