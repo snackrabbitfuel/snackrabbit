@@ -23,12 +23,13 @@ export const EMPRESA = {
      podía cumplir. */
   email: "hello@snackrabbit.co",
 
-  /* Países a los que envías. Ej: "the United States and Canada" */
-  envios: "[COUNTRIES YOU SHIP TO]",
+  /* Países a los que envías. Decidido (ago 2026): EE.UU. contiguo al
+     lanzamiento; Alaska, Hawái e internacional se anuncian por la lista. */
+  envios: "the contiguous United States",
 };
 
 /* Fecha de la última revisión de los textos legales */
-export const ACTUALIZADO = "1 August 2026";
+export const ACTUALIZADO = "5 August 2026";
 
 /* Umbral de envío gratis. Vive también en app.js (FREE_SHIP); si cambia uno,
    cambia el otro. */
