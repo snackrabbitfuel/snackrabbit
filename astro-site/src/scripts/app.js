@@ -108,6 +108,10 @@ const I18N = {
     "fuel.chipSugar": "SIN AZÚCAR",
     "fuel.cta": "PROBAR PACK ×4 — $16",
     "pn.title": "MI MADRIGUERA",
+    "pn.since": "EN LA MADRIGUERA DESDE {fecha}",
+    "pn.founderChip": "FUNDADOR",
+    "pn.hereChip": "ESTÁS AQUÍ",
+    "pn.shopCta": "VER EL DROP ▸",
     "pn.cards": "TU AÑO",
     "pn.card000": "+ CARTA 000 · FUNDADOR",
     "pn.cardsEmpty": "TUS CARTAS APARECEN AQUÍ SEGÚN SE ENVÍAN, UNA AL MES. AÑO UNO EMPIEZA EN ENERO.",
@@ -388,6 +392,10 @@ const I18N = {
     "fuel.chipSugar": "ZERO SUGAR",
     "fuel.cta": "TRY THE 4-PACK — $16",
     "pn.title": "MY BURROW",
+    "pn.since": "IN THE BURROW SINCE {fecha}",
+    "pn.founderChip": "FOUNDER",
+    "pn.hereChip": "YOU ARE HERE",
+    "pn.shopCta": "SHOP THE DROP ▸",
     "pn.cards": "YOUR YEAR",
     "pn.card000": "+ CARD 000 · FOUNDER",
     "pn.cardsEmpty": "YOUR CARDS SHOW UP HERE AS THEY SHIP, ONE A MONTH. YEAR ONE STARTS IN JANUARY.",
@@ -2110,6 +2118,14 @@ const Panel = (() => {
     const m = u.unsafeMetadata || {};
     $("#pnUser").textContent = u.primaryEmailAddress?.emailAddress || "";
 
+    /* Dos datos reales de la cuenta, no adornos: cuándo se creó (Clerk lo
+       sella en el servidor) y si es fundador (lo sella nuestra ruta). */
+    const creada = u.createdAt ? new Date(u.createdAt) : null;
+    $("#pnDesde").textContent = creada
+      ? t("pn.since", { fecha: creada.toLocaleDateString(LANG === "es" ? "es" : "en", { month: "long", year: "numeric" }).toUpperCase() })
+      : "";
+    $("#pnChipFund").hidden = !u.publicMetadata?.fundador;
+
     /* Los meses también aquí: el módulo de La Madriguera los traduce, pero
        scoped a su sección, así que la rejilla del panel se quedaba en inglés
        con el sitio en español. */
@@ -2133,6 +2149,7 @@ const Panel = (() => {
     $$(".pn-carta", el).forEach(c => {
       const n = +c.dataset.carta, tengo = mias.includes(n);
       c.classList.toggle("tiene", tengo);
+      c.classList.remove("sin-cara");
       c.querySelector("img")?.remove();
       if (!tengo) return;
       /* La cara de la carta solo existe cuando esa carta ya se ha enviado; si
@@ -2144,7 +2161,7 @@ const Panel = (() => {
          placa con el número — pero la carta SIGUE siendo suya. Antes se le
          quitaba la clase, así que quien tuviera la 3 la veía como no
          conseguida y el contador mentía. */
-      img.onerror = () => img.remove();
+      img.onerror = () => { img.remove(); c.classList.add("sin-cara"); };
       c.appendChild(img);
     });
     /* La 000 es de fundador, no del año: contarla daba 13/12 a quien tuviera
@@ -2171,9 +2188,18 @@ const Panel = (() => {
 
     const sig = UMBRALES[logrados], desde = logrados ? UMBRALES[logrados - 1] : 0;
     const pct = sig ? Math.min(100, (latas - desde) / (sig - desde) * 100) : 100;
-    const barra = $("#pnRangoFill");
-    if (animar) { barra.style.width = "0"; requestAnimationFrame(() => { barra.style.width = pct + "%"; }); }
-    else barra.style.width = pct + "%";
+    /* El anillo: el progreso es un arco que se dibuja. La circunferencia vive
+       en el atributo stroke-dasharray del marcado; aquí solo se corre el
+       offset. Con animar, se parte de cero y la transición CSS lo dibuja. */
+    const anillo = $("#pnRangoFill");
+    const C = parseFloat(anillo.getAttribute("stroke-dasharray"));
+    const destino = C * (1 - pct / 100);
+    if (animar && !reducedMotion) {
+      anillo.style.strokeDashoffset = C;
+      requestAnimationFrame(() => requestAnimationFrame(() => { anillo.style.strokeDashoffset = destino; }));
+    } else {
+      anillo.style.strokeDashoffset = destino;
+    }
     $("#pnRangoNota").textContent = !latas ? t("pn.rankNone")
       : sig ? t("pn.rankNext", { n: sig - latas, rank: t(`rank.${logrados + 1}`) })
       : t("pn.rankTop");
@@ -2191,10 +2217,29 @@ const Panel = (() => {
     const caja = $("#pnPedidos");
     caja.textContent = "";
     if (!pedidos.length) {
-      const p = document.createElement("p");
-      p.className = "pn-nota";
-      p.textContent = t("pn.ordersEmpty");
-      caja.appendChild(p);
+      /* Un estado vacío es una pantalla que el cliente SÍ va a ver: merece
+         diseño y una salida, no una frase gris. El conejo, el porqué, y un
+         botón que lleva a la tienda. */
+      const v = document.createElement("div");
+      v.className = "pn-vacio";
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "pn-vacio-bunny");
+      svg.setAttribute("aria-hidden", "true");
+      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      use.setAttribute("href", "#bunny");
+      svg.appendChild(use);
+      const txt = document.createElement("p");
+      txt.textContent = t("pn.ordersEmpty");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pn-vacio-cta";
+      btn.textContent = t("pn.shopCta");
+      btn.addEventListener("click", () => {
+        UI.close();
+        document.getElementById("drop")?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      });
+      v.append(svg, txt, btn);
+      caja.appendChild(v);
     } else {
       pedidos.forEach(o => {
         const fila = document.createElement("div");

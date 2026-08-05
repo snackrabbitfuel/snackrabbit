@@ -2317,3 +2317,130 @@ input[aria-invalid="true"] {
   border-color: var(--pink) !important;
   box-shadow: 0 0 0 3px rgba(255, 79, 216, .25) !important;
 }
+
+
+/* ════════════════════════════════════════════════════════════
+   PANEL v2 — MY BURROW como producto, no como pantalla de ajustes.
+   Estas reglas van al final a propósito: ganan a las anteriores del panel
+   sin tener que reescribirlas, y dejan claro qué es la segunda generación.
+   ════════════════════════════════════════════════════════════ */
+
+/* Cabecera: identidad a la izquierda, el anillo del rango a la derecha */
+.pn-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: clamp(16px, 3vw, 40px); flex-wrap: wrap;
+}
+.pn-avatar {
+  display: grid; place-items: center;
+  width: 58px; height: 58px;
+  background: var(--pink); border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 rgba(5, 5, 8, .45);
+}
+.pn-avatar .pn-bunny { width: 34px; height: 30px; color: var(--ink); --bunny-eye: var(--pink); --bunny-muzzle: var(--pink); }
+.pn-desde {
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 8.5px; letter-spacing: 1.6px; color: #4d4d6b; margin-top: 5px;
+}
+.pn-chip-fund {
+  align-self: flex-start;
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 9px; letter-spacing: 2px; font-weight: 700;
+  color: var(--ink); background: var(--yellow);
+  border: 2px solid var(--ink); padding: 5px 9px;
+  box-shadow: 3px 3px 0 rgba(5, 5, 8, .4);
+  rotate: 2deg;
+}
+
+/* El anillo del rango */
+.pn-rango-hero { text-align: center; min-width: 0; }
+.pn-anillo { position: relative; width: clamp(118px, 13vw, 150px); margin: 0 auto; }
+.pn-anillo svg { width: 100%; height: auto; display: block; transform: rotate(-90deg); }
+.pn-an-fondo { fill: none; stroke: var(--line-dark); stroke-width: 8; }
+.pn-an-fill {
+  fill: none; stroke: var(--pink); stroke-width: 8; stroke-linecap: butt;
+  transition: stroke-dashoffset .9s var(--ease-snap);
+}
+@media (prefers-reduced-motion: reduce) { .pn-an-fill { transition: none; } }
+.pn-an-centro {
+  position: absolute; inset: 0;
+  display: grid; place-content: center; gap: 3px;
+  text-align: center; padding: 14px;
+}
+.pn-rango-n { font-family: var(--f-display); font-size: clamp(15px, 1.6vw, 19px); line-height: 1.05; color: var(--bone); }
+.pn-an-latas { font-family: var(--f-ui); font-style: normal; font-size: 9px; letter-spacing: 1.5px; color: var(--gray-2); }
+.pn-an-latas i { font-style: normal; color: var(--yellow); }
+.pn-rango-nota { max-width: 300px; margin: 10px auto 0; }
+/* La barra vieja ya no existe; si alguna regla la menciona, no encuentra nada. */
+
+/* Bento: dos columnas, el año a lo ancho */
+.pn-body { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; align-content: start; }
+.pn-b-ancho { grid-column: 1 / -1; }
+@media (max-width: 860px) { .pn-body { grid-template-columns: 1fr; } }
+
+/* Tarjetas con vida: borde que despierta y elevación contenida */
+.pn-bloque {
+  transition: border-color .2s, transform .2s var(--ease-snap), box-shadow .2s;
+}
+.pn-bloque:hover {
+  border-color: #2a2a44;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(5, 5, 8, .5);
+}
+
+/* El descenso: escalera con conector y marcador de dónde estás */
+.pn-escalera { position: relative; }
+.pn-peldano {
+  position: relative;
+  display: grid; grid-template-columns: 34px 1fr auto auto;
+  align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border: 2px solid transparent;
+  transition: background .2s, border-color .2s;
+}
+.pn-peldano:hover { background: rgba(255, 255, 255, .02); }
+.pn-peldano.hecho .pn-rom { color: var(--yellow); }
+.pn-peldano.hecho .pn-r-nombre { color: var(--bone); }
+.pn-peldano.actual {
+  border-color: var(--pink);
+  background: rgba(255, 79, 216, .06);
+}
+.pn-r-aqui {
+  display: none;
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 7.5px; letter-spacing: 1.5px; font-weight: 700;
+  color: var(--pink);
+}
+.pn-peldano.actual .pn-r-aqui { display: inline; }
+
+/* Estado vacío de pedidos: una pantalla, no una disculpa */
+.pn-vacio {
+  display: grid; justify-items: center; gap: 12px;
+  padding: 26px 14px 18px;
+  text-align: center;
+}
+.pn-vacio-bunny { width: 44px; height: 39px; color: #2a2a44; --bunny-eye: var(--card-dark); --bunny-muzzle: var(--card-dark); }
+.pn-vacio p {
+  font-size: 13.5px; line-height: 1.6; color: var(--gray-2);
+  max-width: 300px;
+}
+.pn-vacio-cta {
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 10px; letter-spacing: 2px; font-weight: 700;
+  color: var(--ink); background: var(--yellow);
+  border: 3px solid var(--ink); padding: 10px 18px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 rgba(5, 5, 8, .4);
+  transition: transform .15s var(--ease-snap), box-shadow .15s var(--ease-snap), background .15s;
+}
+.pn-vacio-cta:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(5, 5, 8, .4); background: var(--pink); }
+
+@media (max-width: 640px) {
+  .pn-head { justify-content: center; text-align: center; }
+  .pn-quien { flex-direction: column; }
+  .pn-chip-fund { align-self: center; }
+}
+
+/* Carta conseguida cuya cara aún no está publicada: se queda la placa con su
+   número en amarillo, no un recuadro vacío. La cara llega cuando se publique. */
+.pn-carta.tiene.sin-cara .pn-c-n,
+.pn-carta.tiene.sin-cara .pn-c-mes { display: block; color: var(--yellow); }
