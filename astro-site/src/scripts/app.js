@@ -1918,6 +1918,49 @@ const Auth = (() => {
    que quedan en el panel de clientes y sobreviven a cambiar de dispositivo.
    Cuando la pasarela de pagos esté activa, este mismo botón pasa al checkout
    de la suscripción y el campo `lista` distingue a los fundadores. */
+/* ---------------------------------------------------------------- CARAS
+   Qué caras de carta se pueden ver hoy. Lo decide el servidor (/api/cartas):
+   aquí solo se pregunta y se guarda la respuesta, porque el panel la pide
+   cada vez que se abre y no hace falta molestar al servidor en cada apertura.
+
+   Con sesión de admin, el servidor devuelve la vista previa del equipo — las
+   del mes del calendario— para poder ver el producto funcionando sin esperar
+   al Año Uno. Eso lo decide él comprobando el token; desde aquí solo se manda
+   si lo hay. */
+const Caras = (() => {
+  let cache = null;
+  let volando = null;
+
+  async function pedir() {
+    if (cache) return cache;
+    if (volando) return volando;
+    volando = (async () => {
+      try {
+        const token = await Auth.token().catch(() => null);
+        const r = await fetch("/api/cartas", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(token ? { token } : {}),
+        });
+        const d = await r.json();
+        cache = d?.caras || {};
+      } catch {
+        /* Sin respuesta no se inventa nada: el panel enseña las placas con el
+           número, que es verdad, en vez de un hueco roto. */
+        cache = {};
+      }
+      volando = null;
+      return cache;
+    })();
+    return volando;
+  }
+
+  /* Al cambiar de sesión cambia quién eres y, con ello, qué puedes ver. */
+  const olvidar = () => { cache = null; };
+
+  return { pedir, olvidar };
+})();
+
 const Madriguera = (() => {
   const sec  = $("#madriguera");
   const btn  = $("#burJoin"), note = $("#burNote"), sel = $("#burSel");
@@ -1929,7 +1972,6 @@ const Madriguera = (() => {
      navegador no vuelve a lanzar `error` si se le pide dos veces la misma URL
      rota, así que sin esta lista un segundo repintado —al apuntarse a la lista,
      sin recargar— dejaría el pie anunciando una carta que no se está viendo. */
-  const faltan = new Set();
 
   let plan = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
   if (plan !== "curioso" && plan !== "cavador") plan = "cavador";
@@ -1989,16 +2031,20 @@ const Madriguera = (() => {
       pie.textContent = t("bur.cardCap", { mes: largos[+n - 1], n });
     };
 
-    const num = String((antes ? 0 : acabado ? 11 : activa) + 1).padStart(3, "0");
-    const src = `/assets/carta-${num}-${LANG}.webp`;
+    const n = (antes ? 0 : acabado ? 11 : activa) + 1;
+    const num = String(n).padStart(3, "0");
+    /* La cara la nombra el servidor (ver /api/cartas). Si la de este mes aún
+       no toca —o si el servidor no responde— se cae a la 001, que siempre
+       está: la portada no puede quedarse con un hueco roto y un pie que
+       promete una carta que no se ve. */
     const respaldo = () => { carta.src = `/assets/carta-001-${LANG}.webp`; rotular("001"); };
-
-    if (faltan.has(src)) respaldo();
-    else {
-      carta.onerror = () => { faltan.add(src); carta.onerror = null; respaldo(); };
-      carta.src = src;
+    Caras.pedir().then(caras => {
+      const cara = caras[n]?.[LANG];
+      if (!cara) return respaldo();
+      carta.onerror = () => { carta.onerror = null; respaldo(); };
+      carta.src = `/assets/${cara}`;
       rotular(num);
-    }
+    }).catch(respaldo);
   }
 
   /* Aviso por correo del alta. El servidor decide a quién escribe y se encarga
@@ -2153,23 +2199,28 @@ const Panel = (() => {
        hacen ahora en Public metadata del panel de Clerk, que ya se usó así. */
     const pub = u.publicMetadata || {};
     const mias = Array.isArray(pub.cartas) ? pub.cartas : [];
-    $$(".pn-carta", el).forEach(c => {
-      const n = +c.dataset.carta, tengo = mias.includes(n);
-      c.classList.toggle("tiene", tengo);
-      c.classList.remove("sin-cara");
-      c.querySelector("img")?.remove();
-      if (!tengo) return;
-      /* La cara de la carta solo existe cuando esa carta ya se ha enviado; si
-         todavía no está publicada, se queda la placa con el número. */
-      const img = new Image();
-      img.src = `/assets/carta-${String(n).padStart(3, "0")}-${LANG}.webp`;
-      img.alt = "";
-      /* Si esa cara aún no está publicada se quita la imagen y se queda la
-         placa con el número — pero la carta SIGUE siendo suya. Antes se le
-         quitaba la clase, así que quien tuviera la 3 la veía como no
-         conseguida y el contador mentía. */
-      img.onerror = () => { img.remove(); c.classList.add("sin-cara"); };
-      c.appendChild(img);
+    /* Las caras las NOMBRA EL SERVIDOR, no este archivo: /api/cartas solo
+       devuelve las que ya tocan según el mes. Así el estreno mes a mes lo
+       decide un reloj en vez de una tarea que alguien debe recordar, y los
+       nombres de las que aún no tocan no viajan al navegador. */
+    Caras.pedir().then(caras => {
+      $$(".pn-carta", el).forEach(c => {
+        const n = +c.dataset.carta, tengo = mias.includes(n);
+        c.classList.toggle("tiene", tengo);
+        c.classList.remove("sin-cara");
+        c.querySelector("img")?.remove();
+        if (!tengo) return;
+        const cara = caras[n]?.[LANG];
+        /* Es tuya, pero su mes no ha llegado: se queda la placa con el número.
+           La carta SIGUE siendo suya — antes se le quitaba la clase y el
+           contador mentía. */
+        if (!cara) { c.classList.add("sin-cara"); return; }
+        const img = new Image();
+        img.src = `/assets/${cara}`;
+        img.alt = "";
+        img.onerror = () => { img.remove(); c.classList.add("sin-cara"); };
+        c.appendChild(img);
+      });
     });
     /* La 000 es de fundador, no del año: contarla daba 13/12 a quien tuviera
        las doce y además la de fundador, y en la rejilla no tiene casilla. */
