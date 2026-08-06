@@ -108,6 +108,17 @@ const I18N = {
     "fuel.chipSugar": "SIN AZÚCAR",
     "fuel.cta": "PROBAR PACK ×4 — $16",
     "pn.title": "MI MADRIGUERA",
+    "pn.claimTitle": "¿TIENES UNA CARTA? RECLÁMALA",
+    "pn.claimPh": "CÓDIGO DEL DORSO",
+    "pn.claimBtn": "RECLAMAR ▸",
+    "pn.claimOk": "La carta {n} es tuya — ejemplar {s} de la tirada.",
+    "pn.claimBad": "Ese código no funciona. Míralo otra vez en el dorso.",
+    "pn.claimUsed": "Ese ejemplar ya se reclamó. Si es tuyo, escríbenos.",
+    "pn.claimHave": "Esa carta ya es tuya.",
+    "pn.claimMany": "Demasiados intentos. Prueba en {m} min.",
+    "pn.claimSoon": "El canje todavía no está abierto.",
+    "pn.claimErr": "No salió. Inténtalo dentro de un momento.",
+    "pn.claimNoSes": "Vuelve a entrar para reclamar una carta.",
     "pn.adminTitle": "PANEL DE ADMINISTRACIÓN",
     "pn.adminSub": "Pedidos, stock y los números del día",
     "pn.since": "EN LA MADRIGUERA DESDE {fecha}",
@@ -394,6 +405,17 @@ const I18N = {
     "fuel.chipSugar": "ZERO SUGAR",
     "fuel.cta": "TRY THE 4-PACK — $16",
     "pn.title": "MY BURROW",
+    "pn.claimTitle": "GOT A CARD? CLAIM IT",
+    "pn.claimPh": "CODE ON THE BACK",
+    "pn.claimBtn": "CLAIM ▸",
+    "pn.claimOk": "Card {n} is yours — copy {s} of the run.",
+    "pn.claimBad": "That code does not work. Check the back of the card.",
+    "pn.claimUsed": "That copy was already claimed. If it is yours, write to us.",
+    "pn.claimHave": "You already have that card.",
+    "pn.claimMany": "Too many tries. Try again in {m} min.",
+    "pn.claimSoon": "Claiming is not open yet.",
+    "pn.claimErr": "That did not go through. Try again in a moment.",
+    "pn.claimNoSes": "Sign in again to claim a card.",
     "pn.adminTitle": "ADMIN PANEL",
     "pn.adminSub": "Orders, stock and the day's numbers",
     "pn.since": "IN THE BURROW SINCE {fecha}",
@@ -2510,6 +2532,70 @@ const Panel = (() => {
   addEventListener("hashchange", porUrl);
   Auth.alCambiar(() => { if (location.hash === "#micuenta") porUrl(); });
   addEventListener("load", () => setTimeout(porUrl, 400));
+
+  /* ---- canjear el código impreso ----
+     El servidor decide: aquí solo se manda lo tecleado y se traduce la
+     respuesta. Ni una validación de formato antes de mandar — adivinar si un
+     código "parece" válido en el navegador solo serviría para dar pistas a
+     quien esté probando, y el servidor tiene que comprobarlo igual. */
+  const formCanje = $("#pnCanje"), campoCodigo = $("#pnCodigo"), msgCanje = $("#pnCanjeMsg");
+
+  const decir = (clave, vars, clase) => {
+    msgCanje.textContent = t(clave, vars);
+    msgCanje.className = "pn-canje-msg" + (clase ? " " + clase : "");
+    msgCanje.hidden = false;
+  };
+
+  formCanje?.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const codigo = campoCodigo.value.trim();
+    if (!codigo) return campoCodigo.focus();
+
+    const btn = formCanje.querySelector("button");
+    btn.disabled = true;
+    msgCanje.hidden = true;
+
+    try {
+      const token = await Auth.token();
+      if (!token) { decir("pn.claimNoSes", {}, "mal"); return; }
+
+      const r = await fetch("/api/canjear", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ token, codigo }),
+      });
+      const d = await r.json().catch(() => ({ estado: "error" }));
+
+      if (d.estado === "ok") {
+        campoCodigo.value = "";
+        decir("pn.claimOk", { n: String(d.carta).padStart(3, "0"), s: d.serie }, "bien");
+        /* El perfil de Clerk que tiene el navegador es de antes del canje: sin
+           recargarlo, la carta nueva no aparecería hasta la próxima visita. */
+        try { await Auth.user()?.reload?.(); } catch {}
+        pintar(false);
+        /* Y se señala CUÁL acaba de llegar: es la recompensa del gesto. */
+        const nueva = $(`.pn-carta[data-carta="${d.carta}"]`, el);
+        if (nueva && !reducedMotion) {
+          nueva.classList.add("recien");
+          setTimeout(() => nueva.classList.remove("recien"), 700);
+        }
+      } else {
+        const cual = {
+          novale: "pn.claimBad",
+          usado: "pn.claimUsed",
+          yatienes: "pn.claimHave",
+          demasiados: "pn.claimMany",
+          sinconfigurar: "pn.claimSoon",
+          sinsesion: "pn.claimNoSes",
+        }[d.estado] || "pn.claimErr";
+        decir(cual, { m: d.minutos }, d.estado === "yatienes" ? "" : "mal");
+      }
+    } catch {
+      decir("pn.claimErr", {}, "mal");
+    } finally {
+      btn.disabled = false;
+    }
+  });
 
   return { abrir, refresh: () => { if (!el.hidden) pintar(false); } };
 })();

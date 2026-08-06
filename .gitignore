@@ -27,3 +27,6 @@ _to_delete/
 .env.backup
 *.pem
 *.key
+
+# Listas de códigos de tirada: cada CSV es una colección reclamable.
+/assets/04-estrategia/cartas/_taller/tiradas/

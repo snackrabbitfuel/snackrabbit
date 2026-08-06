@@ -112,6 +112,21 @@ const CIRC = (2 * Math.PI * 54).toFixed(1);
       <!-- La 000 es de fundador y no pertenece al año. -->
       <p class="pn-c000" id="pnCarta000" data-i18n="pn.card000" hidden>+ CARD 000 · FOUNDER</p>
       <p class="pn-nota" id="pnCartasNota" data-i18n="pn.cardsEmpty">Your cards show up here as they ship, one a month.</p>
+
+      <!-- El puente entre el objeto y la cuenta: los diez caracteres del dorso.
+           Hasta que no tienes la carta en la mano no puedes leerlos, y eso es
+           justo lo que demuestran. Quien valida es el servidor: aquí solo se
+           teclea y se enseña la respuesta. -->
+      <form class="pn-canje" id="pnCanje" novalidate>
+        <label class="pn-canje-lab" for="pnCodigo" data-i18n="pn.claimTitle">GOT A CARD? CLAIM IT</label>
+        <div class="pn-canje-fila">
+          <input class="pn-canje-input" id="pnCodigo" name="codigo" type="text"
+                 inputmode="latin" autocomplete="off" spellcheck="false" maxlength="12"
+                 data-i18n-ph="pn.claimPh" placeholder="CODE ON THE BACK">
+          <button class="pn-canje-btn" type="submit" data-i18n="pn.claimBtn">CLAIM ▸</button>
+        </div>
+        <p class="pn-canje-msg" id="pnCanjeMsg" role="status" hidden></p>
+      </form>
     </section>
 
     <!-- ---- Acto 3: lo operativo ---- -->

@@ -2560,6 +2560,51 @@ input[aria-invalid="true"] {
 }
 .pn-nota { margin-top: 12px; font-family: var(--f-ui); font-style: normal; font-size: 11px; letter-spacing: .5px; color: var(--gray-2); }
 
+/* ---- canjear el código impreso ---- */
+.pn-canje { margin-top: 18px; padding-top: 16px; border-top: 2px solid var(--line-dark); }
+.pn-canje-lab {
+  display: block; margin-bottom: 10px;
+  font-family: var(--f-ui); font-style: normal; font-size: 10px;
+  letter-spacing: 2.5px; font-weight: 700; color: var(--pink);
+}
+.pn-canje-fila { display: flex; gap: 10px; flex-wrap: wrap; }
+.pn-canje-input {
+  flex: 1; min-width: 190px;
+  font-family: var(--f-ui); font-size: 15px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--bone);
+  background: var(--bg-dark); border: 2px solid var(--line-dark);
+  padding: 12px 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.pn-canje-input::placeholder { letter-spacing: 1.5px; font-size: 12px; color: var(--gray-2); text-transform: none; }
+.pn-canje-input:focus { border-color: var(--pink); box-shadow: 4px 4px 0 rgba(0, 0, 0, .5); outline: none; }
+.pn-canje-btn {
+  flex: none;
+  font-family: var(--f-ui); font-style: normal; font-size: 11px;
+  letter-spacing: 2px; font-weight: 700; color: var(--ink);
+  background: var(--pink); border: 3px solid var(--ink);
+  padding: 12px 20px; cursor: pointer;
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, .55);
+  transition: transform .18s var(--ease-snap), box-shadow .18s var(--ease-snap), background .18s;
+}
+.pn-canje-btn:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 rgba(0, 0, 0, .55); background: var(--bone); }
+.pn-canje-btn:disabled { opacity: .55; cursor: wait; transform: none; box-shadow: 5px 5px 0 rgba(0, 0, 0, .55); }
+.pn-canje-msg {
+  margin-top: 10px; font-family: var(--f-ui); font-style: normal;
+  font-size: 12px; letter-spacing: .3px; color: var(--gray-1);
+}
+.pn-canje-msg.bien { color: var(--yellow); font-weight: 700; }
+.pn-canje-msg.mal { color: var(--pink); }
+
+/* La carta recién reclamada se anuncia sola: aparece con un salto para que se
+   vea CUÁL de las doce acaba de llegar, que es la recompensa del gesto. */
+@keyframes pn-llega {
+  0% { transform: scale(.82) rotate(-6deg); opacity: 0; }
+  55% { transform: scale(1.08) rotate(2deg); opacity: 1; }
+  100% { transform: none; }
+}
+.pn-carta.recien { animation: pn-llega .65s var(--ease-snap); z-index: 2; }
+
 /* ---- pedidos: filas como la tabla del panel interno ---- */
 .pn-pedido {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
