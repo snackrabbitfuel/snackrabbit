@@ -9,6 +9,7 @@
    sitios donde aparece. Lo empaqueta Vite, así que no viaja nada de más. */
 import { EMPRESA } from "../data/empresa";
 import { UMBRALES_RANGO } from "../data/rangos";
+import { ANIO_SERIE } from "../data/serie";
 const CONTACTO = EMPRESA.email;
 
 /* ---------- Utils ---------- */
@@ -1950,44 +1951,67 @@ const Auth = (() => {
    al Año Uno. Eso lo decide él comprobando el token; desde aquí solo se manda
    si lo hay. */
 const Caras = (() => {
-  let cache = null;
-  let volando = null;
+  /* DOS cachés, y la razón es un fallo real que costó verlo.
+     Clerk se carga en diferido para no penalizar la portada, así que cuando el
+     carrusel pregunta al cargar la página TODAVÍA NO HAY TOKEN: la respuesta
+     es la pública, una sola carta. Con una caché única, esa respuesta se
+     quedaba pegada, y al abrir el panel —ya con sesión— se reutilizaba. Diego,
+     siendo admin, veía sus cartas como placas amarillas en vez de sus caras.
+     Cada respuesta se guarda según con qué se pidió. */
+  const cache = { publico: null, sesion: null };
+  const volando = { publico: null, sesion: null };
 
-  async function pedir() {
-    if (cache) return cache;
-    if (volando) return volando;
-    volando = (async () => {
-      try {
-        const token = await Auth.token().catch(() => null);
-        const r = await fetch("/api/cartas", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(token ? { token } : {}),
-        });
-        const d = await r.json();
-        cache = d?.caras || {};
-      } catch {
-        /* Sin respuesta no se inventa nada: el panel enseña las placas con el
-           número, que es verdad, en vez de un hueco roto. */
-        cache = {};
-      }
-      volando = null;
-      return cache;
-    })();
-    return volando;
+  async function traer(conSesion) {
+    let token = null;
+    if (conSesion) {
+      /* Se espera a que Clerk termine de arrancar. Sin esto volveríamos a
+         preguntar sin token y a guardar la respuesta equivocada. */
+      try { await Auth.listo(); token = await Auth.token(); } catch {}
+    }
+    try {
+      const r = await fetch("/api/cartas", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(token ? { token } : {}),
+      });
+      return (await r.json())?.caras || {};
+    } catch {
+      /* Sin respuesta no se inventa nada: el panel enseña las placas con el
+         número, que es verdad, en vez de un hueco roto. */
+      return {};
+    }
   }
 
-  /* Al cambiar de sesión cambia quién eres y, con ello, qué puedes ver. */
-  const olvidar = () => { cache = null; };
+  function pedir(conSesion = false) {
+    /* Si ya hay respuesta de sesión vale para todo: quien tenga vista previa
+       de admin la ve también en el carrusel de la portada. */
+    if (cache.sesion) return Promise.resolve(cache.sesion);
+    const k = conSesion ? "sesion" : "publico";
+    if (cache[k]) return Promise.resolve(cache[k]);
+    if (volando[k]) return volando[k];
+    volando[k] = traer(conSesion).then(caras => {
+      cache[k] = caras;
+      volando[k] = null;
+      return caras;
+    });
+    return volando[k];
+  }
+
+  /* Al entrar o salir cambia quién eres y, con ello, qué puedes ver. */
+  const olvidar = () => { cache.sesion = null; cache.publico = null; };
 
   return { pedir, olvidar };
 })();
+
+/* Se conecta aquí y no dentro del módulo porque Auth ya existe a esta altura:
+   sin esto, quien entra con su cuenta seguiría viendo la respuesta de cuando
+   estaba fuera. */
+Auth.alCambiar(() => Caras.olvidar());
 
 const Madriguera = (() => {
   const sec  = $("#madriguera");
   const btn  = $("#burJoin"), note = $("#burNote"), sel = $("#burSel");
   const KEY  = "sr_burrow_tier_v1";
-  const ANIO_SERIE = 2027;      // Año Uno: enero a diciembre de 2027
   const NOMBRE = { curioso: "bur.t1name", cavador: "bur.t2name" };
 
   /* Caras que se pidieron y no existían todavía. Hay que recordarlas: el
@@ -2225,7 +2249,7 @@ const Panel = (() => {
        devuelve las que ya tocan según el mes. Así el estreno mes a mes lo
        decide un reloj en vez de una tarea que alguien debe recordar, y los
        nombres de las que aún no tocan no viajan al navegador. */
-    Caras.pedir().then(caras => {
+    Caras.pedir(true).then(caras => {
       $$(".pn-carta", el).forEach(c => {
         const n = +c.dataset.carta, tengo = mias.includes(n);
         c.classList.toggle("tiene", tengo);
