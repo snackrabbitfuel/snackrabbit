@@ -1,50 +1,48 @@
 ---
-/* MY BURROW — el panel del cliente.
-   No es una pantalla de ajustes: es un sitio al que se baja. El orden va de
-   identidad (quién eres y qué rango tienes) a colección, descenso y, al final,
-   lo administrativo. Lo rellena el módulo Panel de app.js desde el perfil de
-   Clerk; lo que aún no existe se enseña vacío, nunca inventado.
+/* MY BURROW v3 — el panel del cliente con el mismo ADN que la portada y el
+   panel interno: malla con grano, bento de 12 columnas con jerarquía,
+   tarjetas con borde fino y sombra dura al pasar, dientes pixel bajo la
+   cabecera y los sellos de estado de la casa.
 
-   La cabecera lleva el rango como anillo de progreso: es EL dato del club, y
-   un anillo que se dibuja al abrir cuenta más que una barra. El cuerpo es una
-   rejilla de dos columnas donde el año ocupa el ancho entero: la colección es
-   la protagonista y las demás tarjetas la escoltan. */
+   La estructura cuenta una historia en tres actos: quién eres (cabecera +
+   rango y descenso, juntos porque son el mismo dato contado dos veces), qué
+   tienes (el año de cartas, protagonista a todo el ancho), y lo operativo
+   (pedidos, membresía, envío) al final.
+
+   Lo rellena el módulo Panel de app.js desde el perfil de Clerk; los IDs y
+   las clases que crea el JS (pn-pedido, pn-estado, pn-vacio…) no cambian —
+   cambia cómo se ven. Lo que aún no existe se enseña vacío, nunca inventado. */
 const CARTAS = Array.from({ length: 12 }, (_, i) => i);
 const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-/* Único sitio donde viven los umbrales: app.js los importa de aquí. Estaban
-   escritos dos veces, y dos copias del mismo número siempre acaban separándose
-   sin que nadie se entere. */
+/* Único sitio donde viven los umbrales: app.js los importa de aquí. */
 import { UMBRALES_RANGO as RANGOS } from "../data/rangos";
 const ROMANOS = ["I", "II", "III", "IV", "V", "VI"];
 
 /* El anillo: radio 54 en un lienzo de 120 → circunferencia ≈ 339.3. El JS solo
-   mueve el stroke-dashoffset; el número vive aquí para que CSS y JS no tengan
-   cada uno su copia. */
+   mueve el stroke-dashoffset. */
 const CIRC = (2 * Math.PI * 54).toFixed(1);
 ---
 
 <!-- ============ PANEL DE CLIENTE ============ -->
 <div class="modal panel-modal" id="panelModal" role="dialog" aria-modal="true" aria-labelledby="pnTitle" hidden>
-  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
   <div class="pn-mesh" aria-hidden="true"></div>
+  <div class="pn-grano" aria-hidden="true"></div>
+  <button class="modal-x" data-close data-i18n-aria="aria.close" aria-label="Close">✕</button>
 
-  <!-- ---- Identidad + rango ---- -->
+  <!-- ---- Cabecera: identidad, como la barra del panel interno ---- -->
   <header class="pn-head" style="--i:0">
-    <div class="pn-quien">
-      <span class="pn-avatar" aria-hidden="true"><svg class="pn-bunny"><use href="#bunny"></use></svg></span>
-      <div>
-        <p class="pn-kicker" id="pnTitle" data-i18n="pn.title">MY BURROW</p>
-        <p class="pn-user" id="pnUser"></p>
-        <p class="pn-desde" id="pnDesde"></p>
-      </div>
-      <span class="pn-chip-fund" id="pnChipFund" data-i18n="pn.founderChip" hidden>FOUNDER</span>
+    <span class="pn-avatar" aria-hidden="true"><svg class="pn-bunny"><use href="#bunny"></use></svg></span>
+    <div class="pn-quien-txt">
+      <p class="pn-kicker" id="pnTitle" data-i18n="pn.title">MY BURROW</p>
+      <p class="pn-user" id="pnUser"></p>
+      <p class="pn-desde" id="pnDesde"></p>
     </div>
+    <span class="pn-chip-fund" id="pnChipFund" data-i18n="pn.founderChip" hidden>FOUNDER</span>
 
     <!-- El paso al panel interno. Nace oculto y SIN destino: app.js solo le
          pone el href y lo enseña cuando el SERVIDOR confirma que esta cuenta
-         es de las nuestras. Si no lo es, se queda escondido y sin enlace, así
-         que ni siquiera es un botón que lleve a ninguna parte. -->
+         es de las nuestras. -->
     <a class="pn-admin" id="pnAdmin" hidden>
       <span class="pn-admin-ins" aria-hidden="true">
         <svg viewBox="0 0 10 10"><g fill="currentColor">
@@ -59,44 +57,34 @@ const CIRC = (2 * Math.PI * 54).toFixed(1);
       </span>
       <span class="pn-admin-ir" aria-hidden="true">→</span>
     </a>
-
-    <div class="pn-rango-hero">
-      <div class="pn-anillo" role="img" aria-labelledby="pnRangoN">
-        <svg viewBox="0 0 120 120" aria-hidden="true">
-          <circle class="pn-an-fondo" cx="60" cy="60" r="54" />
-          <circle class="pn-an-fill" id="pnRangoFill" cx="60" cy="60" r="54"
-                  stroke-dasharray={CIRC} stroke-dashoffset={CIRC} />
-        </svg>
-        <div class="pn-an-centro">
-          <p class="pn-rango-lab" data-i18n="pn.rank">YOUR RANK</p>
-          <p class="pn-rango-n" id="pnRangoN">—</p>
-          <p class="pn-an-latas"><i id="pnLatasN">0</i> <span data-i18n="pn.cans">CANS</span></p>
-        </div>
-      </div>
-      <p class="pn-rango-nota" id="pnRangoNota"></p>
-    </div>
   </header>
 
+  <div class="pn-dientes" aria-hidden="true"></div>
+
   <div class="pn-body">
-    <!-- ---- El año: la colección manda y ocupa el ancho entero ---- -->
-    <section class="pn-bloque pn-b-ancho" style="--i:1">
-      <div class="pn-h3"><span data-i18n="pn.cards">YOUR YEAR</span><b><i id="pnCartasN">0</i> / 12</b></div>
-      <ol class="pn-cartas">
-        {CARTAS.map((i) => (
-          <li class="pn-carta" data-carta={i + 1} style={`--i:${i}`}>
-            <span class="pn-c-n">{String(i + 1).padStart(3, "0")}</span>
-            <span class="pn-c-mes" data-mes={i}>{MESES[i]}</span>
-          </li>
-        ))}
-      </ol>
-      <!-- La 000 es de fundador y no pertenece al año: tiene su propia marca en
-           vez de una casilla en la rejilla de doce. -->
-      <p class="pn-c000" id="pnCarta000" data-i18n="pn.card000" hidden>+ CARD 000 · FOUNDER</p>
-      <p class="pn-nota" id="pnCartasNota" data-i18n="pn.cardsEmpty">Your cards show up here as they ship, one a month.</p>
+    <!-- ---- Acto 1: el rango, contado dos veces — el anillo y la escalera ---- -->
+    <section class="pn-bloque pn-hero pn-c7" style="--i:1">
+      <div class="pn-h3"><span data-i18n="pn.rank">YOUR RANK</span></div>
+      <div class="pn-hero-cuerpo">
+        <div class="pn-anillo" role="img" aria-labelledby="pnRangoN">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="pn-an-fondo" cx="60" cy="60" r="54" />
+            <circle class="pn-an-fill" id="pnRangoFill" cx="60" cy="60" r="54"
+                    stroke-dasharray={CIRC} stroke-dashoffset={CIRC} />
+          </svg>
+          <div class="pn-an-centro">
+            <p class="pn-an-latas"><i id="pnLatasN">0</i></p>
+            <p class="pn-rango-lab" data-i18n="pn.cans">CANS</p>
+          </div>
+        </div>
+        <div class="pn-hero-txt">
+          <p class="pn-rango-n" id="pnRangoN">—</p>
+          <p class="pn-rango-nota" id="pnRangoNota"></p>
+        </div>
+      </div>
     </section>
 
-    <!-- ---- El descenso ---- -->
-    <section class="pn-bloque" style="--i:2">
+    <section class="pn-bloque pn-c5" style="--i:2">
       <div class="pn-h3"><span data-i18n="pn.descent">THE DESCENT</span></div>
       <ol class="pn-escalera">
         {RANGOS.map((latas, i) => (
@@ -110,28 +98,39 @@ const CIRC = (2 * Math.PI * 54).toFixed(1);
       </ol>
     </section>
 
-    <!-- ---- Pedidos ---- -->
-    <section class="pn-bloque" style="--i:3">
+    <!-- ---- Acto 2: el año — la colección manda y ocupa el ancho entero ---- -->
+    <section class="pn-bloque pn-b-ancho pn-c12" style="--i:3">
+      <div class="pn-h3"><span data-i18n="pn.cards">YOUR YEAR</span><b><i id="pnCartasN">0</i> / 12</b></div>
+      <ol class="pn-cartas">
+        {CARTAS.map((i) => (
+          <li class="pn-carta" data-carta={i + 1} style={`--i:${i}`}>
+            <span class="pn-c-n">{String(i + 1).padStart(3, "0")}</span>
+            <span class="pn-c-mes" data-mes={i}>{MESES[i]}</span>
+          </li>
+        ))}
+      </ol>
+      <!-- La 000 es de fundador y no pertenece al año. -->
+      <p class="pn-c000" id="pnCarta000" data-i18n="pn.card000" hidden>+ CARD 000 · FOUNDER</p>
+      <p class="pn-nota" id="pnCartasNota" data-i18n="pn.cardsEmpty">Your cards show up here as they ship, one a month.</p>
+    </section>
+
+    <!-- ---- Acto 3: lo operativo ---- -->
+    <section class="pn-bloque pn-c7" style="--i:4">
       <div class="pn-h3"><span data-i18n="pn.orders">ORDERS</span><b id="pnPedidosN"></b></div>
       <div id="pnPedidos"></div>
     </section>
 
-    <!-- ---- Lo administrativo, al fondo ---- -->
-    <section class="pn-bloque" style="--i:4">
+    <section class="pn-bloque pn-c5" style="--i:5">
       <div class="pn-h3"><span data-i18n="pn.member">MEMBERSHIP</span></div>
       <p class="pn-dato" id="pnMembresia"></p>
-      <!-- Los Términos y la política de devoluciones prometen que se puede
-           cancelar desde aquí, y hasta ahora aquí no había nada. El enlace se
-           pinta desde app.js: mientras no exista Stripe apunta al correo, y
-           el día que exista abrirá el portal del cliente. -->
+      <!-- El enlace de gestión lo pinta app.js: sin Stripe apunta al correo,
+           con Stripe abrirá el portal del cliente. -->
       <p class="pn-nota" id="pnGestion"></p>
     </section>
-    <section class="pn-bloque" style="--i:5">
+
+    <section class="pn-bloque pn-c12" style="--i:6">
       <div class="pn-h3"><span data-i18n="pn.ship">SHIPPING</span></div>
       <p class="pn-dato" id="pnEnvio"></p>
-      <!-- Sin esto, la dirección solo se podía cambiar haciendo otro pedido:
-           quien se muda a mitad de suscripción no tenía forma de corregirla,
-           y las cajas salen todos los meses. -->
       <button class="pn-editar" id="pnEditar" type="button" data-i18n="pn.editShip">CHANGE ADDRESS</button>
       <form class="pn-form" id="pnFormEnvio" hidden novalidate>
         <label><span data-i18n="ck.name">FULL NAME</span><input name="name" autocomplete="name" required></label>
