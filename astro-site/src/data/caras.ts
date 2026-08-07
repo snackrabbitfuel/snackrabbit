@@ -8,19 +8,19 @@
  * pueden adivinar. La 001 va con nombre llano a propósito: es el escaparate de
  * la portada, y tiene que poder verla cualquiera sin haber entrado.
  *
- * Lo genera assets/04-estrategia/cartas/_taller/publicar-carta.py. No se
- * edita a mano: si cambia una cara, cambia su hash. */
+ * Lo genera assets/04-estrategia/cartas/_taller/publicar-web.py. No se edita a
+ * mano: si cambia una cara, cambia su hash. */
 export const CARAS: Record<number, { es: string; en: string }> = {
   1: { es: "carta-001-es.webp", en: "carta-001-en.webp" },
-  2: { es: "c002-es-4bedcdf139e9.webp", en: "c002-en-068b03faeb5f.webp" },
-  3: { es: "c003-es-0702c77f965e.webp", en: "c003-en-95dbfea44970.webp" },
-  4: { es: "c004-es-dfae06f380b6.webp", en: "c004-en-52be20226784.webp" },
-  5: { es: "c005-es-baf0fe55dd0f.webp", en: "c005-en-3bb949a19f24.webp" },
-  6: { es: "c006-es-5ddb6d8f647e.webp", en: "c006-en-fd8df871c6f0.webp" },
-  7: { es: "c007-es-845da10652dd.webp", en: "c007-en-53879369df18.webp" },
-  8: { es: "c008-es-7505a18de540.webp", en: "c008-en-eb1d7d207313.webp" },
-  9: { es: "c009-es-cdd1efe3a29e.webp", en: "c009-en-5e81cf9667ad.webp" },
-  10: { es: "c010-es-d4fb1b71f76f.webp", en: "c010-en-eee08fa1a826.webp" },
-  11: { es: "c011-es-ca43985cc141.webp", en: "c011-en-2defaa1d501a.webp" },
-  12: { es: "c012-es-75a7a270c459.webp", en: "c012-en-ceee73cae73c.webp" },
+  2: { es: "c002-es-e74d9d7c8909.webp", en: "c002-en-e0d39cfd02fc.webp" },
+  3: { es: "c003-es-4499ff2dece3.webp", en: "c003-en-53c253d4dea7.webp" },
+  4: { es: "c004-es-b880f1a4dae0.webp", en: "c004-en-183db0afa0e2.webp" },
+  5: { es: "c005-es-67279a2fc250.webp", en: "c005-en-f48519bff3d6.webp" },
+  6: { es: "c006-es-3345503c454b.webp", en: "c006-en-293f901209e4.webp" },
+  7: { es: "c007-es-ee24932b26db.webp", en: "c007-en-165b4a8cb6bc.webp" },
+  8: { es: "c008-es-43b3e04e6a1e.webp", en: "c008-en-26dbe1ae8963.webp" },
+  9: { es: "c009-es-c908674633d2.webp", en: "c009-en-8d38f5d40188.webp" },
+  10: { es: "c010-es-c12383835a54.webp", en: "c010-en-60a274a36c66.webp" },
+  11: { es: "c011-es-f90595e0cdf9.webp", en: "c011-en-1698888399b7.webp" },
+  12: { es: "c012-es-4dddfd4eea45.webp", en: "c012-en-56897e5c6476.webp" },
 };
