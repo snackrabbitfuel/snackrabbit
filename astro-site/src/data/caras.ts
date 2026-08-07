@@ -4,14 +4,16 @@
  * un componente de cliente, los doce nombres viajan al navegador y el estreno
  * mes a mes se acaba: cualquiera podría abrir las doce caras el primer día.
  *
- * De la 002 a la 012 el nombre lleva un hash del contenido, así que no se
- * pueden adivinar. La 001 va con nombre llano a propósito: es el escaparate de
- * la portada, y tiene que poder verla cualquiera sin haber entrado.
+ * Las doce llevan un hash del contenido en el nombre, así que no se pueden
+ * adivinar — y al cambiar el arte cambia el nombre, que es lo que hace que los
+ * caches se refresquen solos. La 001 es la única cuyo nombre además se hace
+ * público: Madriguera.astro lo escribe en el HTML al construir, porque es el
+ * escaparate de la portada y tiene que verla cualquiera sin haber entrado.
  *
  * Lo genera assets/04-estrategia/cartas/_taller/publicar-web.py. No se edita a
  * mano: si cambia una cara, cambia su hash. */
 export const CARAS: Record<number, { es: string; en: string }> = {
-  1: { es: "carta-001-es.webp", en: "carta-001-en.webp" },
+  1: { es: "c001-es-203a432f5b52.webp", en: "c001-en-31f889256877.webp" },
   2: { es: "c002-es-e74d9d7c8909.webp", en: "c002-en-e0d39cfd02fc.webp" },
   3: { es: "c003-es-4499ff2dece3.webp", en: "c003-en-53c253d4dea7.webp" },
   4: { es: "c004-es-b880f1a4dae0.webp", en: "c004-en-183db0afa0e2.webp" },

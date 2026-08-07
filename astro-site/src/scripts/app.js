@@ -2083,7 +2083,14 @@ const Madriguera = (() => {
        no toca —o si el servidor no responde— se cae a la 001, que siempre
        está: la portada no puede quedarse con un hueco roto y un pie que
        promete una carta que no se ve. */
-    const respaldo = () => { carta.src = `/assets/carta-001-${LANG}.webp`; rotular("001"); };
+    /* El respaldo lo escribe Astro en el propio <img> al construir: así el
+       nombre con hash vive en un solo sitio y no hay una copia aquí que se
+       quede vieja el día que cambie el arte. */
+    const respaldo = () => {
+      const n = carta.dataset[LANG === "es" ? "respaldoEs" : "respaldoEn"];
+      if (n) carta.src = `/assets/${n}`;
+      rotular("001");
+    };
     Caras.pedir().then(caras => {
       const cara = caras[n]?.[LANG];
       if (!cara) return respaldo();

@@ -10,6 +10,16 @@ const CARTAS = Array.from({ length: 12 }, (_, i) => i);
    arranque el JS, que solo los reescribe al cambiar de idioma. */
 const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
                "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+/* El nombre de la 001 sale del manifiesto, no cableado.
+   Lo lleva escrito el HTML porque la portada la enseña a cualquiera, sin
+   sesión y antes de que arranque el JS. Se lee AL CONSTRUIR, así que solo
+   viaja el de la 001 —que es pública a propósito—, nunca los doce.
+
+   Y lleva hash: cuando cambia el arte cambia el nombre, y con él se refrescan
+   navegadores y CDN. Con el nombre fijo que tenía antes, cambiar la
+   ilustración no cambiaba nada para quien ya la había visto. */
+import { CARAS } from "../data/caras";
+const CARA_001 = CARAS[1];
 ---
 
 <!-- ============ LA MADRIGUERA (CLUB) ============ -->
@@ -27,7 +37,9 @@ const MESES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
     <!-- La cara de la carta del mes es pública; el dorso, donde está la
          curiosidad, solo va dentro de la caja. El idioma cambia la imagen. -->
     <figure class="by-destacada">
-      <img id="burCarta" src="/assets/carta-001-en.webp" width="620" height="864"
+      <img id="burCarta" src={`/assets/${CARA_001.en}`}
+             data-respaldo-es={CARA_001.es} data-respaldo-en={CARA_001.en}
+             width="620" height="864"
            alt="Card 001 — The Binky" loading="lazy" decoding="async">
       <!-- Sin data-i18n a propósito: el número y el mes dependen de la fecha, así
            que este pie lo escribe el JS. El texto de aquí es lo que se ve antes
