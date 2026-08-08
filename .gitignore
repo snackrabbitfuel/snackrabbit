@@ -30,3 +30,9 @@ _to_delete/
 
 # Listas de códigos de tirada: cada CSV es una colección reclamable.
 /assets/04-estrategia/cartas/_taller/tiradas/
+
+# PDF sueltos en la raíz. Aquí caen copias de documentos internos —tech packs,
+# presentaciones— que ya viven en /assets/ y que este repo, siendo público, no
+# debe publicar. Solo la raíz: si algún día el sitio sirve un PDF, irá dentro
+# de astro-site/public y no lo toca esta regla.
+/*.pdf
