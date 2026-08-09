@@ -14,6 +14,7 @@ import {
   Body, Column, Container, Head, Heading, Hr, Html, Link, Preview, Row, Section, Text,
 } from "@react-email/components";
 import { EMPRESA } from "../data/empresa";
+import { REDES } from "../data/redes";
 
 export const SITIO = "https://www.snackrabbit.co";
 
@@ -231,7 +232,9 @@ export function Marco({ adelanto, kicker, titular, motivo, baja, idioma = "en", 
             <Text style={{ margin: "0 0 10px", fontFamily: F.pixel, fontSize: "10px", letterSpacing: "2px", color: C.gris }}>
               <Link href={SITIO} style={{ color: C.gris, textDecoration: "none" }}>SNACKRABBIT.CO</Link>
               {"  ·  "}
-              <Link href="https://www.instagram.com/snackrabbit.tv/" style={{ color: C.gris, textDecoration: "none" }}>INSTAGRAM</Link>
+              <Link href={REDES.instagram} style={{ color: C.gris, textDecoration: "none" }}>INSTAGRAM</Link>
+              {"  ·  "}
+              <Link href={REDES.youtube} style={{ color: C.gris, textDecoration: "none" }}>YOUTUBE</Link>
               {"  ·  "}
               <Link href={`${SITIO}/shipping`} style={{ color: C.gris, textDecoration: "none" }}>{es ? "ENVÍOS" : "SHIPPING"}</Link>
               {"  ·  "}
