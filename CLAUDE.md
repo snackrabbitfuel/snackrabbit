@@ -99,7 +99,8 @@ Pendiente, por orden de dependencia:
    para cobrar. Hoy el checkout es una demostración: no cobra.
 2. Rellenar `astro-site/src/data/empresa.ts` con los datos legales. Mientras
    tengan corchetes salen resaltados en amarillo en las páginas.
-3. URLs de TikTok, YouTube y X para el footer. Instagram ya está.
+3. URL de X para el footer, si llega a haber cuenta. TikTok, Instagram y
+   YouTube ya están puestos y apuntan a los canales de verdad.
 4. **La newsletter sigue sin mandar nada.** Se apunta el contacto y ya. No se
    conectó como la lista de fundadores porque la forma del problema es otra:
    ahí no hay sesión de Clerk que verificar —cualquiera se apunta sin cuenta—,
