@@ -63,8 +63,8 @@ const I18N = {
     "nav.login": "LOGIN",
     "nav.hello": "HOLA, {name}",
     "hero.kicker": "@SNACKRABBIT.TV PRESENTA",
-    "hero.title1": "SIGUE AL",
-    "hero.title2": "CONEJO.",
+    "hero.title1": "CURIOSIDAD",
+    "hero.title2": "EN LATA.",
     "hero.sub": "La curiosidad te trajo hasta aquí.<br>La madriguera hace el resto.",
     "hero.cta1": "VER EL DROP ▸",
     "a11y.skip": "Saltar al contenido",
@@ -360,8 +360,8 @@ const I18N = {
     "nav.login": "LOGIN",
     "nav.hello": "HI, {name}",
     "hero.kicker": "@SNACKRABBIT.TV PRESENTS",
-    "hero.title1": "FOLLOW THE",
-    "hero.title2": "RABBIT.",
+    "hero.title1": "CURIOSITY,",
+    "hero.title2": "CANNED.",
     "hero.sub": "Curiosity got you this far.<br>The burrow does the rest.",
     "hero.cta1": "SHOP THE DROP ▸",
     "a11y.skip": "Skip to content",
@@ -2686,8 +2686,39 @@ $("#newsForm").addEventListener("submit", async e => {
     confetti.burst(e.clientX, e.clientY, 36);
     setTimeout(() => psst.classList.remove("on"), 900);
   });
+  /* El vídeo del hero. Dos reglas:
+     · Con prefers-reduced-motion se queda en el primer fotograma — para
+       algunas personas un bucle de fondo produce mareo de verdad, y el
+       atributo autoplay del HTML no sabe nada de esa preferencia.
+     · Fuera de pantalla se pausa: es un fondo, nadie lo ve al hacer scroll
+       y decodificar vídeo gasta batería. */
+  const heroVideo = $("#heroVideo");
+  if (heroVideo) {
+    if (reducedMotion) {
+      heroVideo.removeAttribute("autoplay"); heroVideo.pause();
+    } else {
+      let heroALaVista = true;
+      new IntersectionObserver(entradas => {
+        entradas.forEach(en => {
+          heroALaVista = en.isIntersecting;
+          if (en.isIntersecting) heroVideo.play().catch(() => {});
+          else heroVideo.pause();
+        });
+      }, { threshold: .05 }).observe(heroVideo);
+      /* Al volver a la pestaña: el navegador pausa el vídeo al ocultarla y no
+         lo reanuda solo — sin esto, quien vuelve se encuentra el fondo
+         congelado. Se comprobó en vivo: play() con el documento oculto no
+         prende. */
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && heroALaVista) heroVideo.play().catch(() => {});
+      });
+    }
+  }
+
+  /* La lata flotante era del hero v1; el v2 lleva el vídeo detrás. La guarda
+     se queda por si el respaldo _respaldo/hero-v1 vuelve algún día. */
   const heroCan = $("#heroCan");
-  heroCan.addEventListener("click", e => {
+  if (heroCan) heroCan.addEventListener("click", e => {
     heroCan.classList.remove("shake"); void heroCan.offsetWidth; heroCan.classList.add("shake");
     confetti.burst(e.clientX, e.clientY, 30);
   });
@@ -2762,12 +2793,12 @@ $$("[data-open-product]").forEach(a => a.addEventListener("click", e => {
   });
 
   // Parallax de scroll: collage del hero + lata de la sección fuel
-  const heroVisual = $("#heroVisual");
+  const heroVisual = $("#heroVisual");   // null en el hero v2: el vídeo no lleva parallax
   const fuelVisual = $(".fuel-visual");
   fuelVisual.style.transitionProperty = "opacity";   // el reveal conserva el fade; el transform es del parallax
   (function loop() {
     const sy = scrollY;
-    if (sy < innerHeight * 1.3) heroVisual.style.translate = `0 ${(sy * -0.1).toFixed(1)}px`;
+    if (heroVisual && sy < innerHeight * 1.3) heroVisual.style.translate = `0 ${(sy * -0.1).toFixed(1)}px`;
     const fr = fuelVisual.getBoundingClientRect();
     if (fr.top < innerHeight && fr.bottom > 0) {
       const c = (fr.top + fr.height / 2 - innerHeight / 2) / innerHeight;

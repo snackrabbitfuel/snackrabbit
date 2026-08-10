@@ -3,20 +3,39 @@
      ahí está el componente, sus 31 reglas de CSS y sus textos, extraídos —
      no se pueden recuperar de un solo fichero porque el CSS, los textos y el
      parallax viven dentro de archivos compartidos. Ver _respaldo/hero-v1/LEEME.md -->
-<!-- ============ HERO ============ -->
-<section class="hero" id="hero">
-  <div class="hero-halftone" aria-hidden="true"></div>
+
+<!-- ============ HERO v2 — el anuncio de playa a pantalla completa ============
+
+     El vídeo va detrás y el texto encima. Decisiones que no son capricho:
+
+     · El titular sigue siendo NEGRO porque se midió el contraste sobre el
+       fotograma real: la peor banda de la zona de texto da 5.0:1, por encima
+       del 4.5:1 de WCAG. Blanco daba 1.6:1 — ilegible.
+     · El velo (hero-scrim) aclara solo el lado del texto, por si un destello
+       del mar pasa por debajo de una letra en mitad del bucle.
+     · muted va en el HTML, no en JS: el clip trae pista de audio y sin el
+       atributo los navegadores bloquean el autoplay.
+     · El póster es el primer fotograma: sin él, la portada parpadea en negro
+       mientras llega el mp4. Y es lo que queda fijo con reduced-motion.
+     · Nombres con hash de contenido, como las cartas: si el vídeo se
+       regenera, el nombre cambia y ningún caché sirve el viejo. -->
+<section class="hero hero-cine" id="hero">
+  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline
+         preload="auto" poster="/assets/hero-playa-poster-5f85aadfd87d.webp"
+         aria-hidden="true" tabindex="-1">
+    <source src="/assets/hero-playa-d2d99bb236c5.mp4" type="video/mp4">
+  </video>
+  <div class="hero-scrim" aria-hidden="true"></div>
 
   <div class="hero-inner">
     <div class="hero-copy">
       <p class="hero-kicker rv" data-i18n="hero.kicker">@SNACKRABBIT.TV PRESENTS</p>
-      <h1 class="hero-title" id="heroTitle" aria-label="FOLLOW THE RABBIT.">
-        <span class="hero-hopper" aria-hidden="true"><span class="hh-x"><span class="hh-y"><svg><use href="#bunny"></use></svg></span></span></span>
+      <h1 class="hero-title" id="heroTitle" aria-label="CURIOSITY, CANNED.">
         <!-- Las palabras van en el HTML, no solo en el JS: sin JavaScript el
              titular de la portada se quedaba vacío y la página era una pantalla
              rosa sin un solo mensaje. El guion las reescribe para animarlas. -->
-        <span class="ht-line"><span class="ht-word" id="htWord1">FOLLOW THE</span></span>
-        <span class="ht-line ht-line-hl"><span class="ht-word" id="htWord2">RABBIT.</span></span>
+        <span class="ht-line"><span class="ht-word" id="htWord1">CURIOSITY,</span></span>
+        <span class="ht-line ht-line-hl"><span class="ht-word" id="htWord2">CANNED.</span></span>
       </h1>
       <p class="hero-sub rv" data-delay="500" data-i18n-html="hero.sub">Curiosity got you this far.<br>The burrow does the rest.</p>
       <div class="hero-ctas rv" data-delay="620">
@@ -24,37 +43,6 @@
         <a class="btn btn-ghost" href="#fuel" data-i18n="hero.cta2">SEE RABBIT FUEL</a>
       </div>
       <p class="hero-meta rv" data-delay="740" data-i18n="hero.meta">ZERO SUGAR · ZERO TAURINE · MATE + GUARANÁ · SHIPS IN 24H</p>
-    </div>
-
-    <div class="hero-visual" id="heroVisual">
-      <div class="hero-tape" aria-hidden="true">
-        <div class="hero-tape-track">
-          <span data-i18n="hero.tape">100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ </span>
-          <span data-i18n="hero.tape">100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ 100% REAL ▸ NO WEIRD STUFF ▸ ZERO SUGAR ▸ </span>
-        </div>
-      </div>
-      <!-- El lema de la sesión de fotos, en texto de verdad: nítido a cualquier
-           tamaño. Va en aria-hidden porque la propia lata ya lo dice. -->
-      <p class="hv-lema" aria-hidden="true">FOCUS<br><em>PLAY</em><br>REPEAT</p>
-      <!-- Sin peluche: la lata es el producto héroe, de pie sobre la roca del
-           fondo. El sello que gira y la banda amarilla siguen igual. -->
-      <figure class="hv-obj hv-can" data-depth="26" id="heroCan" title="Click!">
-        <!-- Recorte de la toma con humo, no el plano de catálogo: en el hero
-             manda la atmósfera. El de catálogo sigue en can-cutout.webp, que lo
-             usan la sección de Rabbit Fuel y la galería del producto. -->
-        <img src="/assets/can-hero.webp" alt="Rabbit Fuel — Natural Energy 250 ml" width="213" height="531" loading="eager">
-      </figure>
-
-      <div class="stamp-spin" data-depth="40" aria-hidden="true">
-        <svg viewBox="0 0 120 120">
-          <defs><path id="stampPath" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
-          <circle cx="60" cy="60" r="58" class="stamp-ring stamp-fill"/>
-          <circle cx="60" cy="60" r="34" class="stamp-ring stamp-ring-in"/>
-          <text class="stamp-text"><textPath href="#stampPath" data-i18n="hero.stamp">100% REAL · NO WEIRD STUFF · 100% REAL · </textPath></text>
-          <g transform="translate(38,39) scale(5.5)"><use href="#bunny" width="8.2" height="7.2" color="#ffd400" style="--bunny-eye:#050508"></use></g>
-        </svg>
-      </div>
-      <span class="hero-badge" data-depth="34" aria-hidden="true" data-i18n-html="hero.badge">ZERO<br>SUGAR</span>
     </div>
   </div>
 
