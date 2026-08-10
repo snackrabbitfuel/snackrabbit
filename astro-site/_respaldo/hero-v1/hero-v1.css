@@ -1,0 +1,232 @@
+/* CSS del hero v1, extraído de src/styles/styles.css el 10 ago 2026.
+ * Todas las reglas .hero* y .hv-*, incluidas las de dentro de @media.
+ * Es una COPIA de respaldo: el archivo vivo sigue siendo styles.css. */
+
+/* ============ HERO ============ */
+.hero {
+  position: relative;
+  min-height: calc(100svh - var(--nav-h));
+  background: var(--pink);
+  color: var(--ink);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 30px clamp(18px, 5vw, 70px) 90px;
+  overflow: hidden;
+}
+
+.hero-halftone {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(var(--pink-deep) 2px, transparent 2px),
+    radial-gradient(rgba(255, 212, 0, .55) 1.6px, transparent 1.6px);
+  background-size: 22px 22px, 34px 34px;
+  background-position: 0 0, 9px 13px;
+  mask-image: radial-gradient(ellipse 90% 80% at 70% 30%, #000 0%, transparent 68%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 70% 30%, #000 0%, transparent 68%);
+}
+
+.hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  align-items: center;
+  gap: clamp(20px, 4vw, 60px);
+  max-width: 1380px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-kicker {
+  font-family: var(--f-ui); font-style: normal;
+  font-size: clamp(11px, 1.3vw, 14px); letter-spacing: 4px;
+  background: var(--ink); color: var(--pink);
+  display: inline-block; padding: 8px 14px;
+  transform: rotate(-1.5deg);
+  margin-bottom: 26px;
+}
+
+.hero-title {
+  position: relative;
+  font-family: var(--f-display); font-style: normal;
+  font-size: clamp(52px, 9.6vw, 150px);
+  line-height: .92;
+  letter-spacing: -.01em;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+/* Conejo pixel saltando sobre el titular */
+.hero-hopper {
+  position: absolute;
+  top: -46px; left: 4px;
+  pointer-events: none;
+}
+
+.hero-hopper svg { width: 36px; height: 32px; color: var(--ink); --bunny-eye: var(--yellow); }
+
+.hero-sub {
+  font-size: clamp(19px, 2.3vw, 28px);
+  line-height: 1.35;
+  max-width: 480px;
+  margin-bottom: 34px;
+}
+
+.hero-ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 26px; }
+
+.hero-meta { font-family: var(--f-ui); font-style: normal; font-size: 11px; letter-spacing: 3px; opacity: .75; }
+
+/* Hero visual */
+.hero-visual {
+  position: relative;
+  min-height: clamp(380px, 46vw, 620px);
+}
+
+/* Panel tras el collage: la escena de humo de la sesión de producto.
+   Es hero-fondo.webp, reconstruida desde can-mood.webp quitándole la lata y el
+   texto pintado — la lata de verdad va encima, flotando y con su clic, y el
+   FOCUS · PLAY · REPEAT se pone en HTML para que salga nítido y no ampliado. */
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  inset: -5% -12% -3% -6%;
+  background: url("/assets/hero-fondo.webp") center / cover no-repeat, var(--ink);
+  border: 5px solid var(--yellow);
+  box-shadow: 16px 16px 0 rgba(5, 5, 8, .3);
+  rotate: 2deg;
+  z-index: 0;
+}
+
+/* El lema de la foto, en texto real. Apilado a la izquierda como en la sesión:
+   tres líneas rosas y el guion amarillo debajo. */
+.hv-lema {
+  position: absolute;
+  left: 6%; top: 20%;
+  z-index: 1;
+  font-family: var(--f-ui); font-style: normal;
+  font-size: clamp(15px, 1.9vw, 26px);
+  letter-spacing: 4px; line-height: 1.8;
+  color: var(--pink);
+  text-shadow: 0 2px 14px rgba(5, 5, 8, .6);
+}
+
+/* PLAY en amarillo, como en la sesión de fotos: rompe la columna rosa por el
+   centro y es lo que hace que el bloque no se lea como un párrafo. */
+.hv-lema em { font-style: normal; color: var(--yellow); }
+
+.hv-lema::after {
+  content: "";
+  display: block;
+  width: 1.6em; height: 6px;
+  margin-top: .55em;
+  background: var(--yellow);
+}
+
+.hero-tape {
+  position: absolute;
+  left: -22%; right: -22%;
+  /* Sube por encima del sello, que vive en la esquina inferior izquierda: a la
+     altura de antes le cruzaba la mitad. El lema sube con ella. */
+  bottom: 34%;
+  z-index: 2;
+  rotate: -7deg;
+  background: var(--yellow);
+  border-top: 3px solid var(--ink);
+  border-bottom: 3px solid var(--ink);
+  padding: 9px 0;
+  overflow: hidden;
+}
+
+.hero-tape-track { display: flex; width: max-content; animation: marq 20s linear infinite; }
+
+.hero-tape-track span {
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 11px; letter-spacing: 3px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Productos recortados (PNG con alfa): sin marco ni fondo, flotando sobre el
+   escenario. El drop-shadow sigue la silueta real, no una caja, así que pueden
+   solaparse sin que uno tape al otro. */
+.hv-obj {
+  position: absolute;
+  transition: transform .4s var(--ease-snap), filter .4s var(--ease-snap);
+}
+
+.hv-obj img { width: 100%; height: auto; display: block; }
+
+/* El sello pasa a la esquina inferior IZQUIERDA. A la derecha se comía la lata,
+   que ahora está de pie sobre la roca y es lo que hay que ver. Aquí además
+   equilibra: lema arriba a la izquierda, sello abajo, lata a la derecha. */
+.hero .stamp-spin { z-index: 4; left: -6%; right: auto; bottom: -7%; }
+
+.hero .stamp-ring { stroke: var(--yellow); }
+
+.hero .stamp-text { fill: var(--yellow); }
+
+.hero-badge { z-index: 4; }
+
+/* La lata, de pie sobre la roca del fondo, a la derecha del lema como en la
+   sesión de fotos. Se coloca con right, no con translate: ese lo usan ya el
+   paralaje del ratón y la animación de flotado, y pisarlo las rompe. */
+.hv-can {
+  z-index: 3;
+  width: clamp(132px, 16.5vw, 214px);
+  right: 17%;
+  bottom: 8%;
+  rotate: -2deg;
+  cursor: pointer;
+  /* sombra proyectada + halo rosa: el producto héroe se despega del fondo */
+  filter: drop-shadow(0 26px 26px rgba(0, 0, 0, .7)) drop-shadow(0 0 34px rgba(255, 79, 216, .32));
+  animation: floaty 5.2s ease-in-out infinite;
+}
+
+.hv-can:hover { scale: 1.03; filter: drop-shadow(0 26px 26px rgba(0, 0, 0, .7)) drop-shadow(0 0 44px rgba(255, 79, 216, .5)); }
+
+.hv-can.shake { animation: shake .5s var(--ease-snap); }
+
+.hv-tape {
+  position: absolute;
+  width: 92px; height: 26px;
+  background: rgba(251, 242, 247, .82);
+  border-left: 2px dashed rgba(5,5,8,.25);
+  border-right: 2px dashed rgba(5,5,8,.25);
+}
+
+.hv-tape-a { top: -16px; left: 24px; rotate: -8deg; }
+
+.hv-tape-b { bottom: -14px; right: 18px; rotate: 12deg; background: rgba(255, 212, 0, .75); }
+
+.hero-badge {
+  position: absolute; top: 0; left: 2%;
+  background: var(--yellow); color: var(--ink);
+  border: 4px solid var(--ink);
+  box-shadow: 8px 8px 0 var(--ink);
+  font-family: var(--f-ui); font-style: normal;
+  font-size: 11px; letter-spacing: 2px; line-height: 1.5;
+  text-align: center;
+  padding: 10px 16px;
+  rotate: -6deg;
+}
+
+.hero-scroll {
+  position: absolute; left: 50%; bottom: 18px;
+  translate: -50% 0;
+  color: var(--ink); text-decoration: none;
+  font-size: 20px;
+  animation: bounceY 1.4s steps(2) infinite;
+}
+
+@media (max-width: 560px) {
+  /* sin override de tamaño: el clamp base ya da 58px aquí, que es lo máximo que
+     admite "FOLLOW THE" en una línea. fitTitle() queda como red de seguridad. */
+  .hero-visual { min-height: 470px; }
+  /* El escenario es estrecho: la lata se estrecha y se va al borde para dejarle
+     su columna al lema, que si no queda debajo de ella.
+     El 34% no es estético: la lata mide 2,7 de alto por 1 de ancho, así que a
+     más de eso su altura se sale del panel y la corta la pantalla. */
+  .hv-can { right: 5%; left: auto; bottom: 9%; width: 34%; }
+  .hv-lema {
+    left: 5%; top: 22%;
+    font-size: 13px; letter-spacing: 2.5px; line-height: 1.95;
+  }
+}
