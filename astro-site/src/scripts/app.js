@@ -802,8 +802,9 @@ if (statProductsNum) statProductsNum.dataset.count = PRODUCTS.length;
    NAVBAR + MENÚ MÓVIL
    ============================================================ */
 (() => {
-  const nav = $("#nav");
-  addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 40), { passive: true });
+  /* La barra ya no cambia con el scroll: es oscura siempre desde el hero v2
+     (el rosa chocaba con el vídeo de playa). El toggle .scrolled se fue con
+     sus reglas. */
 
   const burger = $("#btnBurger"), menu = $("#mobileMenu");
   const toggle = open => {

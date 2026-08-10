@@ -220,10 +220,16 @@ body::after {
 /* ============ NAVBAR ============ */
 .nav {
   position: sticky; top: 0; z-index: 900;
-  /* El texto de la barra es tinta: se diseñó para leerse sobre el hero rosa.
-     Al estar ahora en el flujo y no flotando encima, la barra necesita ese
-     mismo rosa o el texto queda negro sobre negro. */
-  background: var(--pink);
+  /* Oscura siempre. Fue rosa mientras el hero era rosa; con el vídeo de
+     playa detrás, dos rosas distintos chocaban. Es el mismo diseño que antes
+     aparecía al hacer scroll — ahora sin estado intermedio.
+     .96 y no .88: el desenfoque es un adorno que no siempre llega —basta un
+     ancestro con overflow o filter para que el navegador lo descarte— y
+     cuando no llega, el .88 dejaba ver el contenido pasando por debajo del
+     texto del menú. La legibilidad no puede depender de un efecto opcional. */
+  background: rgba(10, 10, 18, .96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   /* En iOS el contenido se dibuja por debajo de la barra de estado. Con
      `viewport-fit=cover` en el <head>, este relleno hace que sea el FONDO DE LA
      BARRA lo que ocupa esa franja, y no la página. */
@@ -233,29 +239,15 @@ body::after {
   gap: 18px;
   padding-left: clamp(16px, 4vw, 44px);
   padding-right: clamp(16px, 4vw, 44px);
-  transition: background .3s, border-color .3s, backdrop-filter .3s;
-  border-bottom: 4px solid transparent;
-}
-.nav.scrolled {
-  /* .96 y no .88: el desenfoque es un adorno que no siempre llega —basta un
-     ancestro con overflow o filter para que el navegador lo descarte— y cuando
-     no llega, el .88 dejaba ver el contenido pasando por debajo del texto del
-     menú. La legibilidad no puede depender de un efecto opcional. */
-  background: rgba(10, 10, 18, .96);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom-color: var(--ink);
+  border-bottom: 4px solid var(--ink);
 }
 .nav::after {
   content: "";
   position: absolute; left: 0; right: 0; bottom: -4px;
   height: 4px;
   background: linear-gradient(90deg, var(--pink), var(--yellow) 55%, var(--pink));
-  opacity: 0;
-  transition: opacity .3s;
   pointer-events: none;
 }
-.nav.scrolled::after { opacity: 1; }
 /* En pantallas táctiles el navbar va opaco y SIN desenfoque. `backdrop-filter`
    sobre un elemento fijo obliga a iOS a componer la barra en una capa aparte, y
    durante el scroll esa capa se desincroniza del resto: queda una banda de
@@ -263,20 +255,14 @@ body::after {
    la página—. Sin desenfoque no hay capa aparte y no hay banda. En escritorio
    se conserva el efecto, donde no da problemas. */
 @media (hover: none) {
-  .nav.scrolled {
+  .nav {
     background: #0a0a12;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 }
 .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
-.nav-bunny { width: 38px; height: 34px; color: var(--ink); --bunny-eye: var(--pink); transition: transform .3s var(--ease-snap); }
-.nav.scrolled .nav-bunny { color: var(--pink); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); }
-.nav:not(.scrolled) .nav-word { color: var(--ink); }
-.nav:not(.scrolled) .nav-links a { color: rgba(5, 5, 8, .72); }
-.nav:not(.scrolled) .nav-links a:hover, .nav:not(.scrolled) .nav-links a.active { color: var(--ink); }
-.nav:not(.scrolled) .nav-links a::after { background: var(--ink); }
-.nav:not(.scrolled) .btn-burger span { background: var(--ink); }
+.nav-bunny { width: 38px; height: 34px; color: var(--pink); --bunny-eye: var(--ink); --bunny-muzzle: var(--ink); transition: transform .3s var(--ease-snap); }
 .nav-brand:hover .nav-bunny { transform: rotate(-8deg) scale(1.12); }
 .nav-word { font-family: var(--f-display); font-style: normal; font-size: 22px; letter-spacing: 1.5px; color: var(--bone); }
 .nav-links { display: flex; gap: clamp(18px, 2.6vw, 40px); }
@@ -368,10 +354,9 @@ body::after {
    ciegas, pero visualmente no existía. */
 .btn-burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; padding: 8px; }
 .btn-burger span {
-  width: 26px; height: 4px; background: var(--ink);
+  width: 26px; height: 4px; background: var(--bone);
   transition: transform .25s, opacity .25s, background .25s;
 }
-.nav.scrolled .btn-burger span { background: var(--bone); }
 .btn-burger.open span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
 .btn-burger.open span:nth-child(2) { opacity: 0; }
 .btn-burger.open span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
