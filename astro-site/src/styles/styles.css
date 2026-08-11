@@ -428,13 +428,22 @@ body::after {
   background: linear-gradient(90deg,
     rgba(230, 230, 255, .38) 0%, rgba(230, 230, 255, .16) 42%, transparent 62%);
 }
-/* En pantalla estrecha el recorte lateral del 16:9 es fuerte: se descentra el
-   encuadre hacia la lata y el plush para que no se salgan, y el velo pasa a
-   aclarar por arriba, que es donde queda el texto. */
+/* En el móvil el vídeo no puede ser telón: la ventana enseña un 29% del ancho
+   del cuadro y el grupo lata+plush mide un 40%, así que cualquier encuadre
+   dejaba la lata gigante detrás del texto — el botón fantasma y la línea de
+   datos desaparecían contra ella. Se parte el hero en dos: el texto vuelve al
+   rosa de marca arriba (el hero v1 móvil, que ya funcionaba) y el vídeo pasa a
+   banda de anuncio abajo, sin texto encima. Con la banda a 38svh el recorte
+   baja y caben el plush y la lata enteros con su orilla (se ve el 68% del
+   cuadro, centrado en 55%). */
 @media (max-width: 760px) {
-  .hero-video { object-position: 64% 50%; }
-  .hero-scrim { background: linear-gradient(180deg,
-    rgba(230, 230, 255, .40) 0%, rgba(230, 230, 255, .14) 46%, transparent 66%); }
+  .hero { justify-content: flex-start; padding-bottom: calc(38svh + 24px); }
+  .hero-video {
+    inset: auto 0 0 0; height: 38svh;
+    object-position: 55% 50%;
+    border-top: 4px solid var(--ink);
+  }
+  .hero-scrim { display: none; }
 }
 
 .hero-inner {
