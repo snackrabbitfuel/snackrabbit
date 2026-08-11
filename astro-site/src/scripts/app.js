@@ -678,6 +678,15 @@ const PRODUCTS = [
        cada "color" es un sabor con su lata. El punto de cada muestra es el
        color de SU etiqueta — la paleta de la familia, verde incluido. */
     variantLabel: { es: "SABOR", en: "FLAVOR" },
+    /* Cada lata lleva SU nombre impreso: el titular del modal sigue al sabor
+       elegido, no al nombre genérico del producto. */
+    namesByColor: {
+      "ORIGINAL": "RABBIT FUEL",
+      "BERRY CURIOUS": "BERRY CURIOUS",
+      "MANGO MISCHIEF": "MANGO MISCHIEF",
+      "PINK COLADA": "PINK COLADA",
+      "SOUR HOP": "SOUR HOP"
+    },
     colors: ["#ff4fd8", "#4fe8ff", "#ffd400", "#050508", "#9dff00"],
     colorNames: ["ORIGINAL", "BERRY CURIOUS", "MANGO MISCHIEF", "PINK COLADA", "SOUR HOP"],
     imgByColor: {
@@ -1168,6 +1177,10 @@ const ProductModal = (() => {
 
   function paint() {
     if (vista >= galeria(color).length) vista = 0;
+    /* El titular sigue a la variante cuando el producto trae nombres por
+       sabor: eliges PINK COLADA y arriba dice PINK COLADA, que es lo que pone
+       la lata que estás viendo. */
+    $("#pmName").textContent = (cur.namesByColor && cur.namesByColor[color]) || cur.name;
     $("#pmPrice").textContent = money(price() * qty);
     $("#pmQty").textContent = qty;
     /* aria-pressed además de la clase: sin él, quien usa lector de pantalla
