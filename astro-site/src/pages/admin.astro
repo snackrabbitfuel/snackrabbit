@@ -1120,13 +1120,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   /* ══════════ DATOS DE EJEMPLO ══════════ */
   const DEMO = {
     pedidos: [
-      { id: "SR-1049", quien: "Ava R. · Austin, TX",      items: [["RABBIT FUEL ×12", 1, 42], ["THE ZOOMIES", 1, 29]], estado: "pagado",    fecha: "5 AGO 09:41" },
+      { id: "SR-1049", quien: "Ava R. · Austin, TX",      items: [["RABBIT FUEL ×12", 1, 42], ["THE LOOKOUT", 1, 35]], estado: "pagado",    fecha: "5 AGO 09:41" },
       { id: "SR-1048", quien: "Mateo G. · Miami, FL",     items: [["THE LOOKOUT · BLACK", 1, 35]],                     estado: "pagado",    fecha: "5 AGO 08:12" },
       { id: "SR-1047", quien: "Jordan K. · Portland, OR", items: [["RABBIT FUEL ×4", 2, 16]],                          estado: "prepara",   fecha: "4 AGO 19:03" },
       { id: "SR-1046", quien: "Sofía L. · Queens, NY",    items: [["RABBIT FUEL ×12", 1, 42], ["THE LOOKOUT · WHITE", 1, 35]], estado: "prepara", fecha: "4 AGO 16:40" },
-      { id: "SR-1045", quien: "Noah P. · Denver, CO",     items: [["THE ZOOMIES", 2, 29]],                             estado: "enviado",   fecha: "4 AGO 11:22" },
+      { id: "SR-1045", quien: "Noah P. · Denver, CO",     items: [["RABBIT FUEL ×4 · PINK COLADA", 2, 16]],                             estado: "enviado",   fecha: "4 AGO 11:22" },
       { id: "SR-1044", quien: "Emma T. · Chicago, IL",    items: [["RABBIT FUEL ×12", 2, 42]],                         estado: "enviado",   fecha: "3 AGO 15:08" },
-      { id: "SR-1043", quien: "Jordan M. · Boise, ID",    items: [["RABBIT FUEL ×4", 1, 16], ["THE ZOOMIES", 1, 29]],  estado: "retraso",   fecha: "29 JUL 10:15" },
+      { id: "SR-1043", quien: "Jordan M. · Boise, ID",    items: [["RABBIT FUEL ×4 · SOUR HOP", 1, 16], ["THE LOOKOUT", 1, 35]],  estado: "retraso",   fecha: "29 JUL 10:15" },
       { id: "SR-1042", quien: "Liam S. · Nashville, TN",  items: [["THE LOOKOUT · BLACK", 1, 35]],                     estado: "entregado", fecha: "2 AGO 09:54" },
       { id: "SR-1041", quien: "Mía C. · Phoenix, AZ",     items: [["RABBIT FUEL ×12", 1, 42]],                         estado: "entregado", fecha: "1 AGO 17:31" },
       { id: "SR-1040", quien: "Lucas B. · Seattle, WA",   items: [["RABBIT FUEL ×4", 3, 16]],                          estado: "entregado", fecha: "1 AGO 12:19" },
@@ -1140,7 +1140,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       { t: "09:41", que: () => `<b>SR-1049</b> ${T("ac.paid")} — $71.00`, hito: true },
       { t: "09:12", que: () => `${T("ac.founder")}: <b>@mochi.dev</b> (67/100)`, hito: true },
       { t: "08:12", que: () => `<b>SR-1048</b> ${T("ac.paid")} — $35.00` },
-      { t: "07:55", que: () => `${T("ac.review")} <b>THE ZOOMIES</b>` },
+      { t: "07:55", que: () => `${T("ac.review")} <b>THE LOOKOUT</b>` },
       { t: null, que: () => `<b>SR-1045</b> ${T("ac.and")} <b>SR-1044</b> ${T("ac.pickup")}` },
     ],
     envios: [
@@ -1159,7 +1159,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     productos: [
       { n: "RABBIT FUEL", v: "PACK ×4 · $16 — PACK ×12 · $42", stock: 18,  max: 200, ventas: 82 },
       { n: "THE LOOKOUT", v: "WHITE · BLACK — $35",            stock: 64,  max: 120, ventas: 34 },
-      { n: "THE ZOOMIES", v: "BLACK — $29",                    stock: 91,  max: 150, ventas: 27 },
     ],
     porEstado: [["TEXAS", 21], ["CALIFORNIA", 18], ["state.ny", 14], ["FLORIDA", 11], ["ILLINOIS", 8]],
     fuentes: [["src.tiktok", 64], ["src.direct", 22], ["src.search", 9], ["src.list", 5]],

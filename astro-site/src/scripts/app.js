@@ -208,15 +208,15 @@ const I18N = {
     "bur.errSave": "NO PUDIMOS GUARDAR TU PLAZA. INTÉNTALO OTRA VEZ.",
     "mani.kicker": "MANIFIESTO",
     "mani.title": "CURIOSIDAD,<br>PERO <em class=\"hl\">EN FÍSICO.</em>",
-    "mani.text": "SnackRabbit nació contando curiosidades de 60 segundos. <strong>DROP 001</strong> es exactamente lo mismo, pero en objetos: una lata que no te miente, una toalla que ha visto más scroll que sudor y un conejo de peluche que te mira mientras trabajas.",
+    "mani.text": "SnackRabbit nació contando curiosidades de 60 segundos. <strong>DROP 001</strong> es exactamente lo mismo, pero en objetos: una lata que no te miente y un conejo de peluche que te mira mientras trabajas.",
     "mani.fact1": "LA YERBA MATE TIENE MÁS ANTIOXIDANTES QUE EL TÉ VERDE.",
     "mani.fact2": "UNA SEMILLA DE GUARANÁ TIENE ~2× LA CAFEÍNA DE UN GRANO DE CAFÉ.",
     "mani.fact3": "LOS CONEJOS PUEDEN VER CASI 360°. NOSOTROS, SOLO ESTE DROP.",
     "faq.title": "PREGUNTAS FRECUENTES",
     "faq.q1": "¿CUÁNDO LLEGA MI PEDIDO?",
     "faq.a1": "Preparamos en 24 h y entregamos en 48–72 h laborables. Recibirás seguimiento por email en cuanto salga de la madriguera.",
-    "faq.q2": "¿QUÉ TAMAÑO TIENEN LA TOALLA Y EL PLUSH?",
-    "faq.a2": "THE ZOOMIES mide 100×50 cm, tamaño gimnasio clásico, y va en negro con el conejo bordado. THE LOOKOUT es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar.",
+    "faq.q2": "¿QUÉ TAMAÑO TIENE EL PLUSH?",
+    "faq.a2": "THE LOOKOUT es tamaño escritorio (~20 cm): cabe entre el teclado y la lata sin estorbar, que es justo su trabajo.",
     "faq.q3": "¿PUEDO DEVOLVER ALGO?",
     "faq.a3": "Sí: 30 días para textil y plush sin usar con etiqueta. Rabbit Fuel no admite devolución una vez abierto el pack (por razones obvias).",
     "faq.q4": "¿QUÉ LLEVA EXACTAMENTE RABBIT FUEL?",
@@ -499,15 +499,15 @@ const I18N = {
     "bur.errSave": "WE COULDN'T SAVE YOUR SPOT. TRY AGAIN.",
     "mani.kicker": "MANIFESTO",
     "mani.title": "CURIOSITY,<br>BUT <em class=\"hl\">PHYSICAL.</em>",
-    "mani.text": "SnackRabbit was born telling 60-second curiosities. <strong>DROP 001</strong> is exactly the same, but in objects: a can that doesn't lie to you, a towel that has seen more scrolling than sweat, and a plush bunny that watches you work.",
+    "mani.text": "SnackRabbit was born telling 60-second curiosities. <strong>DROP 001</strong> is exactly the same, but in objects: a can that doesn't lie to you and a plush bunny that watches you work.",
     "mani.fact1": "YERBA MATE HAS MORE ANTIOXIDANTS THAN GREEN TEA.",
     "mani.fact2": "A GUARANÁ SEED PACKS ~2× THE CAFFEINE OF A COFFEE BEAN.",
     "mani.fact3": "RABBITS CAN SEE ALMOST 360°. WE CAN ONLY SEE THIS DROP.",
     "faq.title": "FREQUENTLY ASKED QUESTIONS",
     "faq.q1": "WHEN DOES MY ORDER ARRIVE?",
     "faq.a1": "We prepare within 24 h and deliver in 48–72 working hours. You'll get tracking by email as soon as it leaves the burrow.",
-    "faq.q2": "HOW BIG ARE THE TOWEL AND THE PLUSH?",
-    "faq.a2": "THE ZOOMIES towel is 100×50 cm, classic gym size, and comes in black with the embroidered bunny. THE LOOKOUT is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way.",
+    "faq.q2": "HOW BIG IS THE PLUSH?",
+    "faq.a2": "THE LOOKOUT is desk-sized (~20 cm): it fits between your keyboard and your can without getting in the way — which is exactly its job.",
     "faq.q3": "CAN I RETURN SOMETHING?",
     "faq.a3": "Yes: 30 days for unused apparel and plush with tags on. Rabbit Fuel can't be returned once the pack is opened (for obvious reasons).",
     "faq.q4": "WHAT EXACTLY IS IN RABBIT FUEL?",
@@ -721,47 +721,6 @@ const PRODUCTS = [
     img: "/assets/plush-cutout.webp",
     imgScale: .74,  // es casi cuadrado: sin esto domina la tarjeta
     viewScale: 1    // las vistas de galería ya vienen encuadradas
-  },
-  {
-    id: "gym-towel",
-    num: "DROP 001 · Nº 03",
-    /* "Zoomies" tiene nombre científico: frenetic random activity period. Le
-       pasa a cualquier animal que de pronto no puede con su propia energía —y
-       a ti en el gimnasio—. Es una curiosidad de verdad, que es justo lo que
-       vende esta marca, y encima da gracia en una toalla. */
-    name: "THE ZOOMIES",
-    price: 29,
-    priceNote: "TOWEL",
-    desc: {
-      es: "Tiene nombre científico: frenetic random activity period. Le pasa a cualquier animal que de pronto no puede con su propia energía. A ti te pasa en el gimnasio. Microfibra, seca rápido, no pesa nada.",
-      en: "It has a scientific name: frenetic random activity period. It happens to any animal that suddenly cannot contain its own energy. Yours happens at the gym. Microfibre, dries fast, weighs nothing."
-    },
-    specs: {
-      es: "100×50 CM · 250 G · 80% POLIÉSTER / 20% POLIAMIDA · BORDADO PREMIUM · LAVADO EN FRÍO",
-      en: "100×50 CM · 250 G · 80% POLYESTER / 20% POLYAMIDE · PREMIUM EMBROIDERY · COLD WASH"
-    },
-    features: [
-      { es: ["ULTRA ABSORBENTE", "Se lleva el sudor al instante."],
-        en: ["ULTRA ABSORBENT", "Soaks up sweat on contact."] },
-      { es: ["SUAVE Y LIGERA", "Cómoda para cualquier rutina."],
-        en: ["SOFT & LIGHTWEIGHT", "Comfortable for any routine."] },
-      { es: ["CALIDAD QUE DURA", "Aguanta lavada tras lavada."],
-        en: ["DURABLE QUALITY", "Holds up wash after wash."] },
-      { es: ["TAMAÑO JUSTO", "Gimnasio, deporte y viaje."],
-        en: ["PERFECT SIZE", "Gym, sports and travel."] }
-    ],
-    /* Solo en negro, por decisión de catálogo (ago 2026). Sin colorNames el
-       producto deja de tener variantes: las muestras de la tarjeta y la fila de
-       color del modal desaparecen solas, y la limpieza del carrito ya sabe
-       quitar el color a las líneas guardadas — el mismo camino que recorrió la
-       lata. Galería única: producto, plegada, bordado y canto. */
-    views: ["/assets/towel-black-cutout.webp", "/assets/towel-black-fold.webp",
-            "/assets/towel-black-stitch.webp", "/assets/towel-black-edge.webp"],
-    sizes: ["ÚNICA"],
-    sizeLabel: { es: "TAMAÑO", en: "SIZE" },
-    img: "/assets/towel-black-cutout.webp",
-    imgScale: 1.12,   // el lienzo nativo lleva más margen que el anterior
-    viewScale: 1.06
   }
 ];
 
