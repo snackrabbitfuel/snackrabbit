@@ -421,7 +421,7 @@ body::after {
      la lata; lo que se sacrifica es orilla por debajo del pliegue, donde la
      base "apoyada" en el borde se lee natural. El margen del zoom (7.5% con scale 1.15)
      cubre exactamente los dos traslados sin descubrir ningún borde. */
-  .hero-video { transform: translateX(7.5%) translateY(4%) scale(1.15); }
+  .hero-video { transform: translateX(7%) scale(1.15); }
 }
 .hero-scrim {
   position: absolute; inset: 0; pointer-events: none;
