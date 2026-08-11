@@ -664,20 +664,30 @@ const PRODUCTS = [
     price: 16,
     priceNote: "PACK ×4",
     desc: {
-      es: "Bebida energética natural: yerba mate + guaraná. Cero taurina, cero cosas raras.",
-      en: "Natural energy drink: yerba mate + guaraná. Zero taurine, zero weird stuff."
+      es: "Bebida energética natural en cinco sabores con su propio conejo. El original: yerba mate + guaraná. Cero taurina, cero cosas raras.",
+      en: "Natural energy drink in five flavors, each with its own rabbit. The original: yerba mate + guaraná. Zero taurine, zero weird stuff."
     },
     specs: {
-      es: "250 ML · 80 MG DE CAFEÍNA · MATE + GUARANÁ · SIN TAURINA · VEGANA · SIN AZÚCAR · 90 KCAL",
-      en: "250 ML · 80 MG CAFFEINE · MATE + GUARANÁ · ZERO TAURINE · VEGAN · ZERO SUGAR · 90 KCAL"
+      es: "250 ML · 80 MG DE CAFEÍNA · SIN TAURINA · VEGANA · SIN AZÚCAR · 90 KCAL",
+      en: "250 ML · 80 MG CAFFEINE · ZERO TAURINE · VEGAN · ZERO SUGAR · 90 KCAL"
     },
     sizes: ["PACK ×4", "PACK ×12"],
     sizeLabel: { es: "PACK", en: "PACK" },
     sizePrices: { "PACK ×4": 16, "PACK ×12": 42 },
-    img: "/assets/can-cutout.webp",
-    /* Una sola galería: la lata no tiene variantes, solo ángulos */
-    views: ["/assets/can-cutout.webp", "/assets/can-top.webp", "/assets/can-back.webp",
-            "/assets/can-label.webp", "/assets/can-mood.webp"],
+    /* Los sabores viajan por la maquinaria de variantes (la misma del plush):
+       cada "color" es un sabor con su lata. El punto de cada muestra es el
+       color de SU etiqueta — la paleta de la familia, verde incluido. */
+    variantLabel: { es: "SABOR", en: "FLAVOR" },
+    colors: ["#ff4fd8", "#4fe8ff", "#ffd400", "#050508", "#9dff00"],
+    colorNames: ["ORIGINAL", "BERRY CURIOUS", "MANGO MISCHIEF", "PINK COLADA", "SOUR HOP"],
+    imgByColor: {
+      "ORIGINAL": "/assets/can-rabbit-fuel.webp",
+      "BERRY CURIOUS": "/assets/can-berry-curious.webp",
+      "MANGO MISCHIEF": "/assets/can-mango-mischief.webp",
+      "PINK COLADA": "/assets/can-pink-colada.webp",
+      "SOUR HOP": "/assets/can-sour-hop.webp"
+    },
+    img: "/assets/can-rabbit-fuel.webp",
     imgScale: 1
   },
   {
@@ -1233,6 +1243,9 @@ const ProductModal = (() => {
     $("#pmDesc").textContent = cur.desc[LANG];
     $("#pmSpecs").textContent = cur.specs[LANG];
     $("#pmSizeLabel").textContent = cur.sizeLabel[LANG];
+    /* La fila de variantes dice COLOR salvo que el producto declare otra cosa:
+       en la lata las variantes son sabores, y llamarlos colores confunde. */
+    $("#pmColorLabel").textContent = (cur.variantLabel && cur.variantLabel[LANG]) || "COLOR";
     $("#pmFeatures").innerHTML = (cur.features || [])
       .map(f => `<li><strong>${f[LANG][0]}</strong><span>${f[LANG][1]}</span></li>`).join("");
     pintarVistas();
@@ -1306,6 +1319,10 @@ const Cart = (() => {
       const p = i && PRODUCTS.find(x => x.id === i.id);
       if (!p) return;
       if (!p.colorNames) i.color = null;
+      /* El caso inverso: el producto GANÓ variantes (la lata, ago 2026). Una
+         línea guardada sin sabor era la única lata que existía entonces — el
+         original. Sin esto, el pedido llegaría sin saber qué lata mandar. */
+      if (p.colorNames && !i.color) i.color = p.colorNames[0];
 
       /* Con tallas, la talla tiene que existir: si no, el precio base daría un
          pack de doce al precio de uno de cuatro. */
