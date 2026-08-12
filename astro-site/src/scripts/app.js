@@ -1127,6 +1127,15 @@ function renderGrid(instant) {
         o.classList.toggle("sel", yo);
         o.setAttribute("aria-pressed", String(yo));
       });
+      /* La tarjeta acompaña a la elección, como el modal: si el producto trae
+         imagen o nombre por variante (la lata y sus sabores), tocar la muestra
+         cambia la lata y el titular ahí mismo. Sin esto, elegías PINK COLADA
+         y la tarjeta seguía enseñando la rosa con su nombre. */
+      const img = card.querySelector(".pcard-media img");
+      const nuevaImg = (p.imgByColor && p.imgByColor[elegido]) || p.img;
+      if (!img.src.endsWith(nuevaImg)) img.src = nuevaImg;
+      const boton = card.querySelector(".pcard-name button");
+      boton.textContent = (p.namesByColor && p.namesByColor[elegido]) || p.name;
     }));
 
     card.querySelector(".pcard-add").addEventListener("click", e => {
@@ -1384,8 +1393,8 @@ const Cart = (() => {
       row.innerHTML = `
         <img src="${thumb}" alt="${p.name}">
         <div>
-          <p class="citem-name">${p.name}</p>
-          <p class="citem-var">${sizeName(it.size)}${p.colorNames && it.color ? " · " + colorName(it.color) : ""}</p>
+          <p class="citem-name">${(p.namesByColor && it.color && p.namesByColor[it.color]) || p.name}</p>
+          <p class="citem-var">${sizeName(it.size)}${p.colorNames && it.color && !p.namesByColor ? " · " + colorName(it.color) : ""}</p>
           <div class="citem-qty">
             <button type="button" aria-label="${t("cart.less", { name: p.name })}">−</button>
             <span>${it.qty}</span>

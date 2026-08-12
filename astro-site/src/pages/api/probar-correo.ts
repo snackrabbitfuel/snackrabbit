@@ -57,7 +57,7 @@ const ejemplos = (idioma: "es" | "en"): Record<string, { asunto: string; el: Rea
     "2": { asunto: (es ? a2es : a2).replace("{{pedido}}", "#SR-4927"),
            el: React.createElement(OrderConfirmed, {
              idioma, nombre: "Diego", pedido: "#SR-4927",
-             articulos: es ? "Rabbit Fuel ×12, The Zoomies" : "Rabbit Fuel ×12, The Zoomies",
+             articulos: "RABBIT FUEL ×8 · PINK COLADA ×4",
              envio: es ? "GRATIS (más de $60)" : "FREE (over $60)",
              total: "$71.00", direccion: "128 Curiosity Ave, Austin, TX 78701" }) },
     "3": { asunto: (es ? a3es : a3).replace("{{pedido}}", "#SR-4927"),
