@@ -2003,7 +2003,16 @@ body::after {
   .fuel-inner { grid-template-columns: 1fr; }
   .paper-inner { grid-template-columns: 1fr; }
   .mani-sticker { max-width: 300px; }
-  .product-modal { grid-template-columns: 1fr; max-height: 90svh; }
+  /* Apilado, el modal supera el 90svh y su overflow:hidden cortaba el panel
+     justo en la fila de sabores, con el botón de añadir bajo el pliegue. El
+     scroll tiene que vivir DENTRO del panel: la foto es fila fija y el panel
+     una fila minmax(0,1fr) que desplaza lo que no cabe. El max-height de
+     escritorio del panel se anula porque aquí manda la rejilla. */
+  .product-modal { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); max-height: 90svh; }
+  .pm-info { max-height: none; }
+  /* Las muestras con su halo de selección (6 px de amarillo) necesitan aire
+     dentro del área que ahora recorta: sin este respiro, el aro se guillotina. */
+  .pm-swatches { flex-wrap: wrap; padding: 6px 2px; }
   .pm-media { border-right: none; border-bottom: 6px solid var(--ink); max-height: 320px; }
   .pm-media img { max-height: 320px; }
   /* Apilado el panel es bajo: se sube el producto y se encogen las miniaturas
