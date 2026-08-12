@@ -17,7 +17,11 @@ const {
   description = "SnackRabbit DROP 001: Rabbit Fuel, the natural energy drink in five flavors, and The Lookout plush. Zero taurine, zero weird stuff.",
   ogTitle = "SNACKRABBIT — DROP 001",
   ogDescription = "Follow the rabbit. Curiosity got you this far; the burrow does the rest. Limited edition: nothing comes back.",
-  ogImage = "/assets/product-rabbit-fuel.jpg",
+  /* Con hash en el nombre, como todo lo que cambia con el diseño: WhatsApp y
+     compañía cachean el preview POR URL, así que regenerar la tarjeta con el
+     mismo nombre dejaría la lata vieja en los chats para siempre. Nombre
+     nuevo = re-descarga en el próximo envío. */
+  ogImage = "/assets/og-lineup-6f70b036c1a3.jpg",
   lang = "en",
 } = Astro.props;
 ---
