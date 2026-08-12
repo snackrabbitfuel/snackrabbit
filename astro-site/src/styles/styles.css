@@ -415,13 +415,13 @@ body::after {
    descubra el fondo: 1.19 cubre el 9% de traslado con medio punto de margen.
    El recorte extra cae en la orilla vacía de la derecha y en cielo/arena. */
 @media (min-width: 761px) {
-  /* Encuadre para el clip v3 (composición del original, cámara fija): la lata
-     nace en el 17.8% del cuadro con cielo encima y arena debajo, así que no
-     hace falta traslado vertical. Medido: lata a ~103 px de la cenefa y arena
-     visible bajo la base a 1440×900; titular sin tocar el plush. El margen
-     del zoom (7.5%) supera al traslado — igualarlo deja el borde al aire por
-     redondeo. */
-  .hero-video { transform: translateX(7%) scale(1.15); }
+  /* Encuadre para el clip v4 (la lineup: las cinco latas, RABBIT FUEL al
+     frente). El grupo nace en el 43.8% del cuadro — la mitad izquierda queda
+     de verdad para el titular—, así que basta el zoom mínimo hasta la fecha.
+     El remate de la lata rosa está alto (0.110), de ahí el 3% de bajada; la
+     arena bajo las bases sobrevive porque el cuadro trae un 17%. El margen
+     del zoom (5.5%) supera al traslado mayor (5%). */
+  .hero-video { transform: translateX(5%) translateY(3%) scale(1.11); }
 }
 .hero-scrim {
   position: absolute; inset: 0; pointer-events: none;
@@ -440,7 +440,7 @@ body::after {
   .hero { justify-content: flex-start; padding-bottom: calc(38svh + 24px); }
   .hero-video {
     inset: auto 0 0 0; height: 38svh;
-    object-position: 55% 50%;
+    object-position: 72% 50%;
     border-top: 4px solid var(--ink);
   }
   .hero-scrim { display: none; }
