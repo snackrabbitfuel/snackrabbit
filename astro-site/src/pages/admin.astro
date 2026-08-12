@@ -935,10 +935,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
       "st.paid": "PAID", "st.packing": "PACKING", "st.packed": "PACKED", "st.shipped": "SHIPPED",
       "st.delivered": "DELIVERED", "st.delayed": "DELAYED",
+      "st.cancelled": "CANCELLED", "st.refunded": "REFUNDED",
       "col.topack": "TO PACK", "col.packing": "PACKING", "col.packed": "PACKED",
       "col.carrier": "WITH CARRIER", "col.delayed": "DELAYED",
 
       "fu.board": "BOARD — DRAG BOXES BETWEEN COLUMNS",
+      "fu.err": "{id} could not be moved. Card sent back.",
       "sh.transit": "IN TRANSIT", "sh.delay": "DELAY ALERT",
       "sh.delayTxt1": "A shipment with no movement for", "sh.delayTxt2": "more than 6 business days",
       "sh.delayTxt3": "shows up here on its own.",
@@ -975,6 +977,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       "mp.timeline": "TIMELINE", "mp.label": "PRINT LABEL ▸", "mp.mark": "MARK SHIPPED ▸",
       "mp.labelT": "Label generated. (Demo)", "mp.markT": "Marked as shipped. (Demo)",
       "mp.created": "Order created", "mp.confirmed": "Payment confirmed", "mp.packing": "Packing",
+      "mp.ship": "SHIPPING", "mp.tax": "TAX",
       "mp.carrier": "With the carrier", "mp.delivered": "Delivered", "mp.pending": "PENDING",
 
       "ac.paid": "paid", "ac.founder": "New founder", "ac.review": "5★ review on",
@@ -1035,10 +1038,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
       "st.paid": "PAGADO", "st.packing": "PREPARANDO", "st.packed": "EMPACADO", "st.shipped": "ENVIADO",
       "st.delivered": "ENTREGADO", "st.delayed": "RETRASADO",
+      "st.cancelled": "CANCELADO", "st.refunded": "REEMBOLSADO",
       "col.topack": "POR PREPARAR", "col.packing": "PREPARANDO", "col.packed": "EMPACADO",
       "col.carrier": "CON EL TRANSPORTISTA", "col.delayed": "RETRASADO",
 
       "fu.board": "TABLERO — ARRASTRA LAS CAJAS ENTRE COLUMNAS",
+      "fu.err": "{id} no se pudo mover. La tarjeta vuelve a su sitio.",
       "sh.transit": "EN TRÁNSITO", "sh.delay": "ALERTA DE RETRASO",
       "sh.delayTxt1": "Un envío sin movimiento durante", "sh.delayTxt2": "más de 6 días laborables",
       "sh.delayTxt3": "sube aquí solo.",
@@ -1075,6 +1080,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
       "mp.timeline": "HISTORIAL", "mp.label": "ETIQUETA ▸", "mp.mark": "MARCAR ENVIADO ▸",
       "mp.labelT": "Etiqueta generada. (Demo)", "mp.markT": "Marcado como enviado. (Demo)",
       "mp.created": "Pedido creado", "mp.confirmed": "Pago confirmado", "mp.packing": "En preparación",
+      "mp.ship": "ENVÍO", "mp.tax": "IMPUESTOS",
       "mp.carrier": "Con el transportista", "mp.delivered": "Entregado", "mp.pending": "PENDIENTE",
 
       "ac.paid": "pagado", "ac.founder": "Fundador nuevo", "ac.review": "Reseña 5★ en",
@@ -1117,7 +1123,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     if (activo) $("#tituloMod").textContent = T("t." + activo.dataset.mod);
   }
 
-  /* ══════════ DATOS DE EJEMPLO ══════════ */
+  /* ══════════ DATOS DE EJEMPLO ══════════
+   * `pedidos` y `envios` ya son solo el paracaídas: si GET /api/pedidos
+   * responde, cargarPedidos() los sustituye por los del servidor ADAPTADOS A
+   * ESTA MISMA FORMA — así ni una función de pintado tuvo que cambiar, y si
+   * la red o la API fallan el panel sigue vivo con el inline, como siempre.
+   * El resto de secciones (series, actividad, clientes, fuentes, fundadores,
+   * hilos, productos) sigue siendo demo a sabiendas: migrarán cuando exista
+   * su fuente real. */
   const DEMO = {
     pedidos: [
       { id: "SR-1049", quien: "Ava R. · Austin, TX",      items: [["RABBIT FUEL ×12", 1, 42], ["THE LOOKOUT", 1, 35]], estado: "pagado",    fecha: "5 AGO 09:41" },
@@ -1173,9 +1186,95 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   const COLS = () => [["pagado", T("col.topack")], ["prepara", T("col.packing")], ["empacado", T("col.packed")],
                       ["enviado", T("col.carrier")], ["retraso", T("col.delayed")]];
   const TXT = () => ({ pagado: T("st.paid"), prepara: T("st.packing"), empacado: T("st.packed"),
-                       enviado: T("st.shipped"), entregado: T("st.delivered"), retraso: T("st.delayed") });
+                       enviado: T("st.shipped"), entregado: T("st.delivered"), retraso: T("st.delayed"),
+                       cancelado: T("st.cancelled"), reembolsado: T("st.refunded") });
   const money = n => "$" + n.toFixed(2);
-  const total = p => p.items.reduce((s, [, c, pr]) => s + c * pr, 0);
+  /* Un pedido real trae `_total` en CENTAVOS, congelado por el servidor al
+     cobrar: se pinta ese y no se recalcula, porque es lo que se cobró de
+     verdad. Recalcular es solo para el demo inline, que no tiene servidor. */
+  const total = p => p._total != null ? p._total / 100 : p.items.reduce((s, [, c, pr]) => s + c * pr, 0);
+
+  /* ══════════ PEDIDOS REALES — GET /api/pedidos ══════════
+   *
+   * La estrategia es adaptar, no rediseñar: un Pedido del contrato
+   * (src/lib/pedidos/tipos.ts) se traduce a la forma que el panel ya pinta
+   * {id, quien, items, estado, fecha}, y las funciones de pintado no se
+   * enteran de dónde salió. El dinero del contrato viaja en centavos y aquí
+   * se divide entre 100 UNA vez, en la frontera — nunca en una plantilla.
+   */
+  let sesionClerk = null;      // la sesión viva de Clerk: getToken() renueva solo
+  let fuenteServidor = false;  // true ⇔ lo pintado salió de /api/pedidos
+  let pedidosCrudos = null;    // los Pedido[] tal como llegaron, para rederivar envíos
+
+  /* Las fechas cortas del panel ("5 AGO 09:41") se fabrican aquí desde el ISO
+     del contrato. Meses en español fijo: es el formato de la casa, no depende
+     del idioma de la interfaz (el demo inline ya venía así). */
+  const MESES = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+  /* Getters UTC a propósito: los ISO del contrato vienen en Z, y con getDate()
+     locales el mismo pedido cambiaba de hora —y hasta de día— según la zona
+     del navegador del admin. La fecha de un pedido es un hecho, no una
+     opinión del sistema operativo. */
+  const fechaCorta = iso => {
+    const d = new Date(iso || "");
+    if (isNaN(d)) return "—";
+    return `${d.getUTCDate()} ${MESES[d.getUTCMonth()]} ${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+  };
+  const fechaDia = iso => {
+    const d = new Date(iso || "");
+    return isNaN(d) ? "—" : `${d.getUTCDate()} ${MESES[d.getUTCMonth()]}`;
+  };
+
+  const adaptarPedido = p => ({
+    id: p.id,
+    quien: (p.cliente?.nombre || "—") + (p.cliente?.ciudad
+      ? ` · ${p.cliente.ciudad}${p.cliente.region ? ", " + p.cliente.region : ""}` : ""),
+    /* nombre · variante · sabor en un solo texto: es lo que el demo ya hacía
+       a mano ("RABBIT FUEL ×4 · PINK COLADA") y lo que la tabla concatena. */
+    items: (p.lineas || []).map(l => [[l.nombre, l.variante, l.sabor].filter(Boolean).join(" · "),
+                                      l.cantidad, l.precioUnitario / 100]),
+    estado: p.estado,
+    /* El demo original enseñaba la fecha del ÚLTIMO hecho relevante, no la de
+       creación: un entregado con fecha de pago parece un pedido estancado.
+       Entregado → entrega; enviado/retraso → salida; el resto → creación. */
+    fecha: fechaCorta(
+      p.estado === "entregado" ? (p.envio?.entregadoEn || p.creadoEn)
+      : (p.estado === "enviado" || p.estado === "retraso") ? (p.envio?.enviadoEn || p.creadoEn)
+      : p.creadoEn),
+    _total: p.total,
+    _envio: p.costeEnvio,
+    _imp: p.impuestos,
+  });
+
+  /* La tabla de envíos sale de los MISMOS pedidos, no de una lista aparte:
+     todo lo que ya está en manos del transportista (o debería). La columna
+     "entrega estimada" del contrato aún no existe — se enseña la entrega real
+     si la hay y un guion honesto si no, antes que inventar una fecha. */
+  const enviosDe = ps => ps
+    .filter(p => (p.estado === "enviado" || p.estado === "retraso" || p.estado === "entregado")
+                 && p.envio?.transportista)
+    /* Sin transportista no hay fila: una línea de envíos hecha de guiones no
+       informa de nada y entierra a las que sí. El pedido sigue visible en el
+       tablero; aquí solo entra lo que de verdad está en la calle. */
+    .map(p => [p.id, p.envio.transportista, p.envio.seguimiento || "—", p.estado,
+               p.envio?.entregadoEn ? fechaDia(p.envio.entregadoEn) : "—"]);
+
+  /* Si CUALQUIER cosa falla (red, 401, 503, cuerpo raro) no se toca nada:
+     DEMO ya trae el inline y el sello DATOS DE EJEMPLO se queda puesto. El
+     sello solo se quita cuando el servidor dice explícitamente demo:false —
+     decidirlo aquí sería adivinar qué almacén corre al otro lado. */
+  async function cargarPedidos(token) {
+    try {
+      const r = await fetch("/api/pedidos", { headers: { authorization: "Bearer " + token } });
+      if (!r.ok) return;
+      const cuerpo = await r.json();
+      if (!cuerpo?.ok || !Array.isArray(cuerpo.pedidos)) return;
+      pedidosCrudos = cuerpo.pedidos;
+      DEMO.pedidos = cuerpo.pedidos.map(adaptarPedido);
+      DEMO.envios = enviosDe(cuerpo.pedidos);
+      fuenteServidor = true;
+      if (!cuerpo.demo) $(".sello-demo").style.display = "none";
+    } catch { /* red caída: el panel vive del inline, como hoy */ }
+  }
 
   /* ══════════ utilidades de vida ══════════ */
   function contar(el, fin, dur = 900) {
@@ -1220,7 +1319,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     tr.dataset.ped = p.id;
     const celdas = corta
       ? [`<b>${p.id}</b>`, p.quien.split(" · ")[0], `<b>${money(total(p))}</b>`, `<span class="est ${p.estado}">${TXT()[p.estado]}</span>`]
-      : [`<b>${p.id}</b>`, p.quien, p.items.map(i => i[0]).join(" + "), `<b>${money(total(p))}</b>`, `<span class="est ${p.estado}">${TXT[p.estado]}</span>`, p.fecha];
+      : [`<b>${p.id}</b>`, p.quien, p.items.map(i => i[0]).join(" + "), `<b>${money(total(p))}</b>`, `<span class="est ${p.estado}">${TXT()[p.estado]}</span>`, p.fecha];
     tr.innerHTML = celdas.map(c => `<td>${c}</td>`).join("");
     tr.addEventListener("click", () => abrirPedido(p));
     return tr;
@@ -1280,14 +1379,48 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
         e.preventDefault(); col.classList.remove("sobre");
         const id = e.dataTransfer.getData("text/plain");
         const p = DEMO.pedidos.find(x => x.id === id);
-        if (p && p.estado !== k) { p.estado = k; pintarTablero(); pintarTablas(); pintarFulMini(); toast(`${id} → ${nom}. (Demo)`); }
+        if (!p || p.estado === k) return;
+        /* Movimiento OPTIMISTA: la tarjeta se queda donde cayó y el servidor
+           confirma después. Se guarda el estado anterior por si dice que no. */
+        const antes = p.estado;
+        p.estado = k; pintarTablero(); pintarTablas(); pintarFulMini();
+        /* Sin servidor detrás (fallback inline) el tablero sigue siendo el
+           juguete local de siempre: POSTear solo revertiría cada movimiento. */
+        if (!fuenteServidor) { toast(`${id} → ${nom}. (Demo)`); return; }
+        (async () => {
+          try {
+            const token = await sesionClerk?.getToken();
+            const r = await fetch("/api/pedidos/transicion", {
+              method: "POST",
+              headers: { "content-type": "application/json", authorization: "Bearer " + token },
+              body: JSON.stringify({ id, a: k }),
+            });
+            const cuerpo = await r.json().catch(() => null);
+            /* 409 y compañía caen aquí: la máquina de estados dijo que no. */
+            if (!r.ok || !cuerpo?.ok) throw new Error("rechazada");
+            /* El servidor devuelve el pedido ya movido: se refresca la copia
+               cruda para que la tabla de envíos no se quede con el estado viejo. */
+            if (cuerpo.pedido && pedidosCrudos) {
+              const i = pedidosCrudos.findIndex(x => x.id === id);
+              if (i >= 0) pedidosCrudos[i] = cuerpo.pedido;
+              DEMO.envios = enviosDe(pedidosCrudos);
+              pintarEnvios();
+            }
+            toast(`${id} → ${nom}`);
+          } catch {
+            /* La tarjeta vuelve a su columna: el tablero nunca miente sobre
+               lo que el servidor tiene apuntado. */
+            p.estado = antes; pintarTablero(); pintarTablas(); pintarFulMini();
+            toast(T("fu.err").replace("{id}", id));
+          }
+        })();
       });
       t.appendChild(col);
     });
   }
   function pintarEnvios() {
     $("#tablaEnvios tbody").innerHTML = DEMO.envios.map(([id, quien, seg, est, fecha]) =>
-      `<tr><td><b>${id}</b></td><td>${quien}</td><td>${seg}…</td><td><span class="est ${est}">${TXT()[est]}</span></td><td>${fecha}</td></tr>`).join("");
+      `<tr><td><b>${id}</b></td><td>${quien}</td><td>${seg === "—" ? "—" : seg + "…"}</td><td><span class="est ${est}">${TXT()[est]}</span></td><td>${fecha}</td></tr>`).join("");
   }
   function pintarClientes() {
     $("#muro").innerHTML = DEMO.fundadores.map((f, i) =>
@@ -1423,8 +1556,17 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     ultimoFoco = document.activeElement;
     $("#mpTitulo").textContent = p.id;
     $("#mpQuien").textContent = p.quien + " · " + p.fecha;
+    /* Con datos del contrato el pedido trae envío e impuestos aparte; sin
+       desglosarlos, las líneas sumaban $35.00 y el TOTAL decía $41.95 con
+       $6.95 de misterio entre medias. Un resumen de dinero que no cuadra a
+       simple vista es peor que ninguno. Con el demo inline (sin _envio) las
+       filas extra no aparecen y todo queda como estaba. */
+    const desglose = [];
+    if (p._envio != null) desglose.push([T("mp.ship"), p._envio / 100]);
+    if (p._imp) desglose.push([T("mp.tax"), p._imp / 100]);
     $("#mpLineas tbody").innerHTML = p.items.map(([n, c, pr]) =>
-      `<tr><td><b>${n}</b></td><td>${c}</td><td>${money(pr * c)}</td></tr>`).join("");
+      `<tr><td><b>${n}</b></td><td>${c}</td><td>${money(pr * c)}</td></tr>`).join("")
+      + desglose.map(([et, v]) => `<tr><td colspan="2" style="color:var(--gray-2)">${et}</td><td>${money(v)}</td></tr>`).join("");
     $("#mpTotal").textContent = money(total(p));
     const pasos = [[T("mp.created"), true], [T("mp.confirmed"), true],
       [T("mp.packing"), ["prepara", "empacado", "enviado", "entregado", "retraso"].includes(p.estado)],
@@ -1586,12 +1728,15 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
      * Y si la respuesta es que no: no se pinta nada. Se rebota al panel del
      * cliente, que es donde esa persona sí tiene sitio. */
     let respuesta;
+    /* El token se sube de ámbito a propósito: el MISMO que valida la puerta
+       sirve para la primera carga de /api/pedidos, sin pedir otro. */
+    let tokenAdmin = null;
     try {
-      const token = await clerk.session?.getToken();
+      tokenAdmin = await clerk.session?.getToken();
       const r = await fetch("/api/admin", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token: tokenAdmin }),
       });
       respuesta = await r.json();
     } catch {
@@ -1610,6 +1755,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     $("#puerta").style.display = "none";
     $("#app").classList.add("abierta");
     $("#salir").addEventListener("click", async () => { try { await clerk.signOut(); location.href = "/"; } catch {} });
+
+    /* La sesión se queda a mano para las escrituras del tablero: getToken()
+       devuelve siempre un token vigente (Clerk lo renueva solo), así una
+       tarjeta arrastrada veinte minutos después no viaja con uno caducado. */
+    sesionClerk = clerk.session;
+    /* Antes del primer pintado, para que el panel no parpadee de demo a real.
+       Si falla, pintarTodo() pinta el inline y nadie se entera. */
+    await cargarPedidos(tokenAdmin);
 
     /* pintar todo y arrancar */
     aplicarIdioma();
