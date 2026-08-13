@@ -75,8 +75,33 @@ const CARA_001 = CARAS[1];
     </div>
   </div>
 
-  <!-- ---- Los dos niveles ---- -->
+  <!-- ---- Los tres niveles ----
+       ARCHIVO va primero y es el único que llega a todo el mundo: una carta
+       pesa 5 g y viaja a cualquier país; una caja de ocho latas pesa 3 kg y no
+       sale de EE.UU. continental. Como el contenido de este canal es en
+       español, el nivel sin bebida no es el "básico": es el único que alcanza
+       a la audiencia que de verdad existe.
+
+       Los dos niveles con bebida se quedan tal cual, detrás, y llevan dicho
+       que son solo EE.UU. Su viabilidad depende del coste de lata: con la
+       cotización de agosto de 2026 ($3.00/lata) CURIOSO pierde $9.44 por socio
+       y mes. Por debajo de $1.82 respira. Mientras no haya un precio cerrado,
+       ARCHIVO es el que sostiene el club. -->
   <div class="bur-tiers">
+    <article class="tier tier-archivo rv" data-tier="archivo" data-delay="20">
+      <span class="tier-flag tier-flag-nuevo" data-i18n="bur.t0flag">SHIPS WORLDWIDE</span>
+      <p class="tier-name" data-i18n="bur.t0name">THE ARCHIVE</p>
+      <p class="tier-price">$15<small data-i18n="bur.per">/MONTH</small></p>
+      <ul class="tier-list">
+        <li data-i18n="bur.t0f1">NUMBERED CARD OF THE MONTH</li>
+        <li data-i18n="bur.t0f2">THE CURIOSITY THAT NEVER GETS POSTED</li>
+        <li data-i18n="bur.t0f3">EXCLUSIVE STICKER</li>
+        <li data-i18n="bur.t0f4">SHIPPING INCLUDED — ANY COUNTRY</li>
+      </ul>
+      <button class="tier-pick" type="button" data-tier-pick="archivo" data-i18n="bur.pick0">CHOOSE THE ARCHIVE</button>
+      <p class="tier-legal" data-i18n="bur.legal0">$15/month, or $149 a year. Renews until you cancel. Nothing is charged today.</p>
+    </article>
+
     <article class="tier rv" data-tier="curioso" data-delay="60">
       <p class="tier-name" data-i18n="bur.t1name">CURIOUS</p>
       <p class="tier-price">$29<small data-i18n="bur.per">/MONTH</small></p>
@@ -84,7 +109,7 @@ const CARA_001 = CARAS[1];
         <li data-i18n="bur.t1f1">8 CANS (2 PACKS ×4)</li>
         <li data-i18n="bur.t1f2">NUMBERED CARD OF THE MONTH</li>
         <li data-i18n="bur.t1f3">EXCLUSIVE STICKER</li>
-        <li data-i18n="bur.t1f4">SHIPPING INCLUDED</li>
+        <li data-i18n="bur.t1f4">SHIPPING INCLUDED — US ONLY</li>
       </ul>
       <button class="tier-pick" type="button" data-tier-pick="curioso" data-i18n="bur.pick1">CHOOSE CURIOUS</button>
       <p class="tier-legal" data-i18n="bur.legal1">$29/month. Renews until you cancel. Nothing is charged today.</p>
@@ -104,14 +129,14 @@ const CARA_001 = CARAS[1];
         <li data-i18n="bur.t2f3">EXCLUSIVE STICKER</li>
         <li data-i18n="bur.t2f4">NEW DROPS 48H EARLY</li>
         <li data-i18n="bur.t2f5">10% OFF THE WHOLE STORE</li>
-        <li data-i18n="bur.t2f6">SHIPPING INCLUDED</li>
+        <li data-i18n="bur.t2f6">SHIPPING INCLUDED — US ONLY</li>
       </ul>
       <button class="tier-pick" type="button" data-tier-pick="cavador" data-i18n="bur.pick2">CHOOSE DIGGER</button>
       <p class="tier-legal" data-i18n="bur.legal2">$49/month. Renews until you cancel. Nothing is charged today.</p>
     </article>
   </div>
 
-  <p class="bur-annual rv" data-i18n="bur.annual">ANNUAL PLAN: $319 CURIOUS · $539 DIGGER — PAY 11 MONTHS, GET 12, PLUS THE "YEAR ONE" PIN. IT IS THE ONLY WAY TO GUARANTEE ALL TWELVE CARDS.</p>
+  <p class="bur-annual rv" data-i18n="bur.annual">ANNUAL PLAN: $149 ARCHIVE · $319 CURIOUS · $539 DIGGER — PAY 11 MONTHS, GET 12, PLUS THE "YEAR ONE" PIN. IT IS THE ONLY WAY TO GUARANTEE ALL TWELVE CARDS.</p>
 
   <!-- ---- Fundadores + lista ---- -->
   <div class="bur-join rv" data-delay="120">

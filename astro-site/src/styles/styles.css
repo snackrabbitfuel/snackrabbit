@@ -1124,6 +1124,20 @@ body::after {
   background: var(--pink);
 }
 .tier-best .tier-list li::before { background: var(--yellow); }
+
+/* ---- ARCHIVO: el nivel que llega a cualquier país ----
+   Se distingue en cian y no en amarillo para que no compita con el distintivo
+   de CAVADOR: son dos mensajes distintos —"el que más da" y "el que te llega
+   estés donde estés"— y con el mismo color el ojo los lee como el mismo.
+   La bandera se inclina al lado contrario por la misma razón. */
+.tier-archivo .tier-name { color: var(--cyan); }
+.tier-archivo .tier-list li::before { background: var(--cyan); }
+.tier-archivo.sel { border-color: var(--cyan); box-shadow: 10px 10px 0 rgba(79, 232, 255, .2); }
+.tier-flag-nuevo {
+  background: var(--cyan);
+  right: auto; left: 18px;
+  rotate: -2deg;
+}
 .tier-pick {
   width: 100%;
   font-family: var(--f-ui); font-style: normal;

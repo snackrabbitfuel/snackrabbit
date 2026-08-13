@@ -161,9 +161,9 @@ const I18N = {
     "rank.6": "EL CONEJO",
     "bur.kicker": "MEMBRESÍA · LA MADRIGUERA",
     "bur.title": "LA CURIOSIDAD<br><em>QUE NO SUBIMOS.</em>",
-    "bur.sub": "Cada mes: tus latas y una curiosidad que nunca sale en el canal. Impresa, numerada y solo para socios.",
+    "bur.sub": "Una curiosidad al mes que no llega al canal. Impresa, numerada, solo para socios — y si quieres, con qué acompañarla.",
     "bur.empieza": "EL AÑO UNO EMPIEZA EN ENERO DE 2027 — APÚNTATE Y ENTRAS DESDE LA CARTA 001",
-    "bur.t2f6": "ENVÍO INCLUIDO",
+    "bur.t2f6": "ENVÍO INCLUIDO — SOLO EE.UU.",
     "fuel.nCaffeine": "Cafeína",
     "fuel.aviso": "80 MG DE CAFEÍNA POR LATA · NO RECOMENDADA PARA MENORES NI DURANTE EL EMBARAZO",
     "bur.yearHead": "AÑO UNO · DE ENERO A DICIEMBRE",
@@ -181,11 +181,19 @@ const I18N = {
        madriguera. */
     "bur.gone": "ENTERRADA",
     "bur.per": "/MES",
+    "bur.t0name": "EL ARCHIVO",
+    "bur.t0flag": "LLEGA A TODO EL MUNDO",
+    "bur.t0f1": "LA CARTA NUMERADA DEL MES",
+    "bur.t0f2": "LA CURIOSIDAD QUE NO SE PUBLICA",
+    "bur.t0f3": "PEGATINA EXCLUSIVA",
+    "bur.t0f4": "ENVÍO INCLUIDO — A CUALQUIER PAÍS",
+    "bur.pick0": "ELEGIR EL ARCHIVO",
+    "bur.legal0": "15 $/mes, o 149 $ al año. Se renueva hasta que la canceles. Hoy no se cobra nada.",
     "bur.t1name": "CURIOSO",
     "bur.t1f1": "8 LATAS (2 PACKS ×4)",
     "bur.t1f2": "CARTA DEL MES NUMERADA",
     "bur.t1f3": "STICKER EXCLUSIVO",
-    "bur.t1f4": "ENVÍO INCLUIDO",
+    "bur.t1f4": "ENVÍO INCLUIDO — SOLO EE.UU.",
     "bur.pick1": "ELEGIR CURIOSO",
     "bur.best": "MEJOR VALOR",
     "bur.t2name": "CAVADOR",
@@ -195,7 +203,7 @@ const I18N = {
     "bur.t2f4": "DROPS NUEVOS 48H ANTES",
     "bur.t2f5": "10% EN TODA LA TIENDA",
     "bur.pick2": "ELEGIR CAVADOR",
-    "bur.annual": "PLAN ANUAL: 319 $ CURIOSO · 539 $ CAVADOR — PAGAS 11 MESES, RECIBES 12, Y EL PIN «AÑO UNO». ES LA ÚNICA FORMA DE ASEGURAR LAS DOCE CARTAS.",
+    "bur.annual": "PLAN ANUAL: 149 $ ARCHIVO · 319 $ CURIOSO · 539 $ CAVADOR — PAGAS 11 MESES, RECIBES 12, Y EL PIN «AÑO UNO». ES LA ÚNICA FORMA DE ASEGURAR LAS DOCE CARTAS.",
     "bur.foundTitle": "LOS PRIMEROS 100",
     "bur.foundText": "Los 100 primeros socios reciben la carta 000 —que no se vuelve a emitir— y su nombre en el Muro de la Madriguera.",
     "bur.cta": "ENTRAR EN LA LISTA ▸",
@@ -458,9 +466,9 @@ const I18N = {
     "rank.6": "THE RABBIT",
     "bur.kicker": "MEMBERSHIP · THE BURROW",
     "bur.title": "THE CURIOSITY<br><em>WE DON'T POST.</em>",
-    "bur.sub": "Every month: your cans and one curiosity that never makes it to the channel. Printed, numbered, members only.",
+    "bur.sub": "One curiosity a month that never makes it to the channel. Printed, numbered, members only — and if you want, something to drink it with.",
     "bur.empieza": "YEAR ONE BEGINS JANUARY 2027 — JOIN THE LIST AND YOU'RE IN FROM CARD 001",
-    "bur.t2f6": "SHIPPING INCLUDED",
+    "bur.t2f6": "SHIPPING INCLUDED — US ONLY",
     "fuel.nCaffeine": "Caffeine",
     "fuel.aviso": "80 MG CAFFEINE PER CAN · NOT RECOMMENDED FOR CHILDREN OR DURING PREGNANCY",
     "bur.yearHead": "YEAR ONE · JANUARY TO DECEMBER",
@@ -472,11 +480,19 @@ const I18N = {
     "bur.cardAlt": "Card {n} of The Burrow",
     "bur.gone": "BURIED",
     "bur.per": "/MONTH",
+    "bur.t0name": "THE ARCHIVE",
+    "bur.t0flag": "SHIPS WORLDWIDE",
+    "bur.t0f1": "NUMBERED CARD OF THE MONTH",
+    "bur.t0f2": "THE CURIOSITY THAT NEVER GETS POSTED",
+    "bur.t0f3": "EXCLUSIVE STICKER",
+    "bur.t0f4": "SHIPPING INCLUDED — ANY COUNTRY",
+    "bur.pick0": "CHOOSE THE ARCHIVE",
+    "bur.legal0": "$15/month, or $149 a year. Renews until you cancel. Nothing is charged today.",
     "bur.t1name": "CURIOUS",
     "bur.t1f1": "8 CANS (2 PACKS ×4)",
     "bur.t1f2": "NUMBERED CARD OF THE MONTH",
     "bur.t1f3": "EXCLUSIVE STICKER",
-    "bur.t1f4": "SHIPPING INCLUDED",
+    "bur.t1f4": "SHIPPING INCLUDED — US ONLY",
     "bur.pick1": "CHOOSE CURIOUS",
     "bur.best": "BEST VALUE",
     "bur.t2name": "DIGGER",
@@ -486,7 +502,7 @@ const I18N = {
     "bur.t2f4": "NEW DROPS 48H EARLY",
     "bur.t2f5": "10% OFF THE WHOLE STORE",
     "bur.pick2": "CHOOSE DIGGER",
-    "bur.annual": "ANNUAL PLAN: $319 CURIOUS · $539 DIGGER — PAY 11 MONTHS, GET 12, PLUS THE \"YEAR ONE\" PIN. IT IS THE ONLY WAY TO GUARANTEE ALL TWELVE CARDS.",
+    "bur.annual": "ANNUAL PLAN: $149 ARCHIVE · $319 CURIOUS · $539 DIGGER — PAY 11 MONTHS, GET 12, PLUS THE \"YEAR ONE\" PIN. IT IS THE ONLY WAY TO GUARANTEE ALL TWELVE CARDS.",
     "bur.foundTitle": "THE FIRST 100",
     "bur.foundText": "The first 100 members get card 000 — never issued again — and their name on the Burrow Wall.",
     "bur.cta": "JOIN THE LIST ▸",
@@ -2011,7 +2027,12 @@ const Madriguera = (() => {
   const sec  = $("#madriguera");
   const btn  = $("#burJoin"), note = $("#burNote"), sel = $("#burSel");
   const KEY  = "sr_burrow_tier_v1";
-  const NOMBRE = { curioso: "bur.t1name", cavador: "bur.t2name" };
+  /* Los planes viven en UN sitio. Añadir un nivel era antes tocar tres
+     condiciones sueltas repartidas por el módulo, y olvidar una dejaba el
+     plan elegible pero no guardable — o al revés. */
+  const PLANES = ["archivo", "curioso", "cavador"];
+  const NOMBRE = { archivo: "bur.t0name", curioso: "bur.t1name", cavador: "bur.t2name" };
+  const valido = p => PLANES.includes(p);
 
   /* Caras que se pidieron y no existían todavía. Hay que recordarlas: el
      navegador no vuelve a lanzar `error` si se le pide dos veces la misma URL
@@ -2019,7 +2040,10 @@ const Madriguera = (() => {
      sin recargar— dejaría el pie anunciando una carta que no se está viendo. */
 
   let plan = (() => { try { return localStorage.getItem(KEY); } catch { return null; } })();
-  if (plan !== "curioso" && plan !== "cavador") plan = "cavador";
+  /* ARCHIVO por defecto: es el único nivel que llega a cualquier país y el
+     único con margen positivo mientras la lata cueste lo que dice la
+     cotización. Antes venía marcado CAVADOR, el más caro. */
+  if (!valido(plan)) plan = "archivo";
   let queria = false;   // pulsó sin sesión: se completa solo al crear la cuenta
   let tocado = false;   // ha elegido plan en esta visita: manda su elección
 
@@ -2146,7 +2170,7 @@ const Madriguera = (() => {
   }
 
   function elegir(p) {
-    if (p !== "curioso" && p !== "cavador") return;
+    if (!valido(p)) return;
     plan = p; tocado = true;
     try { localStorage.setItem(KEY, p); } catch {}
     pintar();
@@ -2387,7 +2411,7 @@ const Panel = (() => {
     const plan = socio?.plan || (enLista ? m.madriguera.plan : null);
     $("#pnMembresia").innerHTML = (socio || enLista)
       ? t(socio ? "pn.memberPaid" : "pn.memberYes",
-          { plan: t(plan === "cavador" ? "bur.t2name" : "bur.t1name") })
+          { plan: t(NOMBRE[plan] || "bur.t0name") })
       : t("pn.memberNone");
 
     /* Los Términos y la política de devoluciones dicen que se cancela desde
