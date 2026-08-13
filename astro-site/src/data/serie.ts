@@ -40,10 +40,23 @@ export function desbloqueadas(hoy: Date = new Date()): number {
 }
 
 /**
- * Cuántas ve el equipo: el mes del calendario, sin esperar al Año Uno.
- * En agosto, ocho. En septiembre, nueve. En enero de 2027 vuelve a una y
- * sigue al club, que para entonces es lo mismo.
+ * Cuántas ve el equipo: TODAS, siempre.
+ *
+ * Antes seguía el mes del calendario —en agosto ocho, en septiembre nueve—
+ * imitando al reloj del club. La idea era ver el producto "funcionando", pero
+ * en la práctica escondía el propio catálogo a quien lo escribió: para revisar
+ * la carta de diciembre había que esperar a diciembre, y para comprobar un
+ * canje de una carta futura no había forma.
+ *
+ * El reloj mensual existe para guardar la sorpresa DE LOS SOCIOS. Al dueño no
+ * hay nada que ocultarle: son sus textos, su arte y sus PDF de imprenta.
+ *
+ * Esto no abre ninguna puerta. Quien decide si esta función se usa es
+ * /api/cartas, y solo la llama DESPUÉS de verificar el token contra Clerk y
+ * comprobar el correo contra el registro de administradores. Sin ese par de
+ * llaves se responde siempre con `desbloqueadas()`, el reloj público, que no
+ * cambia. La sorpresa la protege la verificación, no la aritmética del mes.
  */
-export function desbloqueadasAdmin(hoy: Date = new Date()): number {
-  return hoy.getFullYear() >= ANIO_SERIE ? desbloqueadas(hoy) : hoy.getMonth() + 1;
+export function desbloqueadasAdmin(_hoy: Date = new Date()): number {
+  return TOTAL_CARTAS;
 }
